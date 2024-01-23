@@ -1,0 +1,24 @@
+﻿# CMakeList.txt : CMake project for x86-16, include source and define
+# project specific logic here.
+#
+cmake_minimum_required (VERSION 3.8)
+
+# Enable Hot Reload for MSVC compilers if supported.
+if (POLICY CMP0141)
+  cmake_policy(SET CMP0141 NEW)
+  set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
+endif()
+
+project ("x86-16")
+
+# Add source to this project's executable.
+add_executable (x86-16 "x86-16.c" "core.h" "x86/machine.h" "x86/8086/8086.h" "devices/bios/bios.h" "dos/dos.h" "util/util.h" "util/util.c" "util/util_console.h" "util/util_console.c" "util/logging.h" "util/logging.c" "binary/binary.h" "cmd/cmd.h" "cmd/cmd.c" "x86/8086/8086.c" "x86/machine.c" "dos/dos.c" "binary/binary.c")
+
+# set debugger directory for Visual Studio to output directory
+set_property(TARGET x86-16 PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
+
+if (CMAKE_VERSION VERSION_GREATER 3.12)
+  set_property(TARGET x86-16 PROPERTY CXX_STANDARD 20)
+endif()
+
+# TODO: Add tests and install targets if needed.
