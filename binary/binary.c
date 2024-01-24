@@ -213,7 +213,8 @@ void Binary_Bootstrap(uint8_t* binary_data)
 		basecpu->SS = loaded_binary_msdos.mz_header.initial_ss;
 		basecpu->SP = loaded_binary_msdos.mz_header.initial_sp;
 
-		basecpu->IP = loaded_binary_msdos.mz_header.initial_ip;
+		// TODO: ??????? why is this required it shouldn't be (take into account the PSP)
+		basecpu->IP = loaded_binary_msdos.mz_header.initial_ip + MSDOS_PSP_SIZE;
 
 		// TODO: ALMOST CERTAINLY WRONG!!! Just not sure about what the documentation says here...
 		if (loaded_binary_msdos.psp->fcb1.drive_number > 0) 			basecpu->AL = 0;

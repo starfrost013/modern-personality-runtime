@@ -4,7 +4,7 @@
 
 #include "core.h"
 #include "cmd/cmd.h"
-#include "x86/8086/8086.h"
+#include "cpu/8086/8086.h"
 
 int main(int argc, char* argv[])
 {

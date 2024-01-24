@@ -1,7 +1,7 @@
 #pragma once
 #include "..\core.h"
-#include "..\x86\machine.h"
-#include "..\x86\8086\8086.h"
+#include "..\cpu\machine.h"
+#include "..\cpu\8086\8086.h"
 #include "..\cmd\cmd.h"
 #include "..\dos\dos.h"
 
@@ -23,7 +23,7 @@
 
 // THIS WILL MOST LIKELY CHANGE BECAUSE THE ENVIRONMENT BLOCK WILL BE PUT THEREm
 #define MSDOS_LOADED_BINARY_LOCATION_SEG	0x0050 
-#define MSDOS_LOADED_BINARY_LOCATION_OFF	0x0000
+#define MSDOS_LOADED_BINARY_LOCATION_OFF	0x0100
 
 // when this is loaded the PSP and binary point into the CPU address space
 // do these apps depend on dos memory layout?

@@ -614,3 +614,9 @@ typedef struct msdos_sysvars_v5
 
 bool MSDOS_Init();				// Initialise boring DOS.
 bool MTDOS_Init();				// Initialise exciting DOS.
+
+//
+// Trapped APIs
+//
+
+void MSDOS_Int21(uint16_t ax);
