@@ -101,7 +101,7 @@ void i8086_SetPF16(uint16_t result)
 	cpu->flag_parity = (~result) & 1;
 }
 
-void i8086_SetSF8(uint16_t result)
+void i8086_SetSF8(uint8_t result)
 {
 	// this works because we only have an 8-bit number, basically checks if first bit is 1 or not (which is how twos complement determines negative or not)
 	return (result & 0x80);
