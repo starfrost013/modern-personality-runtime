@@ -16,7 +16,7 @@ void i8086_Update()
 	// if we are doing this
 	while (!cpu_8086.halted)
 	{
-		// set fake PC and real SP registers (this simplifies code later down the lie
+		// set fake PC and real SP registers (this simplifies code later down the line)
 		cpu_8086._PC = (cpu_8086.CS * X86_PARAGRAPH_SIZE) + cpu_8086.IP;
 		cpu_8086._realSP = (cpu_8086.SS * X86_PARAGRAPH_SIZE) + cpu_8086.SP;
 		cpu_8086.last_prefix = override_none;
@@ -39,7 +39,8 @@ void i8086_Update()
 
 
 		// read the next opcode
-		uint8_t next_opcode = i8086_ReadU8(cpu_8086._PC);
+		uint8_t next_opcode = i8086_ReadU8(cpu_8086._PC++);
+		cpu_8086.IP++;
 
 		bool increment = false;
 
@@ -61,6 +62,7 @@ void i8086_Update()
 		if (increment)
 		{
 			cpu_8086.IP++;
+			cpu_8086._PC++;
 			next_opcode = i8086_ReadU8(cpu_8086._PC);
 		}
 
@@ -72,19 +74,20 @@ void i8086_Update()
 		switch (next_opcode)
 		{
 			case 0x04:
-				read_imm8 = i8086_ReadU8(cpu_8086.IP++);
+				read_imm8 = i8086_ReadU8(cpu_8086._PC++);
 				i8086_Add8(&cpu_8086.AL, read_imm8, false);
 				Logging_LogChannel("ADD AL, %02x", LogChannel_Debug);
+
 				cpu_8086.IP++;
 				break;
 			case 0x05:
-				read_imm16_01 = i8086_ReadU16(cpu_8086.IP++);
+				read_imm16_01 = i8086_ReadU16(cpu_8086._PC++);
 
 				i8086_Add16(&cpu_8086.AX, read_imm16_01, false);
 				Logging_LogChannel("ADD AL, %02x", LogChannel_Debug);
 			
 				// we read a 16bit value
-				cpu_8086.IP += 2;
+				cpu_8086.IP++;
 				break;
 			case 0x06:
 				Logging_LogChannel("PUSH ES", LogChannel_Debug);
@@ -113,18 +116,18 @@ void i8086_Update()
 				cpu_8086.IP++;
 				break;
 			case 0x14:
-				read_imm8 = i8086_ReadU8(cpu_8086.IP++);
+				read_imm8 = i8086_ReadU8(cpu_8086._PC++);
 				i8086_Add8(&cpu_8086.AL, read_imm8, true);
 				Logging_LogChannel("ADC AL, %02x", LogChannel_Debug);
 				cpu_8086.IP++;
 				break;
 			case 0x15:
-				read_imm16_01 = i8086_ReadU16(cpu_8086.IP++);
+				read_imm16_01 = i8086_ReadU16(cpu_8086._PC++);
 
 				i8086_Add16(&cpu_8086.AX, read_imm16_01, true);
 				Logging_LogChannel("ADC AL, %02x", LogChannel_Debug);
 
-				// we read a 16bit value
+				// INCREMENT by instruction length
 				cpu_8086.IP += 2;
 				break;
 			case 0x16:
@@ -336,6 +339,103 @@ void i8086_Update()
 				cpu_8086.DI = cpu_8086.address_space[cpu_8086._realSP + 1] >> 8 + cpu_8086.address_space[cpu_8086._realSP];
 				cpu_8086.SP += 2;
 				cpu_8086.IP++;
+				break;
+			// b0-bf: move immediate instructions
+			case 0xB0:
+				read_imm8 = i8086_ReadU8(cpu_8086._PC++);
+				cpu_8086.AL = read_imm8;
+				Logging_LogChannel("MOV AL, %02x", LogChannel_Debug, read_imm8);
+				cpu_8086.IP++;
+				break;
+			case 0xB1:
+				read_imm8 = i8086_ReadU8(cpu_8086._PC++);
+				cpu_8086.CL = read_imm8;
+				Logging_LogChannel("MOV CL, %02x", LogChannel_Debug, read_imm8);
+				cpu_8086.IP++;
+				break;
+			case 0xB2:
+				read_imm8 = i8086_ReadU8(cpu_8086._PC++);
+				cpu_8086.DL = read_imm8;
+				Logging_LogChannel("MOV DL, %02x", LogChannel_Debug, read_imm8);
+				cpu_8086.IP++;
+				break;
+			case 0xB3:
+				read_imm8 = i8086_ReadU8(cpu_8086._PC++);
+				cpu_8086.BL = read_imm8;
+				Logging_LogChannel("MOV BL, %02x", LogChannel_Debug, read_imm8);
+				cpu_8086.IP++;
+				break;
+			case 0xB4:
+				read_imm8 = i8086_ReadU8(cpu_8086._PC++);
+				cpu_8086.AH = read_imm8;
+				Logging_LogChannel("MOV AH, %02x", LogChannel_Debug, read_imm8);
+				cpu_8086.IP++;
+				break;
+			case 0xB5:
+				read_imm8 = i8086_ReadU8(cpu_8086._PC++);
+				cpu_8086.CH = read_imm8;
+				Logging_LogChannel("MOV CH, %02x", LogChannel_Debug, read_imm8);
+				cpu_8086.IP++;
+				break;
+			case 0xB6:
+				read_imm8 = i8086_ReadU8(cpu_8086._PC++);
+				cpu_8086.DH = read_imm8;
+				Logging_LogChannel("MOV DH, %02x", LogChannel_Debug, read_imm8);
+				cpu_8086.IP++;
+				break;
+			case 0xB7:
+				read_imm8 = i8086_ReadU8(cpu_8086._PC++);
+				cpu_8086.BH = read_imm8;
+				Logging_LogChannel("MOV BH, %02x", LogChannel_Debug, read_imm8);
+				cpu_8086.IP++;
+				break;
+			case 0xB8:
+				read_imm16_01 = i8086_ReadU16(cpu_8086._PC++);
+				cpu_8086.AX = read_imm16_01;
+				Logging_LogChannel("MOV AX, %04x", LogChannel_Debug, read_imm16_01);
+				cpu_8086.IP += 2;
+				break;
+			case 0xB9:
+				read_imm16_01 = i8086_ReadU16(cpu_8086._PC++);
+				cpu_8086.CX = read_imm16_01;
+				Logging_LogChannel("MOV CX, %04x", LogChannel_Debug, read_imm16_01);
+				cpu_8086.IP += 2;
+				break;
+			case 0xBA:
+				read_imm16_01 = i8086_ReadU16(cpu_8086._PC++);
+				cpu_8086.DX = read_imm16_01;
+				Logging_LogChannel("MOV DX, %04x", LogChannel_Debug, read_imm16_01);
+				cpu_8086.IP += 2;
+				break;
+			case 0xBB:
+				read_imm16_01 = i8086_ReadU16(cpu_8086._PC++);
+				cpu_8086.BX = read_imm16_01;
+				Logging_LogChannel("MOV BX, %04x", LogChannel_Debug, read_imm16_01);
+				cpu_8086.IP += 2;
+				break;
+			case 0xBC:
+				read_imm16_01 = i8086_ReadU16(cpu_8086._PC++);
+				cpu_8086.SP = read_imm16_01;
+				Logging_LogChannel("MOV SP, %04x", LogChannel_Debug, read_imm16_01);
+				cpu_8086.IP += 2;
+				break;
+			case 0xBD:
+				read_imm16_01 = i8086_ReadU16(cpu_8086._PC++);
+				cpu_8086.BP = read_imm16_01;
+				Logging_LogChannel("MOV BP, %04x", LogChannel_Debug, read_imm16_01);
+				cpu_8086.IP += 2;
+				break;
+			case 0xBE:
+				read_imm16_01 = i8086_ReadU16(cpu_8086._PC++);
+				cpu_8086.SI = read_imm16_01;
+				Logging_LogChannel("MOV SI, %04x", LogChannel_Debug, read_imm16_01);
+				cpu_8086.IP += 2;
+				break;
+			case 0xBF:
+				read_imm16_01 = i8086_ReadU16(cpu_8086._PC++);
+				cpu_8086.DI = read_imm16_01;
+				Logging_LogChannel("MOV DI, %04x", LogChannel_Debug, read_imm16_01);
+				cpu_8086.IP += 2;
 				break;
 			case 0xCC:
 				cpu_8086.int3 = true;
