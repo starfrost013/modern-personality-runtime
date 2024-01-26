@@ -1,6 +1,6 @@
 #pragma once
 #include "dos.h"
-#include "..\cmd\cmd.h"
+#include "../cmd/cmd.h"
 
 // Dos.c: Implements dos (boring dos)
 

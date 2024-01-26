@@ -35,17 +35,11 @@ Logger* Logger_new()
 
 	if (Util_EnumHasFlag(logger->settings->source, LogSource_File))
 	{
-		errno_t error = fopen_s(&(logger->handle), logger->settings->fileName, "w+");
+		logger->handle = fopen(logger->settings->fileName, "w+");
 
-		// TODO: delete old logs
-		char* errorString[10];
-		memset(&errorString, 0x00, sizeof(char) * 10);
-
-		strerror_s(errorString, 10, error);
-
-		if (error != 0)
+		if (logger->handle == NULL)
 		{
-			printf(u8"Log failed: 0x0002DEAD Error opening logfile %s: %s\n", logger->settings->fileName, *errorString);
+			printf(u8"Log failed: 0x0002DEAD Error opening logfile %s: errno %d\n", logger->settings->fileName, errno);
 			return NULL;
 		}
 	}

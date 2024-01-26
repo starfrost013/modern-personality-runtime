@@ -1,5 +1,5 @@
 #pragma once
-#include "..\core.h"
+#include "../core.h"
 #include "util.h"
 
 char g_string_from_intptr[10];

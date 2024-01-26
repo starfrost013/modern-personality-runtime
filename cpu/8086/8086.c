@@ -93,6 +93,30 @@ void i8086_Update()
 				i8086_Add8(modrm_info.final_offset, modrm_info.reg_ptr8, false);
 				cpu_8086.IP += 2;
 				break;
+			case 0x01:
+				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
+				cpu_8086._PC++;
+				modrm_info = i8086_ModRM(true, next_opcode, i8086_ReadU8(cpu_8086._PC));
+
+				i8086_Add16(modrm_info.final_offset, modrm_info.reg_ptr16, false);
+				cpu_8086.IP += 2;
+				break;
+			case 0x02:
+				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
+				cpu_8086._PC++;
+				modrm_info = i8086_ModRM(false, next_opcode, i8086_ReadU8(cpu_8086._PC));
+
+				i8086_Add8(modrm_info.reg_ptr8, modrm_info.final_offset, false);
+				cpu_8086.IP += 2;
+				break;
+			case 0x03:
+				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
+				cpu_8086._PC++;
+				modrm_info = i8086_ModRM(true, next_opcode, i8086_ReadU8(cpu_8086._PC));
+
+				i8086_Add16(modrm_info.reg_ptr16, modrm_info.final_offset, false);
+				cpu_8086.IP += 2;
+				break;
 			case 0x04:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				i8086_Add8(&cpu_8086.AL, &temp_imm8u, false);
@@ -129,16 +153,48 @@ void i8086_Update()
 				cpu_8086.CS = i8086_Pop();
 				cpu_8086.IP++;
 				break;
+			case 0x10:
+				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
+				cpu_8086._PC++;
+				modrm_info = i8086_ModRM(false, next_opcode, i8086_ReadU8(cpu_8086._PC));
+
+				i8086_Add8(modrm_info.final_offset, modrm_info.reg_ptr8, true);
+				cpu_8086.IP += 2;
+				break;
+			case 0x11:
+				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
+				cpu_8086._PC++;
+				modrm_info = i8086_ModRM(true, next_opcode, i8086_ReadU8(cpu_8086._PC));
+
+				i8086_Add16(modrm_info.final_offset, modrm_info.reg_ptr16, true);
+				cpu_8086.IP += 2;
+				break;
+			case 0x12:
+				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
+				cpu_8086._PC++;
+				modrm_info = i8086_ModRM(false, next_opcode, i8086_ReadU8(cpu_8086._PC));
+
+				i8086_Add8(modrm_info.reg_ptr8, modrm_info.final_offset, true);
+				cpu_8086.IP += 2;
+				break;
+			case 0x13:
+				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
+				cpu_8086._PC++;
+				modrm_info = i8086_ModRM(true, next_opcode, i8086_ReadU8(cpu_8086._PC));
+
+				i8086_Add16(modrm_info.reg_ptr16, modrm_info.final_offset, true);
+				cpu_8086.IP += 2;
+				break;
 			case 0x14:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
-				i8086_Add8(&cpu_8086.AL, temp_imm8u, true);
+				i8086_Add8(&cpu_8086.AL, &temp_imm8u, true);
 				Logging_LogChannel("ADC AL, %02x", LogChannel_Debug);
 				cpu_8086.IP++;
 				break;
 			case 0x15:
 				temp_imm16u_01 = i8086_ReadU16(cpu_8086._PC);
 
-				i8086_Add16(&cpu_8086.AX, temp_imm16u_01, true);
+				i8086_Add16(&cpu_8086.AX, &temp_imm16u_01, true);
 				Logging_LogChannel("ADC AL, %02x", LogChannel_Debug);
 
 				// INCREMENT by instruction length
@@ -324,12 +380,14 @@ void i8086_Update()
 				cpu_8086.DI = i8086_Pop();
 				cpu_8086.IP++;
 				break;
+			case 0x60: // undocumented alias due to microcode bit matching criteria
 			case 0x70:
 				temp_imm8s = i8086_ReadS8(cpu_8086._PC);
 				i8086_JumpConditional(temp_imm8s, cpu_8086.flag_overflow);
 
 				(temp_imm8s < 0) ? Logging_LogChannel("JO -%02Xh", LogChannel_Debug, temp_imm8s) : Logging_LogChannel("JO +%02Xh", LogChannel_Debug, temp_imm8s);
 				break;
+			case 0x61: // undocumented alias due to microcode bit matching criteria
 			case 0x71:
 				temp_imm8s = i8086_ReadS8(cpu_8086._PC);
 				i8086_JumpConditional(temp_imm8s, !cpu_8086.flag_overflow);
@@ -337,6 +395,7 @@ void i8086_Update()
 				// print the direction we want to change
 				(temp_imm8s < 0) ? Logging_LogChannel("JNO -%02Xh", LogChannel_Debug, temp_imm8s) : Logging_LogChannel("JNO +%02Xh", LogChannel_Debug, temp_imm8s);
 				break;
+			case 0x62: // undocumented alias due to microcode bit matching criteria
 			case 0x72:
 				temp_imm8s = i8086_ReadS8(cpu_8086._PC);
 				i8086_JumpConditional(temp_imm8s, cpu_8086.flag_carry);
@@ -344,6 +403,7 @@ void i8086_Update()
 				(temp_imm8s < 0) ? Logging_LogChannel("JB -%02Xh", LogChannel_Debug, temp_imm8s) : Logging_LogChannel("JB +%02Xh", LogChannel_Debug, temp_imm8s);
 
 				break;
+			case 0x63: // undocumented alias due to microcode bit matching criteria
 			case 0x73:
 				temp_imm8s = i8086_ReadS8(cpu_8086._PC);
 				i8086_JumpConditional(temp_imm8s, !cpu_8086.flag_carry);
@@ -351,42 +411,49 @@ void i8086_Update()
 				(temp_imm8s < 0) ? Logging_LogChannel("JAE -%02Xh", LogChannel_Debug, temp_imm8s) : Logging_LogChannel("JAE +%02Xh", LogChannel_Debug, temp_imm8s);
 
 				break;
+			case 0x64: // undocumented alias due to microcode bit matching criteria
 			case 0x74:
 				temp_imm8s = i8086_ReadS8(cpu_8086._PC);
 				i8086_JumpConditional(temp_imm8s, cpu_8086.flag_zero);
 
 				(temp_imm8s < 0) ? Logging_LogChannel("JE -%02Xh", LogChannel_Debug, temp_imm8s) : Logging_LogChannel("JE +%02Xh", LogChannel_Debug, temp_imm8s);
 				break;
+			case 0x65: // undocumented alias due to microcode bit matching criteria
 			case 0x75:
 				temp_imm8s = i8086_ReadS8(cpu_8086._PC);
 				i8086_JumpConditional(temp_imm8s, !cpu_8086.flag_zero);
 
 				(temp_imm8s < 0) ? Logging_LogChannel("JNE -%02Xh", LogChannel_Debug, temp_imm8s) : Logging_LogChannel("JNE +%02Xh", LogChannel_Debug, temp_imm8s);
 				break;
+			case 0x66: // undocumented alias due to microcode bit matching criteria
 			case 0x76:
 				temp_imm8s = i8086_ReadS8(cpu_8086._PC);
 				i8086_JumpConditional(temp_imm8s, cpu_8086.flag_zero || cpu_8086.flag_carry);
 
 				(temp_imm8s < 0) ? Logging_LogChannel("JBE -%02Xh", LogChannel_Debug, temp_imm8s) : Logging_LogChannel("JBE +%02Xh", LogChannel_Debug, temp_imm8s);
 				break;
+			case 0x67: // undocumented alias due to microcode bit matching criteria
 			case 0x77:
 				temp_imm8s = i8086_ReadS8(cpu_8086._PC);
 				i8086_JumpConditional(temp_imm8s, cpu_8086.flag_zero || cpu_8086.flag_carry);
 
 				(temp_imm8s < 0) ? Logging_LogChannel("JA -%02Xh", LogChannel_Debug, temp_imm8s) : Logging_LogChannel("JA +%02Xh", LogChannel_Debug, temp_imm8s);
 				break;
+			case 0x68: // undocumented alias due to microcode bit matching criteria
 			case 0x78:
 				temp_imm8s = i8086_ReadS8(cpu_8086._PC);
 				i8086_JumpConditional(temp_imm8s, cpu_8086.flag_sign);
 
 				(temp_imm8s < 0) ? Logging_LogChannel("JS -%02Xh", LogChannel_Debug, temp_imm8s) : Logging_LogChannel("JS +%02Xh", LogChannel_Debug, temp_imm8s);
 				break;
+			case 0x69: // undocumented alias due to microcode bit matching criteria
 			case 0x79:
 				temp_imm8s = i8086_ReadS8(cpu_8086._PC);
 				i8086_JumpConditional(temp_imm8s, !cpu_8086.flag_sign);
 
 				(temp_imm8s < 0) ? Logging_LogChannel("JNS -%02Xh", LogChannel_Debug, temp_imm8s) : Logging_LogChannel("JNS +%02Xh", LogChannel_Debug, temp_imm8s);
 				break;
+			case 0x6A: // undocumented alias due to microcode bit matching criteria
 			case 0x7A:
 				temp_imm8s = i8086_ReadS8(cpu_8086._PC);
 				i8086_JumpConditional(temp_imm8s, cpu_8086.flag_parity);
@@ -394,24 +461,28 @@ void i8086_Update()
 				(temp_imm8s < 0) ? Logging_LogChannel("JPE -%02Xh", LogChannel_Debug, temp_imm8s) : Logging_LogChannel("JPE +%02Xh", LogChannel_Debug, temp_imm8s);
 				cpu_8086.IP++;
 				break;
+			case 0x6B: // undocumented alias due to microcode bit matching criteria
 			case 0x7B:
 				temp_imm8s = i8086_ReadS8(cpu_8086._PC);
 				i8086_JumpConditional(temp_imm8s, !cpu_8086.flag_parity);
 
 				(temp_imm8s < 0) ? Logging_LogChannel("JPO -%02Xh", LogChannel_Debug, temp_imm8s) : Logging_LogChannel("JPO +%02Xh", LogChannel_Debug, temp_imm8s);
 				break;
+			case 0x6C: // undocumented alias due to microcode bit matching criteria
 			case 0x7C:
 				temp_imm8s = i8086_ReadS8(cpu_8086._PC);
 				i8086_JumpConditional(temp_imm8s, cpu_8086.flag_sign != cpu_8086.flag_overflow);
 
 				(temp_imm8s < 0) ? Logging_LogChannel("JL -%02Xh", LogChannel_Debug, temp_imm8s) : Logging_LogChannel("JL +%02Xh", LogChannel_Debug, temp_imm8s);
 				break;
+			case 0x6D: // undocumented alias due to microcode bit matching criteria
 			case 0x7D:
 				temp_imm8s = i8086_ReadS8(cpu_8086._PC);
 				i8086_JumpConditional(temp_imm8s, cpu_8086.flag_sign == cpu_8086.flag_overflow);
 
 				(temp_imm8s < 0) ? Logging_LogChannel("JGE -%02Xh", LogChannel_Debug, temp_imm8s) : Logging_LogChannel("JGE +%02Xh", LogChannel_Debug, temp_imm8s);
 				break;
+			case 0x6E: // undocumented alias due to microcode bit matching criteria
 			case 0x7E:
 				temp_imm8s = i8086_ReadS8(cpu_8086._PC);
 				i8086_JumpConditional(temp_imm8s, cpu_8086.flag_zero
@@ -419,6 +490,7 @@ void i8086_Update()
 
 				(temp_imm8s < 0) ? Logging_LogChannel("JLE -%02Xh", LogChannel_Debug, temp_imm8s) : Logging_LogChannel("JLE +%02Xh", LogChannel_Debug, temp_imm8s);
 				break;
+			case 0x6F: // undocumented alias due to microcode bit matching criteria
 			case 0x7F:
 				temp_imm8s = i8086_ReadS8(cpu_8086._PC);
 				i8086_JumpConditional(temp_imm8s, !cpu_8086.flag_zero
@@ -610,6 +682,59 @@ void i8086_Update()
 				Logging_LogChannel("MOV DI, %04x", LogChannel_Debug, temp_imm16u_01);
 				cpu_8086.IP += 2;
 				break;
+			case 0xC0: // undocumented alias
+			case 0xC2:
+				temp_imm16u_01 = i8086_ReadU16(cpu_8086._PC);
+
+				// pull return address
+				uint16_t ret_address = i8086_Pop();
+				
+				// operand2 is number of bytes to free from stack
+				// for parameters etc..
+				for (int i = 0; i < temp_imm16u_01; i += 2)
+				{
+					// throw away
+					i8086_Pop();
+				}
+
+				cpu_8086.IP = ret_address;
+				Logging_LogChannel("RETN %04x", LogChannel_Debug, temp_imm16u_01);
+				break;
+			case 0xC1:
+			case 0xC3:
+				// pull return address for IP
+				cpu_8086.IP = i8086_Pop();
+				Logging_LogChannel("NEAR RET to %04x:%04x", LogChannel_Debug, cpu_8086.CS, cpu_8086.IP);
+				break;
+			case 0xC8: // undocumented alias
+			case 0xCA:
+				temp_imm16u_01 = i8086_ReadU16(cpu_8086._PC);
+
+				// pull return address
+				uint16_t ret_address_off = i8086_Pop();
+				uint16_t ret_address_seg = i8086_Pop();
+
+				// THIS IS DONE AFTER
+ 
+				// operand2 is number of bytes to free from stack
+				// for parameters etc..
+				for (int i = 0; i < temp_imm16u_01; i += 2)
+				{
+					// throw away
+					i8086_Pop();
+				}
+
+				cpu_8086.IP = ret_address_off;
+				cpu_8086.CS = ret_address_seg;
+				Logging_LogChannel("FAR RETN %04x (to %04x:%04x)", LogChannel_Debug, temp_imm16u_01, cpu_8086.CS, cpu_8086.IP);
+				break;
+			case 0xC9: // undocumented alias
+			case 0xCB:
+				// pull return address for IP and CS
+				cpu_8086.IP = i8086_Pop();
+				cpu_8086.CS = i8086_Pop();
+				Logging_LogChannel("FAR RET to %04x:%04x", LogChannel_Debug, cpu_8086.CS, cpu_8086.IP);
+				break;
 			case 0xCC:
 				cpu_8086.int3 = true;
 				cpu_8086.IP++;
@@ -757,21 +882,5 @@ uint16_t i8086_ReadU16(uint32_t position)
 int16_t i8086_ReadS16(uint32_t position)
 {
 	return (cpu_8086.address_space[position + 1] << 8)
-		+ (cpu_8086.address_space[position]);
-}
-
-uint32_t i8086_ReadU32(uint32_t position)
-{
-	return (cpu_8086.address_space[position + 3] << 24)
-		+ (cpu_8086.address_space[position + 2] << 16)
-		+ (cpu_8086.address_space[position + 1] << 8)
-		+ (cpu_8086.address_space[position]);
-}
-
-int32_t i8086_ReadS32(uint32_t position)
-{
-	return (cpu_8086.address_space[position + 3] << 24)
-		+ (cpu_8086.address_space[position + 2] << 16)
-		+ (cpu_8086.address_space[position + 1] << 8)
 		+ (cpu_8086.address_space[position]);
 }

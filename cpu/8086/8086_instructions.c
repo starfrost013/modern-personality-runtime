@@ -2,7 +2,6 @@
 #include "8086.h"
 // 8086_instructions.c : Implements some instructions that are too big for the regular giant switch statement.
 
-
 void i8086_Add8(uint8_t* destination, uint8_t* source, bool adc)
 {
 	uint8_t original_value = 0;
@@ -61,6 +60,64 @@ void i8086_Add16(uint16_t* destination, uint16_t* source, bool adc)
 	}
 }
 
+
+void i8086_Sub8(uint8_t* destination, uint8_t* source, bool sbb)
+{
+	uint8_t original_value = 0;
+	// so it doesn't get overwritten
+	memcpy(&original_value, destination, sizeof(uint8_t));
+
+	// do the addition
+
+	if (sbb)
+	{
+		*destination = *destination - (*source + cpu_8086.flag_carry);
+	}
+	else
+	{
+		*destination = *destination - *source;
+	}
+
+	// save the final value
+	uint8_t final_value = *destination;
+
+	i8086_SetOF8(final_value, *source, original_value, false); // we are not subtracting
+	i8086_SetCF8(final_value);
+	i8086_SetAF8(final_value, *source, original_value);
+	i8086_SetZF8(final_value);
+	i8086_SetPF8(final_value);
+	i8086_SetSF8(final_value);
+
+}
+
+void i8086_Sub16(uint16_t* destination, uint16_t* source, bool sbb)
+{
+	uint8_t original_value = 0;
+	// so it doesn't get overwritten
+	memcpy(&original_value, destination, sizeof(uint8_t));
+
+	// do the addition
+	if (sbb)
+	{
+		*destination = *destination - (*source + cpu_8086.flag_carry);
+	}
+	else
+	{
+		*destination = *destination - *source;
+	}
+
+	// save the final value
+	uint8_t final_value = *destination;
+
+	i8086_SetOF16(final_value, *source, original_value, false); // we are not subtracting
+	i8086_SetCF16(final_value);
+	i8086_SetAF16(final_value, *source, original_value);
+	i8086_SetZF16(final_value);
+	i8086_SetPF16(final_value);
+	i8086_SetSF16(final_value);
+}
+
+
 void i8086_Loop(uint8_t destination_offset, bool condition)
 {
 	cpu_8086.CX--;
@@ -104,6 +161,8 @@ uint16_t i8086_Pop()
 	cpu_8086.SP += 2;
 	return ret_val;
 }
+
+#define DEBUG_MODRM_STRING_LENGTH		512;
 
 i8086_modrm_t i8086_ModRM(bool w, uint8_t opcode, uint8_t modrm)
 {

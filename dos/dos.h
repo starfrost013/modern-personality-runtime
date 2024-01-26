@@ -1,5 +1,5 @@
 #pragma once
-#include "..\core.h"
+#include "../core.h"
 
 // dos.h : MS-DOS API
 // Implements:

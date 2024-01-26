@@ -1,7 +1,7 @@
 #pragma once
 
-#include "..\core.h"
-#include "..\dos\dos.h"
+#include "../core.h"
+#include "../dos/dos.h"
 
 // CMD.h: parses command line and stores program state.
 

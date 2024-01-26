@@ -1,9 +1,9 @@
 #pragma once
-#include "..\core.h"
-#include "..\cpu\machine.h"
-#include "..\cpu\8086\8086.h"
-#include "..\cmd\cmd.h"
-#include "..\dos\dos.h"
+#include "../core.h"
+#include "../cpu/machine.h"
+#include "../cpu/8086/8086.h"
+#include "../cmd/cmd.h"
+#include "../dos/dos.h"
 
 // BinLoader
 // Loads binaries into the virtual address space for both operating systems
