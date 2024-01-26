@@ -12,7 +12,7 @@ endif()
 project ("x86-16")
 
 # Add source to this project's executable.
-add_executable (x86-16 "x86-16.c" "core.h" "cpu/machine.h" "cpu/8086/8086.h" "devices/bios/bios.h" "dos/dos.h" "util/util.h" "util/util.c" "util/util_console.h" "util/util_console.c" "util/logging.h" "util/logging.c" "binary/binary.h" "cmd/cmd.h" "cmd/cmd.c" "cpu/8086/8086.c" "cpu/machine.c" "dos/dos.c" "binary/binary.c" "cpu/8086/8086_util.c" "dos/dos_trap.c")
+add_executable (x86-16 "x86-16.c" "core.h" "cpu/machine.h" "cpu/8086/8086.h" "devices/bios/bios.h" "dos/dos.h" "util/util.h" "util/util.c" "util/util_console.h" "util/util_console.c" "util/logging.h" "util/logging.c" "binary/binary.h" "cmd/cmd.h" "cmd/cmd.c" "cpu/8086/8086.c" "cpu/machine.c" "dos/dos.c" "binary/binary.c" "cpu/8086/8086_util.c" "dos/dos_trap.c" "cpu/8086/8086_instructions.c")
 
 # set debugger directory for Visual Studio to output directory
 set_property(TARGET x86-16 PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
