@@ -51,9 +51,16 @@ void i8086_Update()
 			cpu_8086.last_prefix = override_es;
 			increment = true;
 			break;
+		case 0x2E:
+			cpu_8086.last_prefix = override_cs;
+			increment = true;
+			break;
 		case 0x36:
 			cpu_8086.last_prefix = override_ss;
 			increment = true;
+			break;
+		case 0x3E:
+			cpu_8086.last_prefix = override_ds;
 			break;
 		}
 
@@ -476,6 +483,16 @@ void i8086_Update()
 			case 0xFB:
 				Logging_LogChannel("STI", LogChannel_Debug);
 				cpu_8086.flag_interrupt_enable = true;
+				cpu_8086.IP++;
+				break;
+			case 0xFC:
+				Logging_LogChannel("CLD", LogChannel_Debug);
+				cpu_8086.flag_direction = false;
+				cpu_8086.IP++;
+				break;
+			case 0xFD:
+				Logging_LogChannel("CLD", LogChannel_Debug);
+				cpu_8086.flag_direction = false;
 				cpu_8086.IP++;
 				break;
 			default:

@@ -17,6 +17,11 @@ typedef enum i8086_prefix_s
 	override_es = 1,
 	
 	override_ss = 2,
+
+	override_cs = 3,
+
+	override_ds = 4,
+
 } i8086_prefix_t;
 
 typedef enum i8086_repeat_s
