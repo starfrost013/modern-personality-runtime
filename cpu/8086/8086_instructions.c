@@ -77,6 +77,19 @@ void i8086_Loop(uint8_t destination_offset, bool condition)
 	}
 }
 
+void i8086_JumpConditional(uint8_t destination_offset, bool condition)
+{
+	if (condition)
+	{
+		cpu_8086.IP += destination_offset;
+	}
+	else
+	{
+		// onto next instruction
+		cpu_8086.IP++;
+	}
+}
+
 void i8086_Push(uint16_t value)
 {
 	// stack grows DOWN!!!!!

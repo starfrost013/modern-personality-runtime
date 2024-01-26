@@ -316,215 +316,105 @@ void i8086_Update()
 				break;
 			case 0x70:
 				read_imm8s = i8086_ReadS8(cpu_8086._PC++);
+				i8086_JumpConditional(read_imm8s, cpu_8086.flag_overflow);
 
-				if (cpu_8086.flag_overflow)
-				{
-					cpu_8086.IP += read_imm8s;
-
-					// print the direction we want to change
-					(read_imm8s < 0) ? Logging_LogChannel("JO -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JO +%02Xh", LogChannel_Debug, read_imm8s);
-				}
-
-				cpu_8086.IP++;
+				(read_imm8s < 0) ? Logging_LogChannel("JO -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JO +%02Xh", LogChannel_Debug, read_imm8s);
 				break;
 			case 0x71:
 				read_imm8s = i8086_ReadS8(cpu_8086._PC++);
+				i8086_JumpConditional(read_imm8s, !cpu_8086.flag_overflow);
 
-				if (!cpu_8086.flag_overflow)
-				{
-					cpu_8086.IP += read_imm8s;
-
-					// print the direction we want to change
-					(read_imm8s < 0) ? Logging_LogChannel("JNO -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JNO +%02Xh", LogChannel_Debug, read_imm8s);
-				}
-
-				cpu_8086.IP++;
+				// print the direction we want to change
+				(read_imm8s < 0) ? Logging_LogChannel("JNO -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JNO +%02Xh", LogChannel_Debug, read_imm8s);
 				break;
 			case 0x72:
 				read_imm8s = i8086_ReadS8(cpu_8086._PC++);
+				i8086_JumpConditional(read_imm8s, cpu_8086.flag_carry);
 
-				if (cpu_8086.flag_carry)
-				{
-					cpu_8086.IP += read_imm8s;
+				(read_imm8s < 0) ? Logging_LogChannel("JB -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JB +%02Xh", LogChannel_Debug, read_imm8s);
 
-					// print the direction we want to change
-					(read_imm8s < 0) ? Logging_LogChannel("JB -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JB +%02Xh", LogChannel_Debug, read_imm8s);
-				}
-
-				cpu_8086.IP++;
 				break;
 			case 0x73:
 				read_imm8s = i8086_ReadS8(cpu_8086._PC++);
+				i8086_JumpConditional(read_imm8s, !cpu_8086.flag_carry);
 
-				if (!cpu_8086.flag_carry)
-				{
-					cpu_8086.IP += read_imm8s;
+				(read_imm8s < 0) ? Logging_LogChannel("JAE -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JAE +%02Xh", LogChannel_Debug, read_imm8s);
 
-					// print the direction we want to change
-					(read_imm8s < 0) ? Logging_LogChannel("JAE -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JAE +%02Xh", LogChannel_Debug, read_imm8s);
-				}
-
-				cpu_8086.IP++;
 				break;
 			case 0x74:
 				read_imm8s = i8086_ReadS8(cpu_8086._PC++);
+				i8086_JumpConditional(read_imm8s, cpu_8086.flag_zero);
 
-				if (cpu_8086.flag_zero)
-				{
-					cpu_8086.IP += read_imm8s;
-
-					// print the direction we want to change
-					(read_imm8s < 0) ? Logging_LogChannel("JE -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JE +%02Xh", LogChannel_Debug, read_imm8s);
-				}
-
-				cpu_8086.IP++;
+				(read_imm8s < 0) ? Logging_LogChannel("JE -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JE +%02Xh", LogChannel_Debug, read_imm8s);
 				break;
 			case 0x75:
 				read_imm8s = i8086_ReadS8(cpu_8086._PC++);
+				i8086_JumpConditional(read_imm8s, !cpu_8086.flag_zero);
 
-				if (!cpu_8086.flag_zero)
-				{
-					cpu_8086.IP += read_imm8s;
-
-					// print the direction we want to change
-					(read_imm8s < 0) ? Logging_LogChannel("JNE -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JNE +%02Xh", LogChannel_Debug, read_imm8s);
-				}
-
-				cpu_8086.IP++;
+				(read_imm8s < 0) ? Logging_LogChannel("JNE -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JNE +%02Xh", LogChannel_Debug, read_imm8s);
 				break;
 			case 0x76:
 				read_imm8s = i8086_ReadS8(cpu_8086._PC++);
+				i8086_JumpConditional(read_imm8s, cpu_8086.flag_zero || cpu_8086.flag_carry);
 
-				if (cpu_8086.flag_zero
-					|| cpu_8086.flag_carry)
-				{
-					cpu_8086.IP += read_imm8s;
-
-					// print the direction we want to change
-					(read_imm8s < 0) ? Logging_LogChannel("JBE -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JBE +%02Xh", LogChannel_Debug, read_imm8s);
-				}
-
-				cpu_8086.IP++;
+				(read_imm8s < 0) ? Logging_LogChannel("JBE -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JBE +%02Xh", LogChannel_Debug, read_imm8s);
 				break;
 			case 0x77:
 				read_imm8s = i8086_ReadS8(cpu_8086._PC++);
+				i8086_JumpConditional(read_imm8s, cpu_8086.flag_zero || cpu_8086.flag_carry);
 
-				if (!cpu_8086.flag_zero
-					&& !cpu_8086.flag_carry)
-				{
-					cpu_8086.IP += read_imm8s;
-
-					// print the direction we want to change
-					(read_imm8s < 0) ? Logging_LogChannel("JA -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JA +%02Xh", LogChannel_Debug, read_imm8s);
-				}
-
-				cpu_8086.IP++;
+				(read_imm8s < 0) ? Logging_LogChannel("JA -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JA +%02Xh", LogChannel_Debug, read_imm8s);
 				break;
 			case 0x78:
 				read_imm8s = i8086_ReadS8(cpu_8086._PC++);
+				i8086_JumpConditional(read_imm8s, cpu_8086.flag_sign);
 
-				if (cpu_8086.flag_sign)
-				{
-					cpu_8086.IP += read_imm8s;
-
-					// print the direction we want to change
-					(read_imm8s < 0) ? Logging_LogChannel("JS -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JS +%02Xh", LogChannel_Debug, read_imm8s);
-				}
-
-				cpu_8086.IP++;
+				(read_imm8s < 0) ? Logging_LogChannel("JS -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JS +%02Xh", LogChannel_Debug, read_imm8s);
 				break;
 			case 0x79:
 				read_imm8s = i8086_ReadS8(cpu_8086._PC++);
+				i8086_JumpConditional(read_imm8s, !cpu_8086.flag_sign);
 
-				if (!cpu_8086.flag_sign)
-				{
-					cpu_8086.IP += read_imm8s;
-
-					// print the direction we want to change
-					(read_imm8s < 0) ? Logging_LogChannel("JNS -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JNS +%02Xh", LogChannel_Debug, read_imm8s);
-				}
-
-				cpu_8086.IP++;
+				(read_imm8s < 0) ? Logging_LogChannel("JNS -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JNS +%02Xh", LogChannel_Debug, read_imm8s);
 				break;
 			case 0x7A:
 				read_imm8s = i8086_ReadS8(cpu_8086._PC++);
+				i8086_JumpConditional(read_imm8s, cpu_8086.flag_parity);
 
-				if (cpu_8086.flag_parity)
-				{
-					cpu_8086.IP += read_imm8s;
-
-					// print the direction we want to change
-					(read_imm8s < 0) ? Logging_LogChannel("JPE -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JPE +%02Xh", LogChannel_Debug, read_imm8s);
-				}
-
+				(read_imm8s < 0) ? Logging_LogChannel("JPE -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JPE +%02Xh", LogChannel_Debug, read_imm8s);
 				cpu_8086.IP++;
 				break;
 			case 0x7B:
 				read_imm8s = i8086_ReadS8(cpu_8086._PC++);
+				i8086_JumpConditional(read_imm8s, !cpu_8086.flag_parity);
 
-				if (!cpu_8086.flag_parity)
-				{
-					cpu_8086.IP += read_imm8s;
-
-					// print the direction we want to change
-					(read_imm8s < 0) ? Logging_LogChannel("JPO -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JPO +%02Xh", LogChannel_Debug, read_imm8s);
-				}
-
-				cpu_8086.IP++;
+				(read_imm8s < 0) ? Logging_LogChannel("JPO -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JPO +%02Xh", LogChannel_Debug, read_imm8s);
 				break;
 			case 0x7C:
 				read_imm8s = i8086_ReadS8(cpu_8086._PC++);
+				i8086_JumpConditional(read_imm8s, cpu_8086.flag_sign != cpu_8086.flag_overflow);
 
-				if (cpu_8086.flag_sign != cpu_8086.flag_overflow)
-				{
-					cpu_8086.IP += read_imm8s;
-
-					// jump if less...
-					(read_imm8s < 0) ? Logging_LogChannel("JL -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JL +%02Xh", LogChannel_Debug, read_imm8s);
-				}
-
-				cpu_8086.IP++;
+				(read_imm8s < 0) ? Logging_LogChannel("JL -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JL +%02Xh", LogChannel_Debug, read_imm8s);
 				break;
 			case 0x7D:
 				read_imm8s = i8086_ReadS8(cpu_8086._PC++);
+				i8086_JumpConditional(read_imm8s, cpu_8086.flag_sign == cpu_8086.flag_overflow);
 
-				if (cpu_8086.flag_sign == cpu_8086.flag_overflow)
-				{
-					cpu_8086.IP += read_imm8s;
-
-					// print the direction we want to change
-					(read_imm8s < 0) ? Logging_LogChannel("JGE -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JGE +%02Xh", LogChannel_Debug, read_imm8s);
-				}
-
-				cpu_8086.IP++;
+				(read_imm8s < 0) ? Logging_LogChannel("JGE -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JGE +%02Xh", LogChannel_Debug, read_imm8s);
 				break;
 			case 0x7E:
 				read_imm8s = i8086_ReadS8(cpu_8086._PC++);
+				i8086_JumpConditional(read_imm8s, cpu_8086.flag_zero
+					|| (cpu_8086.flag_parity != cpu_8086.flag_overflow));
 
-				if (cpu_8086.flag_zero
-					|| (cpu_8086.flag_parity != cpu_8086.flag_overflow))
-				{
-					cpu_8086.IP += read_imm8s;
-
-					// print the direction we want to change
-					(read_imm8s < 0) ? Logging_LogChannel("JLE -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JLE +%02Xh", LogChannel_Debug, read_imm8s);
-				}
-
-				cpu_8086.IP++;
+				(read_imm8s < 0) ? Logging_LogChannel("JLE -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JLE +%02Xh", LogChannel_Debug, read_imm8s);
 				break;
 			case 0x7F:
 				read_imm8s = i8086_ReadS8(cpu_8086._PC++);
+				i8086_JumpConditional(read_imm8s, !cpu_8086.flag_zero
+					&& (cpu_8086.flag_parity == cpu_8086.flag_overflow));
 
-				if (!cpu_8086.flag_zero
-					&& (cpu_8086.flag_parity == cpu_8086.flag_overflow))
-				{
-					cpu_8086.IP += read_imm8s;
-
-					// print the direction we want to change
-					(read_imm8s < 0) ? Logging_LogChannel("JG -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JG +%02Xh", LogChannel_Debug, read_imm8s);
-				}
-
-				cpu_8086.IP++;
+				(read_imm8s < 0) ? Logging_LogChannel("JG -%02Xh", LogChannel_Debug, read_imm8s) : Logging_LogChannel("JG +%02Xh", LogChannel_Debug, read_imm8s);
 				break;
 			case 0x90:
 				// lol
@@ -533,7 +423,8 @@ void i8086_Update()
 				break;
 			case 0x9A:
 
-				i8086_Push(cpu_8086._PC + 4); // return address after call
+				i8086_Push(cpu_8086.IP + 4); // return address after call
+				i8086_Push(cpu_8086.CS);     // and the segment
 
 				read_imm16u_01 = i8086_ReadU16(cpu_8086._PC++);
 				read_imm16u_02 = i8086_ReadU16(cpu_8086._PC+=2);
