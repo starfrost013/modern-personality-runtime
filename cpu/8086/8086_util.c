@@ -6,31 +6,31 @@
 
 void i8086_SetCF8(uint8_t result)
 {
-	struct basecpu* cpu = CPU_Get();
+	basecpu_t* cpu = CPU_Get();
 	cpu->flag_carry = (result & 0x100); // ff max
 }
 
 void i8086_SetCF16(uint16_t result)
 {
-	struct basecpu* cpu = CPU_Get();
+	basecpu_t* cpu = CPU_Get();
 	cpu->flag_carry = (result & 0x10000); // ffff max
 }
 
 void i8086_SetAF8(uint8_t result, uint8_t source, uint8_t destination)
 {
-	struct basecpu* cpu = CPU_Get();
+	basecpu_t* cpu = CPU_Get();
 	cpu->flag_aux_carry = (result ^ source ^ destination) & 0x10;
 }
 
 void i8086_SetAF16(uint16_t result, uint16_t source, uint16_t destination)
 {
-	struct basecpu* cpu = CPU_Get();
+	basecpu_t* cpu = CPU_Get();
 	cpu->flag_aux_carry = (result ^ source ^ destination) & 0x10;
 }
 
 void i8086_SetOF8(uint8_t result, uint8_t source, uint8_t destination, bool isSubtracting)
 {
-	struct basecpu* cpu = CPU_Get();
+	basecpu_t* cpu = CPU_Get();
 	
 	if (!isSubtracting)
 	{
@@ -46,7 +46,7 @@ void i8086_SetOF8(uint8_t result, uint8_t source, uint8_t destination, bool isSu
 
 void i8086_SetOF16(uint16_t result, uint16_t source, uint16_t destination, bool isSubtracting)
 {
-	struct basecpu* cpu = CPU_Get();
+	basecpu_t* cpu = CPU_Get();
 
 	if (!isSubtracting)
 	{
@@ -62,7 +62,7 @@ void i8086_SetOF16(uint16_t result, uint16_t source, uint16_t destination, bool 
 
 void i8086_SetZF8(uint8_t result)
 {
-	struct basecpu* cpu = CPU_Get();
+	basecpu_t* cpu = CPU_Get();
 
 	// VERY HARD!
 	cpu->flag_zero = (result == 0);
@@ -70,7 +70,7 @@ void i8086_SetZF8(uint8_t result)
 
 void i8086_SetZF16(uint16_t result)
 {
-	struct basecpu* cpu = CPU_Get();
+	basecpu_t* cpu = CPU_Get();
 
 	// VERY HARD!
 	cpu->flag_zero = (result == 0);
@@ -78,7 +78,7 @@ void i8086_SetZF16(uint16_t result)
 
 void i8086_SetPF8(uint8_t result)
 {
-	struct basecpu* cpu = CPU_Get();
+	basecpu_t* cpu = CPU_Get();
 
 	// will mean 0=
 	result ^= (result >> 4);
@@ -90,7 +90,7 @@ void i8086_SetPF8(uint8_t result)
 
 void i8086_SetPF16(uint16_t result)
 {
-	struct basecpu* cpu = CPU_Get();
+	basecpu_t* cpu = CPU_Get();
 
 	// will mean 0=
 	result ^= (result >> 8);

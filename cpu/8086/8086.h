@@ -56,7 +56,7 @@ typedef enum i8086_repeat_s
 
 typedef struct i8086_s
 {
-	struct			basecpu;
+	struct			basecpu_s;
 	uint8_t			address_space[ADDRESS_SPACE_8086];
 
 	bool			halted;				// 'HLT' instruction ran

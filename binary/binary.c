@@ -174,7 +174,7 @@ bool NE_Load()
 void Binary_Bootstrap(uint8_t* binary_data)
 {
 	Logging_LogChannel("Bootstrapping CPU for executing the program.", LogChannel_Debug);
-	struct basecpu* basecpu = CPU_Get();
+	basecpu_t* basecpu = CPU_Get();
 
 	if (cmd.cpu_ver == cpu_type_i8086)
 	{

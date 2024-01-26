@@ -9,7 +9,7 @@
 // Value resolution of x86 segment registers
 #define X86_PARAGRAPH_SIZE		16
 
-struct basecpu
+typedef struct basecpu_s
 {
 	// Accumulator register
 	// Type punning terrorism
@@ -87,7 +87,7 @@ struct basecpu
 	bool		flag_interrupt_enable;	// bit9
 	bool		flag_direction;			// bit10
 	bool		flag_overflow;			// bit11
-};
+} basecpu_t;
 
 // Needed for LAHF/SAHF etc
 #define FLAG_CARRY				1		// Carry flag: If a carry occurred, set to 1
@@ -102,4 +102,4 @@ struct basecpu
 
 bool	machine_running;		// Is the cpu actually running?
 
-struct basecpu* CPU_Get();
+basecpu_t* CPU_Get();

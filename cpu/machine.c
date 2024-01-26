@@ -6,7 +6,7 @@
 binary_type		Binary_GetBinaryType();
 
 // Gets the cpu you chose.
-struct basecpu* CPU_Get()
+basecpu_t* CPU_Get()
 {
 	if (cmd.cpu_ver == cpu_type_i8086)
 	{
