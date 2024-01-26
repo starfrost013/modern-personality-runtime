@@ -3,21 +3,21 @@
 // 8086_instructions.c : Implements some instructions that are too big for the regular giant switch statement.
 
 
-void i8086_Add8(uint8_t* destination, uint8_t source, bool adc)
+void i8086_Add8(uint8_t* destination, uint8_t* source, bool adc)
 {
 	uint8_t original_value = 0;
 	// so it doesn't get overwritten
 	memcpy(&original_value, destination, sizeof(uint8_t));
 
 	// do the addition
-	*destination = source + *destination;
+	*destination = *source + *destination;
 
 	// save the final value
 	uint8_t final_value = *destination;
 
-	i8086_SetOF8(final_value, source, original_value, false); // we are not subtracting
+	i8086_SetOF8(final_value, *source, original_value, false); // we are not subtracting
 	i8086_SetCF8(final_value);
-	i8086_SetAF8(final_value, source, original_value);
+	i8086_SetAF8(final_value, *source, original_value);
 	i8086_SetZF8(final_value);
 	i8086_SetPF8(final_value);
 	i8086_SetSF8(final_value);
@@ -32,21 +32,21 @@ void i8086_Add8(uint8_t* destination, uint8_t source, bool adc)
 	}
 }
 
-void i8086_Add16(uint16_t* destination, uint16_t source, bool adc)
+void i8086_Add16(uint16_t* destination, uint16_t* source, bool adc)
 {
 	uint8_t original_value = 0;
 	// so it doesn't get overwritten
 	memcpy(&original_value, destination, sizeof(uint8_t));
 
 	// do the addition
-	*destination = source + *destination;
+	*destination = *source + *destination;
 
 	// save the final value
 	uint8_t final_value = *destination;
 
-	i8086_SetOF16(final_value, source, original_value, false); // we are not subtracting
+	i8086_SetOF16(final_value, *source, original_value, false); // we are not subtracting
 	i8086_SetCF16(final_value);
-	i8086_SetAF16(final_value, source, original_value);
+	i8086_SetAF16(final_value, *source, original_value);
 	i8086_SetZF16(final_value);
 	i8086_SetPF16(final_value);
 	i8086_SetSF16(final_value);
@@ -112,8 +112,8 @@ i8086_modrm_t i8086_ModRM(bool w, uint8_t opcode, uint8_t modrm)
 
 	i8086_modrm_t modrm_info;
 
-	modrm_info.mod = (modrm) & 0xC0; // pull out bits 6-7
-	uint8_t reg_temp = (modrm << 2) & 0xE0; // pull out bits 3-5
+	modrm_info.mod = (modrm >> 6); // pull out bits 6-7
+	uint8_t reg_temp = ((uint8_t)(modrm << 2) >> 5); // pull out bits 3-5
 	modrm_info.rm = (modrm) & 0x07; // pull out bits 0-2
 
 	// for some instructions these are extra opcodes

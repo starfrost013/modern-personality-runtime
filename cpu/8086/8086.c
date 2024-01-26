@@ -81,12 +81,21 @@ void i8086_Update()
 			int16_t			temp_imm16s_02 = 0x00;
 			uint16_t		temp_imm16u_01 = 0x00;
 			uint16_t		temp_imm16u_02 = 0x00;
+			i8086_modrm_t	modrm_info;
 
 			switch (next_opcode)
 			{
+			case 0x00:
+				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
+				cpu_8086._PC++;
+				modrm_info = i8086_ModRM(false, next_opcode, i8086_ReadU8(cpu_8086._PC));
+
+				i8086_Add8(modrm_info.final_offset, modrm_info.reg_ptr8, false);
+				cpu_8086.IP += 2;
+				break;
 			case 0x04:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
-				i8086_Add8(&cpu_8086.AL, temp_imm8u, false);
+				i8086_Add8(&cpu_8086.AL, &temp_imm8u, false);
 				Logging_LogChannel("ADD AL, %02x", LogChannel_Debug);
 
 				cpu_8086.IP++;
@@ -94,7 +103,7 @@ void i8086_Update()
 			case 0x05:
 				temp_imm16u_01 = i8086_ReadU16(cpu_8086._PC);
 
-				i8086_Add16(&cpu_8086.AX, temp_imm16u_01, false);
+				i8086_Add16(&cpu_8086.AX, &temp_imm16u_01, false);
 				Logging_LogChannel("ADD AL, %02x", LogChannel_Debug);
 
 				// we read a 16bit value
