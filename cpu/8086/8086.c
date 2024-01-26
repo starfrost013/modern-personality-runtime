@@ -347,6 +347,20 @@ void i8086_Update()
 				cpu_8086.SP += 2;
 				cpu_8086.IP++;
 				break;
+			case 0x90:
+				// lol
+				Logging_LogChannel("NOP", LogChannel_Debug);
+				cpu_8086.IP++;
+				break;
+			case 0x9A:
+				read_imm16_01 = i8086_ReadU16(cpu_8086._PC++);
+				read_imm16_02 = i8086_ReadU16(cpu_8086._PC+=2);
+
+				cpu_8086.IP = read_imm16_01;
+				cpu_8086.CS = read_imm16_02;
+
+				Logging_LogChannel("CALL FAR %04x:%04x", LogChannel_Debug, read_imm16_01, read_imm16_02);
+				break;
 			// b0-bf: move immediate instructions
 			case 0xB0:
 				read_imm8 = i8086_ReadU8(cpu_8086._PC++);

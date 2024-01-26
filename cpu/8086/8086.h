@@ -9,6 +9,13 @@
 
 #define ADDRESS_SPACE_8086		1048576
 
+typedef struct i8086_modrm_s
+{
+	uint8_t mod;			//bits6-7
+	uint8_t reg;			//bits3-5
+	uint8_t rm;				//bits0-2
+};
+
 typedef enum i8086_prefix_s
 {
 	// DS by default
