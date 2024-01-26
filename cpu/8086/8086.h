@@ -11,10 +11,15 @@
 
 typedef struct i8086_modrm_s
 {
-	uint8_t mod;			//bits6-7
-	uint8_t reg;			//bits3-5
-	uint8_t rm;				//bits0-2
-};
+	bool		w;				//derived from opcode map, not decoded (word length, 0=8bit, 1=16bit)
+	uint8_t		mod;			//bits6-7
+	uint8_t*	reg_ptr8;		//bits3-5 for reg if w=0
+	uint16_t*	reg_ptr16;		//bits3-5 for reg if w=1
+	uint8_t		ext_opcode;		//bits3-5 for some opcodes
+	uint8_t		rm;				//bits0-2
+
+	uint8_t*	final_offset;	//filled in for memory-referencing instructions
+} i8086_modrm_t;
 
 typedef enum i8086_prefix_s
 {
@@ -95,6 +100,9 @@ void i8086_SetSF16(uint16_t result);															// Set sign flag based on 8-b
 // arithmetic
 void i8086_Add8(uint8_t* destination, uint8_t source, bool adc);	// 8-bit ADD/ADC: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
 void i8086_Add16(uint16_t* destination, uint16_t source, bool adc);	// 16-bit ADD/ADC: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+
+// instruction decode
+i8086_modrm_t i8086_ModRM(bool w, uint8_t opcode, uint8_t modrm);
 
 // loop
 void i8086_Loop(uint8_t destination_offset, bool condition); // Loop instruction

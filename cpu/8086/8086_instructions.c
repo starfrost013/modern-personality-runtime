@@ -105,6 +105,298 @@ uint16_t i8086_Pop()
 	return ret_val;
 }
 
+i8086_modrm_t i8086_ModRM(bool w, uint8_t opcode, uint8_t modrm)
+{
+	// NOT VERIFIED!
+	// MIGHT BE WRONG!
+
+	i8086_modrm_t modrm_info;
+
+	modrm_info.mod = (modrm) & 0xC0; // pull out bits 6-7
+	uint8_t reg_temp = (modrm << 2) & 0xE0; // pull out bits 3-5
+	modrm_info.rm = (modrm) & 0x07; // pull out bits 0-2
+
+	// for some instructions these are extra opcodes
+	modrm_info.ext_opcode = reg_temp;
+
+	// Mode 0 - Memory Argument / General Register Argument
+	// Mode 1 - Memory Argument / General Register Argument + 8-Bit Signed Displacement Address
+	// Mode 2 - Memory Argument / Segment Register Argument + 16-Bit Signed Displacement Address
+	// Mode 3 - Register Argument
+
+	// determine the register we are modifying
+	switch (reg_temp)
+	{
+	case 0:
+		if (w)
+		{
+			modrm_info.reg_ptr16 = &cpu_8086.AX;
+
+		}
+		else
+		{
+			modrm_info.reg_ptr8 = &cpu_8086.AL;
+		}
+		break;
+	case 1:
+		if (w)
+		{
+			modrm_info.reg_ptr16 = &cpu_8086.CX;
+		}
+		else
+		{
+			modrm_info.reg_ptr8 = &cpu_8086.CL;
+		}
+		break;
+	case 2:
+		if (w)
+		{
+			modrm_info.reg_ptr16 = &cpu_8086.DX;
+		}
+		else
+		{
+			modrm_info.reg_ptr8 = &cpu_8086.DL;
+		}
+		break;
+	case 3:
+		if (w)
+		{
+			modrm_info.reg_ptr16 = &cpu_8086.BX;
+		}
+		else
+		{
+			modrm_info.reg_ptr8 = &cpu_8086.BL;
+		}
+
+		break;
+	case 4:
+		if (w)
+		{
+			modrm_info.reg_ptr16 = &cpu_8086.SP;
+		}
+		else
+		{
+			modrm_info.reg_ptr8 = &cpu_8086.AH;
+		}
+		break;
+	case 5:
+		if (w)
+		{
+			modrm_info.reg_ptr16 = &cpu_8086.BP;
+		}
+		else
+		{
+			 modrm_info.reg_ptr8 = &cpu_8086.CH;
+		}
+		break;
+	case 6:
+		if (w)
+		{
+			modrm_info.reg_ptr16 = &cpu_8086.SI;
+		}
+		else
+		{
+			modrm_info.reg_ptr8 = &cpu_8086.DH;
+		}
+
+		break;
+	case 7:
+		if (w)
+		{
+			modrm_info.reg_ptr16 = &cpu_8086.DI;
+		} 
+		else
+		{
+			modrm_info.reg_ptr8 = &cpu_8086.BH;
+
+		}
+		break;
+	}
+
+	uint8_t segreg_default = cpu_8086.address_space[cpu_8086.DS];
+
+	switch (cpu_8086.last_prefix)
+	{
+	case override_ds: // todo: figure out which ones default to SS
+		segreg_default = cpu_8086.address_space[cpu_8086.DS];
+		break;
+
+	case override_ss:
+		segreg_default = cpu_8086.address_space[cpu_8086.SS];
+		break;
+	case override_es:
+		segreg_default = cpu_8086.address_space[cpu_8086.ES];
+		break;
+	case override_cs:
+		segreg_default = cpu_8086.address_space[cpu_8086.CS];
+		break;
+	default:
+		// BP based indexing uses SS by default, for stack frames
+		if (modrm_info.rm == 2
+			|| modrm_info.rm == 3
+			|| modrm_info.rm == 6)
+		{
+			segreg_default = &cpu_8086.address_space[cpu_8086.SS];
+		}
+		else
+		{
+			segreg_default = &cpu_8086.address_space[cpu_8086.DS];
+		}
+		break;
+	}
+
+	// make it actually based on segment registers
+	segreg_default *= X86_PARAGRAPH_SIZE;
+
+	if (modrm_info.mod == 3)
+	{
+		// completely differnet register order for fuck knows what reason
+		// final offset is just a pointer so it modfies the ax reg by dereferencing it
+		switch (modrm_info.rm)
+		{
+		case 0:
+			if (w)
+			{
+				modrm_info.final_offset = &cpu_8086.AX;
+			}
+			else
+			{
+				modrm_info.final_offset = &cpu_8086.AL;
+			}
+			break;
+		case 1:
+			if (w)
+			{
+				modrm_info.final_offset = &cpu_8086.CX;
+			}
+			else
+			{
+				modrm_info.final_offset = &cpu_8086.CL;
+			}
+			break;
+		case 2:
+			if (w)
+			{
+				modrm_info.final_offset = &cpu_8086.DX;
+			}
+			else
+			{
+				modrm_info.final_offset = &cpu_8086.DL;
+			}
+			break;
+		case 3:
+			if (w)
+			{
+				modrm_info.final_offset = &cpu_8086.BX;
+			}
+			else
+			{
+				modrm_info.final_offset = &cpu_8086.BL;
+			}
+			break;
+		case 4:
+			if (w)
+			{
+				modrm_info.final_offset = &cpu_8086.SP;
+			}
+			else
+			{
+				modrm_info.final_offset = &cpu_8086.AH;
+			}
+			break;
+		case 5:
+			if (w)
+			{
+				modrm_info.final_offset = &cpu_8086.BP;
+			}
+			else
+			{
+				modrm_info.final_offset = &cpu_8086.CH;
+			}
+			break;
+		case 6:
+			if (w)
+			{
+				modrm_info.final_offset = &cpu_8086.SI;
+			}
+			else
+			{
+				modrm_info.final_offset = &cpu_8086.DH;
+			}
+		case 7:
+			if (w)
+			{
+				modrm_info.final_offset = &cpu_8086.DI;
+			}
+			else
+			{
+				modrm_info.final_offset = &cpu_8086.BH;
+			}
+			break;
+
+		}
+	}
+	else
+	{
+		// switch the r/m bits
+		switch (modrm_info.rm)
+		{
+			case 0:
+				modrm_info.final_offset = &cpu_8086.address_space[segreg_default + cpu_8086.BX + cpu_8086.SI];
+				break;
+			case 1:
+				modrm_info.final_offset = &cpu_8086.address_space[segreg_default + cpu_8086.BX + cpu_8086.DI];
+				break;
+			case 2: 
+				modrm_info.final_offset = &cpu_8086.address_space[segreg_default + cpu_8086.BP + cpu_8086.SI];
+				break;
+			case 3:
+				modrm_info.final_offset = &cpu_8086.address_space[segreg_default + cpu_8086.BP + cpu_8086.DI];
+				break;
+			case 4:
+				modrm_info.final_offset = &cpu_8086.address_space[segreg_default + cpu_8086.SI];
+				break;
+			case 5:
+				modrm_info.final_offset = &cpu_8086.address_space[segreg_default + cpu_8086.DI];
+				break;
+			case 6:
+				// why
+				if (modrm_info.mod == 0)
+				{
+					modrm_info.final_offset = &cpu_8086.address_space[segreg_default + i8086_ReadS16(cpu_8086._PC)];
+					cpu_8086.IP += 2; // _PC updates every cycle but it's at the start so we update it here
+					cpu_8086._PC += 2;
+
+				}
+				else
+				{
+					modrm_info.final_offset = &cpu_8086.address_space[segreg_default + cpu_8086.BP];
+				}
+
+				break;
+			case 7:
+				modrm_info.final_offset = &cpu_8086.address_space[segreg_default + cpu_8086.BX];
+				break;
+		}
+
+		if (modrm_info.mod == 1)
+		{
+			modrm_info.final_offset += i8086_ReadS8(cpu_8086._PC);
+			cpu_8086.IP++;
+			cpu_8086._PC++;
+		}
+		else if (modrm_info.mod == 2)
+		{
+			modrm_info.final_offset += i8086_ReadS16(cpu_8086._PC);
+			cpu_8086.IP += 2;
+			cpu_8086._PC += 2;
+		}
+
+	}
+
+	return modrm_info;
+}
+
 void i8086_MoveSegOff8(uint8_t value, bool direction)
 {
 	// modrm but for some reason both mod and reg are avoided, so it has to have its own implementation only for opcodes a0-a3. also only for the AH register.
