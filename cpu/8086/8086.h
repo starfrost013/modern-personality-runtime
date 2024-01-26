@@ -99,6 +99,10 @@ void i8086_Add16(uint16_t* destination, uint16_t source, bool adc);	// 16-bit AD
 // loop
 void i8086_Loop(uint8_t destination_offset, bool condition); // Loop instruction
 
+// move
+void i8086_MoveSegOff8(uint8_t value, bool direction);	// modrm but for some reason both mod and reg are avoided, so it has to have its own implementation only for opcodes a0-a3. also only for the AH register.
+void i8086_MoveSegOff16(uint16_t value, bool direction);// modrm but for some reason both mod and reg are avoided, so it has to have its own implementation only for opcodes a0-a3. also only for the AX register.
+
 // jump
 void i8086_JumpConditional(uint8_t destination_offset, bool condition); // Jump conditional instruction
 

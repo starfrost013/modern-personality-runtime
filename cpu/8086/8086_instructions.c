@@ -104,3 +104,71 @@ uint16_t i8086_Pop()
 	cpu_8086.SP += 2;
 	return ret_val;
 }
+
+void i8086_MoveSegOff8(uint8_t value, bool direction)
+{
+	// modrm but for some reason both mod and reg are avoided, so it has to have its own implementation only for opcodes a0-a3. also only for the AH register.
+
+	// default register for this is DS
+	uint16_t* seg_ptr = &cpu_8086.address_space[(cpu_8086.DS * X86_PARAGRAPH_SIZE) + value];
+
+	switch (cpu_8086.last_prefix)
+	{
+		case override_es:
+			seg_ptr = &cpu_8086.address_space[(cpu_8086.ES * X86_PARAGRAPH_SIZE) + value];
+			Logging_LogChannel("MOV AL, [ES:%02x]", value);
+			break;
+		case override_cs:
+			seg_ptr = &cpu_8086.address_space[(cpu_8086.CS * X86_PARAGRAPH_SIZE) + value];
+			Logging_LogChannel("I don't think this is a great idea (MOV AL, [CS:%02x])", LogChannel_Warning, value);
+			break;
+		case override_ss:
+			seg_ptr = &cpu_8086.address_space[(cpu_8086.SS * X86_PARAGRAPH_SIZE) + value];
+			Logging_LogChannel("MOV AL, [SS:%02x]", LogChannel_Warning, value);
+			break;
+	}
+
+
+	if (!direction) // a0-a1
+	{
+		cpu_8086.AL = *seg_ptr;
+	}
+	else // a2-a3
+	{
+		*seg_ptr = cpu_8086.AL;
+	}
+}
+
+void i8086_MoveSegOff16(uint16_t value, bool direction)
+{
+	// modrm but for some reason both mod and reg are avoided, so it has to have its own implementation only for opcodes a0-a3. also only for the AH register.
+
+	// default register for this is DS
+	uint16_t* seg_ptr = &cpu_8086.address_space[(cpu_8086.DS * X86_PARAGRAPH_SIZE) + value];
+
+	switch (cpu_8086.last_prefix)
+	{
+	case override_es:
+		seg_ptr = &cpu_8086.address_space[(cpu_8086.ES * X86_PARAGRAPH_SIZE) + value];
+		Logging_LogChannel("MOV AL, [ES:%02x]", value);
+		break;
+	case override_cs:
+		seg_ptr = &cpu_8086.address_space[(cpu_8086.CS * X86_PARAGRAPH_SIZE) + value];
+		Logging_LogChannel("I don't think this is a great idea (MOV AL, [CS:%02x])", LogChannel_Warning, value);
+		break;
+	case override_ss:
+		seg_ptr = &cpu_8086.address_space[(cpu_8086.SS * X86_PARAGRAPH_SIZE) + value];
+		Logging_LogChannel("MOV AL, [SS:%02x]", LogChannel_Warning, value);
+		break;
+	}
+
+
+	if (!direction) // a0-a1
+	{
+		cpu_8086.AX = *seg_ptr;
+	}
+	else // a2-a3
+	{
+		*seg_ptr = cpu_8086.AX;
+	}
+}
