@@ -248,7 +248,7 @@ i8086_modrm_t i8086_ModRM(bool w, uint8_t opcode, uint8_t modrm)
 	// make it actually based on segment registers
 	segreg_default *= X86_PARAGRAPH_SIZE;
 
-	if (modrm_info.mod == 3)
+	if (modrm_info.mod == 0b11)
 	{
 		// completely differnet register order for fuck knows what reason
 		// final offset is just a pointer so it modfies the ax reg by dereferencing it
@@ -379,13 +379,13 @@ i8086_modrm_t i8086_ModRM(bool w, uint8_t opcode, uint8_t modrm)
 				break;
 		}
 
-		if (modrm_info.mod == 1)
+		if (modrm_info.mod == 0b01)
 		{
 			modrm_info.final_offset += i8086_ReadS8(cpu_8086._PC);
 			cpu_8086.IP++;
 			cpu_8086._PC++;
 		}
-		else if (modrm_info.mod == 2)
+		else if (modrm_info.mod == 0b10)
 		{
 			modrm_info.final_offset += i8086_ReadS16(cpu_8086._PC);
 			cpu_8086.IP += 2;
