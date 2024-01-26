@@ -13,76 +13,78 @@ void i8086_Update()
 {
 	Logging_LogChannel("Successfully executing program.", LogChannel_Debug);
 
-	// if we are doing this
-	while (!cpu_8086.halted)
+	while (machine_running)
 	{
-		// set fake PC and real SP registers (this simplifies code later down the line)
-		cpu_8086._PC = (cpu_8086.CS * X86_PARAGRAPH_SIZE) + cpu_8086.IP;
-		cpu_8086._realSP = (cpu_8086.SS * X86_PARAGRAPH_SIZE) + cpu_8086.SP;
-		cpu_8086.last_prefix = override_none;
+		// if we are doing this
+		while (!cpu_8086.halted)
+		{
+			// set fake PC and real SP registers (this simplifies code later down the line)
+			cpu_8086._PC = (cpu_8086.CS * X86_PARAGRAPH_SIZE) + cpu_8086.IP;
+			cpu_8086._realSP = (cpu_8086.SS * X86_PARAGRAPH_SIZE) + cpu_8086.SP;
+			cpu_8086.last_prefix = override_none;
 
-		// TODO; change this
-		cpu_8086.int3 = cpu_8086.flag_trap; 
+			// TODO; change this
+			cpu_8086.int3 = cpu_8086.flag_trap;
 
 #if _DEBUG
-		if (cpu_8086.int3)
-		{
-			Logging_LogChannel("INT3!", LogChannel_Debug);
+			if (cpu_8086.int3)
+			{
+				Logging_LogChannel("INT3!", LogChannel_Debug);
 #ifdef _MSC_VER
-			__debugbreak();
+				__debugbreak();
 #else
-			__builtin_trap();
+				__builtin_trap();
 #endif
-			cpu_8086.int3 = false;
-		}
+				cpu_8086.int3 = false;
+			}
 #endif
 
 
-		// read the next opcode
-		uint8_t next_opcode = i8086_ReadU8(cpu_8086._PC++);
-		cpu_8086.IP++;
-
-		bool increment = false;
-
-		// handle prefixes etc
-		switch (next_opcode)
-		{
-		case 0x26:
-			cpu_8086.last_prefix = override_es;
-			increment = true;
-			break;
-		case 0x2E:
-			cpu_8086.last_prefix = override_cs;
-			increment = true;
-			break;
-		case 0x36:
-			cpu_8086.last_prefix = override_ss;
-			increment = true;
-			break;
-		case 0x3E:
-			cpu_8086.last_prefix = override_ds;
-			break;
-		}
-
-		//TODO: REPEAT PARSING
-
-		if (increment)
-		{
+			// read the next opcode
+			uint8_t next_opcode = i8086_ReadU8(cpu_8086._PC++);
 			cpu_8086.IP++;
-			cpu_8086._PC++;
-			next_opcode = i8086_ReadU8(cpu_8086._PC);
-		}
 
-		uint16_t		interrupt_num = 0x00;
-		uint8_t			read_imm8u = 0x00;
-		int8_t			read_imm8s = 0x00;
-		int16_t			read_imm16s_01 = 0x00;
-		int16_t			read_imm16s_02 = 0x00;
-		uint16_t		read_imm16u_01 = 0x00;
-		uint16_t		read_imm16u_02 = 0x00;
+			bool increment = false;
 
-		switch (next_opcode)
-		{
+			// handle prefixes etc
+			switch (next_opcode)
+			{
+			case 0x26:
+				cpu_8086.last_prefix = override_es;
+				increment = true;
+				break;
+			case 0x2E:
+				cpu_8086.last_prefix = override_cs;
+				increment = true;
+				break;
+			case 0x36:
+				cpu_8086.last_prefix = override_ss;
+				increment = true;
+				break;
+			case 0x3E:
+				cpu_8086.last_prefix = override_ds;
+				break;
+			}
+
+			//TODO: REPEAT PARSING
+
+			if (increment)
+			{
+				cpu_8086.IP++;
+				cpu_8086._PC++;
+				next_opcode = i8086_ReadU8(cpu_8086._PC);
+			}
+
+			uint16_t		interrupt_num = 0x00;
+			uint8_t			read_imm8u = 0x00;
+			int8_t			read_imm8s = 0x00;
+			int16_t			read_imm16s_01 = 0x00;
+			int16_t			read_imm16s_02 = 0x00;
+			uint16_t		read_imm16u_01 = 0x00;
+			uint16_t		read_imm16u_02 = 0x00;
+
+			switch (next_opcode)
+			{
 			case 0x04:
 				read_imm8u = i8086_ReadU8(cpu_8086._PC++);
 				i8086_Add8(&cpu_8086.AL, read_imm8u, false);
@@ -95,7 +97,7 @@ void i8086_Update()
 
 				i8086_Add16(&cpu_8086.AX, read_imm16u_01, false);
 				Logging_LogChannel("ADD AL, %02x", LogChannel_Debug);
-			
+
 				// we read a 16bit value
 				cpu_8086.IP++;
 				break;
@@ -427,7 +429,7 @@ void i8086_Update()
 				i8086_Push(cpu_8086.CS);     // and the segment
 
 				read_imm16u_01 = i8086_ReadU16(cpu_8086._PC++);
-				read_imm16u_02 = i8086_ReadU16(cpu_8086._PC+=2);
+				read_imm16u_02 = i8086_ReadU16(cpu_8086._PC += 2);
 
 				cpu_8086.IP = read_imm16u_01;
 				cpu_8086.CS = read_imm16u_02;
@@ -435,7 +437,7 @@ void i8086_Update()
 				Logging_LogChannel("CALL FAR %04x:%04x", LogChannel_Debug, read_imm16u_01, read_imm16u_02);
 
 				break;
-			// b0-bf: move immediate instructions
+				// b0-bf: move immediate instructions
 			case 0xB0:
 				read_imm8u = i8086_ReadU8(cpu_8086._PC++);
 				cpu_8086.AL = read_imm8u;
@@ -539,7 +541,7 @@ void i8086_Update()
 			case 0xCD:
 				interrupt_num = i8086_ReadU8(cpu_8086.IP++); //increment IP and read 
 
-				Logging_LogChannel("The application called an interrupt service routine.\n\n" 
+				Logging_LogChannel("The application called an interrupt service routine.\n\n"
 					"INT %02Xh AX=%04X BX=%04X CX=%04X DX=%04X\n"
 					"CS=%04X IP=%04X (Physical address of PC=%05X) DS=%04X ES=%04X SS=%04X\n"
 					"BP=%04X DI=%04X SI=%04X", LogChannel_Debug, interrupt_num,
@@ -593,7 +595,7 @@ void i8086_Update()
 				cpu_8086.CS = read_imm16u_02;
 
 				Logging_LogChannel("JMP FAR %04x:%04x", LogChannel_Debug, read_imm16u_01, read_imm16u_02);
-				
+
 				break;
 			case 0xEB:
 				read_imm8s = i8086_ReadS8(cpu_8086._PC++);
@@ -602,7 +604,7 @@ void i8086_Update()
 
 				cpu_8086.IP += read_imm8s;
 				break;
-			case 0xF5: 
+			case 0xF5:
 				Logging_LogChannel("CMC", LogChannel_Debug);
 				// IGNORE THIS WARNING, THIS IS WHAT THE INSTRUCTION IS MEANT TO DO 
 				cpu_8086.flag_carry = ~cpu_8086.flag_carry; // get complement
@@ -612,7 +614,7 @@ void i8086_Update()
 				Logging_LogChannel("CLC", LogChannel_Debug);
 				cpu_8086.flag_carry = false;
 				cpu_8086.IP++;
-				break; 
+				break;
 			case 0xF9:
 				Logging_LogChannel("STC", LogChannel_Debug);
 				cpu_8086.flag_carry = true;
@@ -643,20 +645,20 @@ void i8086_Update()
 				cpu_8086.IP++;
 				break;
 
+			}
+
 		}
 
+		//todo: put in loop that keeps progrma running
+		if (cpu_8086.halted
+			&& cpu_8086.interrupt_waiting
+			&& cpu_8086.flag_interrupt_enable)
+		{
+			// WAIT FOR THE INTERRUPT TO BE HANDLED AND SET INTERRUPT_WAITING TO TRUE? 
+			// THIS IS NOT IMPLEMENTED!
+			cpu_8086.halted = false;
+		}
 	}
-
-	//todo: put in loop that keeps progrma running
-	if (cpu_8086.halted
-		&& cpu_8086.interrupt_waiting
-		&& cpu_8086.flag_interrupt_enable)
-	{
-		// WAIT FOR THE INTERRUPT TO BE HANDLED AND SET INTERRUPT_WAITING TO TRUE? 
-		// THIS IS NOT IMPLEMENTED!
-		cpu_8086.halted = false;
-	}
-
 
 }
 

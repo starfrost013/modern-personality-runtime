@@ -3,7 +3,7 @@
 #include "..\core.h"
 #include "..\dos\dos.h"
 
-// CMD.h: parses command line 
+// CMD.h: parses command line and stores program state.
 
 // Type of cpu to initialise.
 typedef enum cpu_type_e

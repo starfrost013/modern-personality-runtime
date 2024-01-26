@@ -3,13 +3,12 @@
 
 // binary.c: Implementation of Binary Loader
 
-void Binary_Bootstrap();
+void Binary_Bootstrap(uint8_t* binary_data);
 
 bool COM_Load()
 {
 	return false;
 }
-
 
 // This also serves as INT21,4A handler...
 bool MZ_Load()
