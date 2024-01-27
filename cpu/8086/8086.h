@@ -1,7 +1,8 @@
 #pragma once
+#include "cpu/machine.h"
+
 #include <stdint.h>
 #include <stdbool.h>
-#include "cpu/machine.h"
 
 //
 // 8086.h
