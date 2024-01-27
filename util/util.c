@@ -1,5 +1,12 @@
-#include "../core.h"
 #include "util.h"
+
+#include <assert.h>
+#include <ctype.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
 
 char g_string_from_intptr[10];
 

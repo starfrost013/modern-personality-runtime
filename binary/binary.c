@@ -1,6 +1,19 @@
 #include "binary.h"
+#include "util/logging.h"
+#include "cpu/machine.h"
+#include "cpu/8086/8086.h"
+#include "cmd/cmd.h"
+#include "dos/dos.h"
+
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdint.h>
 
 // binary.c: Implementation of Binary Loader
+
+msdos_loaded_binary_t loaded_binary_msdos;
 
 void Binary_Bootstrap(uint8_t* binary_data);
 

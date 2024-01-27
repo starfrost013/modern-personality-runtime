@@ -1,7 +1,8 @@
 #pragma once
-#include "../core.h"
-#include "../dos/dos.h"
-#include "../cmd/cmd.h"
+#include "dos/dos.h"
+#include "cmd/cmd.h"
+#include <stdint.h>
+#include <stdbool.h>
 
 // Shared header file for intel x86 processors.
 // This has stuff that is shared by every single x86-based processor.

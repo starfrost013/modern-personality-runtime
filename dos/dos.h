@@ -1,5 +1,6 @@
 #pragma once
-#include "../core.h"
+#include <stdbool.h>
+#include <stdint.h>
 
 // dos.h : MS-DOS API
 // Implements:

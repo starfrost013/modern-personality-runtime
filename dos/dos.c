@@ -1,5 +1,11 @@
 #include "dos.h"
-#include "../cmd/cmd.h"
+#include "cmd/cmd.h"
+#include "util/logging.h"
+#include "binary/binary.h"
+
+#include <stdbool.h>
+#include <stdint.h>
+#include <string.h>
 
 // Dos.c: Implements dos (boring dos)
 
