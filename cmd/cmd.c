@@ -1,4 +1,12 @@
 #include "cmd.h"
+#include "macros.h"
+#include "util/logging.h"
+#include "util/util.h"
+
+#include <errno.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
 
 cmd_t cmd;
 

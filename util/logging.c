@@ -1,7 +1,15 @@
 #include "logging.h"
-#include "../core.h"
-#include "Util.h"
-#include "util_console.h"
+#include "util/util.h"
+#include "util/util_console.h"
+
+#include <assert.h>
+#include <ctype.h>
+#include <errno.h>
+#include <stdarg.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 // Defines only used in this source file
 #define	LOGGING_MAX_LENGTH_TEXT		512													// Maximum length of text being logged via the logger.

@@ -1,22 +1,6 @@
-﻿// core.h : Include file for standard system include files,
-// or project specific include files.
+﻿// macros.h : Various useful global macros
 
 #pragma once
-
-#include <assert.h>
-#include <ctype.h>
-#include <errno.h>
-#include <malloc.h>
-#include <stdarg.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-
-#include "util/util.h"
-#include "util/logging.h"
 
 #define X86_VERSION			"0.1"
 

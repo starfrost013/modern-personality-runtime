@@ -1,4 +1,7 @@
 #include "8086.h"
+#include "util/logging.h"
+#include <string.h>
+
 // 8086_instructions.c : Implements some instructions that are too big for the regular giant switch statement.
 
 void i8086_Add8(uint8_t* destination, uint8_t* source, bool adc)

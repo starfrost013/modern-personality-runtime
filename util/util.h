@@ -1,5 +1,6 @@
 #pragma once
-#include "../core.h"
+#include <stdbool.h>
+#include <stdint.h>
 
 //
 //	Util.h: Implements "general" util functions.

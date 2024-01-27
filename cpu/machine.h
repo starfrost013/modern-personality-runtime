@@ -1,5 +1,4 @@
 #pragma once
-#include "../core.h"
 #include "../dos/dos.h"
 #include "../cmd/cmd.h"
 

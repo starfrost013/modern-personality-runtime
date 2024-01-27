@@ -1,5 +1,7 @@
-#include "../core.h"
 #include "util_console.h"
+#include "util/util.h"
+#include <stdio.h>
+#include <string.h>
 
 // various buffer size demands
 #define CONSOLE_TERMINAL_COMMAND_PREFIX "\x1B["

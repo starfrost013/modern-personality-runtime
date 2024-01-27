@@ -1,4 +1,5 @@
 #include "8086.h"
+#include "util/logging.h"
 
 i8086_t cpu_8086;
 
