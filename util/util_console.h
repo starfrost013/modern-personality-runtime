@@ -4,7 +4,7 @@
 //	UtilConsole.h: Implements console utilities. Uses ANSI command codes (Windows 10 v1511+ / Linux)
 //
 
-typedef enum ConsoleColor_s
+typedef enum ConsoleColor_e
 {
 	ConsoleColor_Black = 0,
 	ConsoleColor_Red = 1,

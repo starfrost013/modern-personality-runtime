@@ -842,6 +842,28 @@ void i8086_Update()
 				cpu_8086.IP = i8086_Pop();
 				Logging_LogChannel("NEAR RET to %04x:%04x", LogChannel_Debug, cpu_8086.CS, cpu_8086.IP);
 				break;
+			case 0xC6:
+				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
+				cpu_8086._PC++;
+				modrm_info = i8086_ModRM(false, next_opcode, temp_imm8u);
+
+				// we don't need the previous temp_imm8u value
+				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
+
+				*modrm_info.reg_ptr8 = temp_imm8u;
+				cpu_8086.IP += 2;
+				break;
+			case 0xC7:
+				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
+				cpu_8086._PC++;
+				modrm_info = i8086_ModRM(true, next_opcode, temp_imm8u);
+
+				// we don't need the previous temp_imm8u value
+				temp_imm16u_01 = i8086_ReadU16(cpu_8086._PC);
+
+				*modrm_info.reg_ptr16 = temp_imm16u_01;
+				cpu_8086.IP += 3;
+				break;
 			case 0xC8: // undocumented alias
 			case 0xCA:
 				temp_imm16u_01 = i8086_ReadU16(cpu_8086._PC);
