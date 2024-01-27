@@ -1,4 +1,3 @@
-#pragma once
 #include "8086.h"
 // 8086_util.c:
 //

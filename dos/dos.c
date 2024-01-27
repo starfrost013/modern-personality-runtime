@@ -1,4 +1,3 @@
-#pragma once
 #include "dos.h"
 #include "../cmd/cmd.h"
 

@@ -1,4 +1,3 @@
-#pragma once
 #include "binary.h"
 
 // binary.c: Implementation of Binary Loader
