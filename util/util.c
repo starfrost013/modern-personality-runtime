@@ -6,19 +6,12 @@ char g_string_from_intptr[10];
 
 void Util_DateGetCurrentString(char *str)
 {
-	time_t current_time;
-	const struct tm* current_time_info_ptr = malloc(sizeof(struct tm));
-
-	memset(current_time_info_ptr, 0x00, sizeof(struct tm));
+	time_t current_time = 0;
+    // get the local time
+	time(&current_time);
+	const struct tm* current_time_info_ptr = localtime(&current_time); // todo: use localtime
 
 	assert(str != NULL);
-
-	memset(current_time_info_ptr, 0x00, sizeof(current_time_info_ptr));
-	memset(&current_time, 0x00, sizeof(current_time));
-
-	// get the local time
-	time(&current_time);
-	localtime_s(current_time_info_ptr, &current_time); // todo: use localtime
 
 	char* final_text = asctime(current_time_info_ptr);
 
@@ -56,7 +49,7 @@ char* Util_StringFromInt(int32_t num)
 {
 	// 10 digit number as uint32_t max is 2147483647
 	memset(&g_string_from_intptr, 0x00, sizeof(char) * 10);
-	sprintf_s(&g_string_from_intptr, sizeof(char) * 10, "%d", num);
+	snprintf(&g_string_from_intptr, sizeof(char) * 10, "%d", num);
 	
 	return &g_string_from_intptr;
 }

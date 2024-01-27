@@ -23,6 +23,6 @@ typedef struct cmd_s
 	FILE*			handle;							// Handle to the binary.
 } cmd_t;
 
-cmd_t cmd;
+extern cmd_t cmd;
 
 bool CMD_Parse(int argc, char* argv[]);
