@@ -100,6 +100,6 @@ typedef struct basecpu_s
 #define FLAG_DIRECTION			1 << 10  // Direction flag
 #define FLAG_OVERFLOW			1 << 11  // Single step flag
 
-bool	machine_running;		// Is the cpu actually running?
+extern bool	machine_running;		// Is the cpu actually running?
 
 basecpu_t* CPU_Get();

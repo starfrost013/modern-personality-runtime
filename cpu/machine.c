@@ -5,6 +5,8 @@
 
 binary_type		Binary_GetBinaryType();
 
+bool machine_running;
+
 // Gets the cpu you chose.
 basecpu_t* CPU_Get()
 {

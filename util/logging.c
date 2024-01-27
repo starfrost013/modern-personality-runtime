@@ -12,6 +12,8 @@
 // Prototypes for "internal" functions only used in this source file
 void	Logging_Log(const char* text, LogChannel channel, va_list args);
 
+Logger* sys_logger;
+
 // Implementation
 Logger* Logger_new()
 {
@@ -169,11 +171,11 @@ void Logging_Log(const char* text, LogChannel channel, va_list args)
 
 	assert(date_buffer[0] != NULL);
 
-	strcat_s(log_string_buffer, sizeof(log_string_buffer), prefix);
-	strcat_s(log_string_buffer, sizeof(log_string_buffer), date_buffer);
-	strcat_s(log_string_buffer, sizeof(log_string_buffer), date_suffix);
-	strcat_s(log_string_buffer, sizeof(log_string_buffer), text);
-	strcat_s(log_string_buffer, sizeof(log_string_buffer), suffix);
+	strncat(log_string_buffer, sizeof(log_string_buffer), prefix);
+	strncat(log_string_buffer, sizeof(log_string_buffer), date_buffer);
+	strncat(log_string_buffer, sizeof(log_string_buffer), date_suffix);
+	strncat(log_string_buffer, sizeof(log_string_buffer), text);
+	strncat(log_string_buffer, sizeof(log_string_buffer), suffix);
 
 	if (Util_EnumHasFlag(sys_logger->settings->source, LogSource_Printf))
 	{

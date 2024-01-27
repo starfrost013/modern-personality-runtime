@@ -1,7 +1,7 @@
 #pragma once
 #include "8086.h"
 
-extern i8086_t cpu_8086;
+i8086_t cpu_8086;
 
 void i8086_Init()
 {

@@ -66,4 +66,4 @@ LogSettings* LogSettings_new(const char* fileName, LogChannel channels, LogSourc
 
 void LogSettings_destroy(LogSettings* settings);
 
-Logger* sys_logger;
+extern Logger* sys_logger;
