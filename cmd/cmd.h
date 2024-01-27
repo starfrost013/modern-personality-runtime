@@ -1,7 +1,7 @@
 #pragma once
 
 #include "macros.h"
-#include "../dos/dos.h"
+#include "dos/dos.h"
 
 #include <stdbool.h>
 #include <stdio.h>

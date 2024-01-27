@@ -1,8 +1,7 @@
 #pragma once
-#include "../cpu/machine.h"
-#include "../cpu/8086/8086.h"
-#include "../cmd/cmd.h"
-#include "../dos/dos.h"
+#include "dos/dos.h"
+#include <stdint.h>
+#include <stdbool.h>
 
 // BinLoader
 // Loads binaries into the virtual address space for both operating systems
