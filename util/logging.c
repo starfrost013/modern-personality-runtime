@@ -24,18 +24,16 @@ Logger* sys_logger;
 // Implementation
 Logger* Logger_new()
 {
-	Logger* logger = (Logger*)malloc(sizeof(Logger));
+	Logger* logger = (Logger*)calloc(1, sizeof(Logger));
 
 	assert(logger != NULL);
 	if (logger == NULL) return NULL;		//Shutup MSVC warnings 
-
-	memset(logger, 0x00, sizeof logger);
 
 	//todo: allow this to be configured in settings
 	logger->settings = LogSettings_new(u8"latest.log", LogChannel_Debug | LogChannel_Message | LogChannel_Warning | LogChannel_Error | LogChannel_Fatal, 
 		LogSource_Printf | LogSource_File, false);
 	logger->initialised = true;
-	logger->handle = malloc(sizeof(FILE));
+	logger->handle = calloc(1, sizeof(FILE));
 
 	assert(logger->handle != NULL);
 	if (logger->handle == NULL) return NULL;		//Shutup MSVC warnings 
@@ -68,12 +66,11 @@ LogSettings* LogSettings_new(const char* fileName, LogChannel channels, LogSourc
 {
 	assert(fileName != NULL);
 
-	LogSettings* settings = (LogSettings*)malloc(sizeof(LogSettings));
+	LogSettings* settings = (LogSettings*)calloc(1, sizeof(LogSettings));
 
 	assert(settings != NULL);
 	if (settings == NULL) return NULL;		//Shutup MSVC warnings 
 
-	memset(settings, 0x00, sizeof settings);
 	settings->fileName = fileName;
 	settings->channels = channels;
 	settings->source = source;
