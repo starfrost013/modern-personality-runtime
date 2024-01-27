@@ -102,14 +102,16 @@ void i8086_SetPF16(uint16_t result)
 
 void i8086_SetSF8(uint8_t result)
 {
+	basecpu_t* cpu = CPU_Get();
 	// this works because we only have an 8-bit number, basically checks if first bit is 1 or not (which is how twos complement determines negative or not)
-	return (result & 0x80);
+	cpu->flag_sign = (result & 0x80);
 }
 
 void i8086_SetSF16(uint16_t result)
 {
+	basecpu_t* cpu = CPU_Get();
 	// this works because we only have an 16-bit number, basically checks if first bit is 1 or not (which is how twos complement determines negative or not)
-	return (result & 0x8000);
+	cpu->flag_sign = (result & 0x8000);
 }
 
 #ifdef _DEBUG
