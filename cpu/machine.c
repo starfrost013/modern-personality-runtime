@@ -1,4 +1,3 @@
-#pragma once
 #include "machine.h"
 #include "8086/8086.h"
 // Machine.c: Implements machine.h

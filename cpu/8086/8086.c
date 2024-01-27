@@ -1,4 +1,3 @@
-#pragma once
 #include "8086.h"
 
 i8086_t cpu_8086;

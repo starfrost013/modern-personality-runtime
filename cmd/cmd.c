@@ -1,4 +1,3 @@
-#pragma once
 #include "cmd.h"
 
 cmd_t cmd;
