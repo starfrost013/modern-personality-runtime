@@ -307,7 +307,7 @@ i8086_modrm_t i8086_ModRM(bool w, uint8_t opcode, uint8_t modrm)
 	}
 
 	// make it actually based on segment registers
-	segreg_default *= X86_PARAGRAPH_SIZE;
+	segreg_default *= X86_PARAGRAPH_SIZE; 
 
 	if (modrm_info.mod == 0b11)
 	{
