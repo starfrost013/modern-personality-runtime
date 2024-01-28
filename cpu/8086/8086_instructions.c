@@ -384,6 +384,7 @@ i8086_modrm_t i8086_ModRM(bool w, uint8_t opcode, uint8_t modrm)
 			{
 				modrm_info.final_offset = &cpu_8086.DH;
 			}
+			break;
 		case 7:
 			if (w)
 			{
