@@ -7,7 +7,7 @@
 void i8086_Add8(uint8_t* destination, uint8_t* source, bool adc)
 {
 	uint8_t original_value = 0;
-	// so it doesn't get overwritten
+	// so the original value doesn't get overwritten
 	memcpy(&original_value, destination, sizeof(uint8_t));
 
 	// do the addition
@@ -36,7 +36,7 @@ void i8086_Add8(uint8_t* destination, uint8_t* source, bool adc)
 void i8086_Add16(uint16_t* destination, uint16_t* source, bool adc)
 {
 	uint8_t original_value = 0;
-	// so it doesn't get overwritten
+	// so the original value doesn't get overwritten
 	memcpy(&original_value, destination, sizeof(uint8_t));
 
 	// do the addition
@@ -66,10 +66,10 @@ void i8086_Add16(uint16_t* destination, uint16_t* source, bool adc)
 void i8086_Sub8(uint8_t* destination, uint8_t* source, bool sbb)
 {
 	uint8_t original_value = 0;
-	// so it doesn't get overwritten
+	// so the original value doesn't get overwritten
 	memcpy(&original_value, destination, sizeof(uint8_t));
 
-	// do the addition
+	// do the subtraction
 
 	if (sbb)
 	{
@@ -95,10 +95,10 @@ void i8086_Sub8(uint8_t* destination, uint8_t* source, bool sbb)
 void i8086_Sub16(uint16_t* destination, uint16_t* source, bool sbb)
 {
 	uint8_t original_value = 0;
-	// so it doesn't get overwritten
+	// so the original value doesn't get overwritten
 	memcpy(&original_value, destination, sizeof(uint8_t));
 
-	// do the addition
+	// do the subtraction
 	if (sbb)
 	{
 		*destination = *destination - (*source + cpu_8086.flag_carry);
@@ -119,6 +119,40 @@ void i8086_Sub16(uint16_t* destination, uint16_t* source, bool sbb)
 	i8086_SetSF16(final_value);
 }
 
+void i8086_Cmp8(uint8_t* destination, uint8_t* source, bool sbb)
+{
+	uint8_t original_value = 0;
+	// so it doesn't get overwritten
+	memcpy(&original_value, destination, sizeof(uint8_t));
+
+	// CMP is the same as SUB, but it doesn't save the final result and just sets flags
+	uint8_t final_value = *destination - *source;
+
+	i8086_SetOF8(final_value, *source, original_value, false); // we are not subtracting
+	i8086_SetCF8(final_value);
+	i8086_SetAF8(final_value, *source, original_value);
+	i8086_SetZF8(final_value);
+	i8086_SetPF8(final_value);
+	i8086_SetSF8(final_value);
+}
+
+void i8086_Cmp16(uint16_t* destination, uint16_t* source, bool sbb)
+{
+	uint8_t original_value = 0;
+	// so it doesn't get overwritten
+	memcpy(&original_value, destination, sizeof(uint8_t));
+
+	// CMP is the same as SUB, but it doesn't save final result and just sets flags
+	uint8_t final_value = *destination - *source;
+
+	// cmp doesn't save the final result and just sets flags
+	i8086_SetOF16(final_value, *source, original_value, false); // we are not subtracting
+	i8086_SetCF16(final_value);
+	i8086_SetAF16(final_value, *source, original_value);
+	i8086_SetZF16(final_value);
+	i8086_SetPF16(final_value);
+	i8086_SetSF16(final_value);
+}
 
 void i8086_Loop(uint8_t destination_offset, bool condition)
 {
