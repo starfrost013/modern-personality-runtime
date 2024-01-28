@@ -33,12 +33,6 @@ Logger* Logger_new()
 	logger->settings = LogSettings_new(u8"latest.log", LogChannel_Debug | LogChannel_Message | LogChannel_Warning | LogChannel_Error | LogChannel_Fatal, 
 		LogSource_Printf | LogSource_File, false);
 	logger->initialised = true;
-	logger->handle = calloc(1, sizeof(FILE));
-
-	assert(logger->handle != NULL);
-	if (logger->handle == NULL) return NULL;		//Shutup MSVC warnings 
-
-	memset(logger->handle, 0x00, sizeof(FILE));
 
 	if (Util_EnumHasFlag(logger->settings->source, LogSource_File))
 	{
@@ -125,11 +119,8 @@ void Logging_Log(const char* text, LogChannel channel, va_list args)
 	}
 #endif
 
-	char date_buffer[LOGGING_MAX_LENGTH_DATE];
-	char log_string_buffer[LOGGING_MAX_LENGTH_TOTAL];
-
-	memset(&date_buffer, 0x00, sizeof(char) * LOGGING_MAX_LENGTH_DATE);
-	memset(&log_string_buffer, 0x00, sizeof(char) * LOGGING_MAX_LENGTH_TOTAL);
+	char date_buffer[LOGGING_MAX_LENGTH_DATE] = {0};
+	char log_string_buffer[LOGGING_MAX_LENGTH_TOTAL] = {0};
 
 	Util_DateGetCurrentString(&date_buffer);
 

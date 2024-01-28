@@ -25,9 +25,7 @@ bool COM_Load()
 // This also serves as INT21,4A handler...
 bool MZ_Load()
 {
-	mz_header_t mz_header;
-
-	memset(&mz_header, 0x00, sizeof(mz_header_t));
+	mz_header_t mz_header = {0};
 
 	// Read the header...
 	Logging_LogChannel("WE ARE LOADING AN MZ BINARY NOW!!!!\n", LogChannel_Debug);

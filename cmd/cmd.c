@@ -9,12 +9,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-cmd_t cmd;
+cmd_t cmd = {0};
 
 bool CMD_Parse(int argc, char* argv[])
 {
-	memset(&cmd, 0x00, sizeof(cmd_t));
-
 	Logging_LogChannel("Beginning to parse command line...", LogChannel_Debug);
 
 	for (int argn = 0; argn < argc; argn++)
@@ -140,8 +138,7 @@ bool CMD_Parse(int argc, char* argv[])
 		{
 			// every arg after program to run is interpreted as arguments for the program
 			// this is in the DOS PSP format
-			char command_line_tmp[MAX_PATH_MODERN];
-			memset(command_line_tmp, 0x00, sizeof(char)* MAX_PATH_MODERN);
+			char command_line_tmp[MAX_PATH_MODERN] = {0};
 
 			// immediately end processing
 
@@ -161,7 +158,6 @@ bool CMD_Parse(int argc, char* argv[])
 			// copy it to cmd_t structure
 			strncpy(cmd.command_line, command_line_tmp_trim, MAX_PATH_MODERN);
 
-			// ensured in the case of no parsing by the memset line above
 			if (strlen(cmd.command_line) == 0) return false;
 
 			// open handle for read
