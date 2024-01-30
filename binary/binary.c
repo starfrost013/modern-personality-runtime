@@ -143,8 +143,8 @@ bool MZ_Load()
 			binary_data[final_address + 1] = (new_seg >> 8);
 			binary_data[final_address] = (new_seg & 0xFF);
 
-			Logging_LogChannel("Loaded relocation entry #%d (relocated by %04X:%04X to segaddr %04Xh)", LogChannel_Debug, 
-				reloc_num, MSDOS_LOADED_BINARY_LOCATION_SEG, MSDOS_LOADED_BINARY_LOCATION_OFF, new_seg);
+			Logging_LogChannel("Loaded relocation entry #%d (relocated by CS value %04X to segaddr %04Xh)", LogChannel_Debug, 
+				reloc_num, MSDOS_LOADED_BINARY_LOCATION_SEG, new_seg);
 		}
 		
 	}
@@ -174,8 +174,9 @@ void Binary_Bootstrap(uint8_t* binary_data)
 	if (cmd.cpu_ver == cpu_type_i8086)
 	{
 		i8086_t* i8086 = CPU_Get();
-		loaded_binary_msdos.psp = &i8086->address_space[MSDOS_LOADED_BINARY_LOCATION_SEG * X86_PARAGRAPH_SIZE];
-		loaded_binary_msdos.binary = &i8086->address_space[MSDOS_LOADED_BINARY_LOCATION_SEG * X86_PARAGRAPH_SIZE] + MSDOS_PSP_SIZE;
+		// in the case of an MZ file, the PSP appeasr to be loaded immediately before the binray
+		loaded_binary_msdos.psp = &i8086->address_space[(MSDOS_LOADED_BINARY_LOCATION_SEG - 0x10) * X86_PARAGRAPH_SIZE];
+		loaded_binary_msdos.binary = &i8086->address_space[MSDOS_LOADED_BINARY_LOCATION_SEG * X86_PARAGRAPH_SIZE];
 
 		Logging_LogChannel("Copying binary into emulated CPU address space beginning at %04x:%04x", LogChannel_Debug, MSDOS_LOADED_BINARY_LOCATION_SEG, MSDOS_PSP_SIZE);
 		memcpy(loaded_binary_msdos.binary, binary_data, loaded_binary_msdos.code_size);
@@ -201,7 +202,7 @@ void Binary_Bootstrap(uint8_t* binary_data)
 			// relocate
 			basecpu->DS = MSDOS_LOADED_BINARY_LOCATION_SEG;
 			basecpu->CS = loaded_binary_msdos.mz_header.initial_cs + MSDOS_LOADED_BINARY_LOCATION_SEG;
-			basecpu->IP = loaded_binary_msdos.mz_header.initial_ip + MSDOS_LOADED_BINARY_LOCATION_OFF;
+			basecpu->IP = loaded_binary_msdos.mz_header.initial_ip;
 		}
 
 		// set based on header values
