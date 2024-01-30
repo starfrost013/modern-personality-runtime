@@ -138,28 +138,13 @@ bool MZ_Load()
 			// calculate the address of the far call we are fixing up
 			uint32_t final_address = (reloc_table->entries[reloc_num].segment * X86_PARAGRAPH_SIZE) + reloc_table->entries[reloc_num].offset;
 
-			//this part prevents overflow issues 
+			uint16_t new_seg = (binary_data[final_address + 1] << 8) + (binary_data[final_address] ) + MSDOS_LOADED_BINARY_LOCATION_SEG;
 
-			reloc_table->entries[reloc_num].offset = (binary_data[final_address + 1] << 8) + (binary_data[final_address] & 0x00FF);
-			reloc_table->entries[reloc_num].segment = (binary_data[final_address + 3] << 8) + (binary_data[final_address + 2] & 0x00FF);
+			binary_data[final_address + 1] = (new_seg >> 8);
+			binary_data[final_address] = (new_seg & 0xFF);
 
-			Logging_LogChannel("Fixing up reference to far address %04X:%04X (address relative to start of code 0x%04X)\n", LogChannel_Debug, 
-				reloc_table->entries[reloc_num].segment, reloc_table->entries[reloc_num].offset, final_address);
-
-			// actually do the relocation (this moves it to where in memory it is actually loaded)
-			reloc_table->entries[reloc_num].offset += MSDOS_LOADED_BINARY_LOCATION_OFF;
-			reloc_table->entries[reloc_num].segment += MSDOS_LOADED_BINARY_LOCATION_SEG;
-
-			binary_data[final_address] = reloc_table->entries[reloc_num].offset & 0x00FF;
-			binary_data[final_address + 1] = reloc_table->entries[reloc_num].offset >> 8;
-			binary_data[final_address + 2] = reloc_table->entries[reloc_num].segment & 0x00FF;
-			binary_data[final_address + 3] = reloc_table->entries[reloc_num].segment >> 8;
-
-			uint16_t final_off = (binary_data[final_address+1] << 8) + (binary_data[final_address]);
-			uint16_t final_seg = (binary_data[final_address+3] << 8) + (binary_data[final_address+2]);
-
-			Logging_LogChannel("Loaded relocation entry #%d (new address %04X:%04X, relocated by %04X:%04X)\n", LogChannel_Debug, 
-				reloc_num, final_seg, final_off, MSDOS_LOADED_BINARY_LOCATION_SEG, MSDOS_LOADED_BINARY_LOCATION_OFF);
+			Logging_LogChannel("Loaded relocation entry #%d (relocated by %04X:%04X to segaddr %04Xh)", LogChannel_Debug, 
+				reloc_num, MSDOS_LOADED_BINARY_LOCATION_SEG, MSDOS_LOADED_BINARY_LOCATION_OFF, new_seg);
 		}
 		
 	}
@@ -213,17 +198,16 @@ void Binary_Bootstrap(uint8_t* binary_data)
 		}
 		else
 		{
+			// relocate
 			basecpu->DS = MSDOS_LOADED_BINARY_LOCATION_SEG;
-			basecpu->CS = MSDOS_LOADED_BINARY_LOCATION_SEG + loaded_binary_msdos.mz_header.initial_cs;
+			basecpu->CS = loaded_binary_msdos.mz_header.initial_cs + MSDOS_LOADED_BINARY_LOCATION_SEG;
+			basecpu->IP = loaded_binary_msdos.mz_header.initial_ip + MSDOS_LOADED_BINARY_LOCATION_OFF;
 		}
 
 		// set based on header values
-	
-		basecpu->SS = loaded_binary_msdos.mz_header.initial_ss;
+		// the stack segment is also relocated
+		basecpu->SS = loaded_binary_msdos.mz_header.initial_ss + MSDOS_LOADED_BINARY_LOCATION_OFF + MSDOS_LOADED_BINARY_LOCATION_SEG;
 		basecpu->SP = loaded_binary_msdos.mz_header.initial_sp;
-
-		// TODO: ??????? why is this required it shouldn't be (take into account the PSP)
-		basecpu->IP = loaded_binary_msdos.mz_header.initial_ip + MSDOS_PSP_SIZE;
 
 		// TODO: ALMOST CERTAINLY WRONG!!! Just not sure about what the documentation says here...
 		if (loaded_binary_msdos.psp->fcb1.drive_number > 0) 			basecpu->AL = 0;

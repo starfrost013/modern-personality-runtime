@@ -102,11 +102,6 @@ void i8086_SetSF16(uint16_t result);															// Set sign flag based on 8-b
 // other flags (IF,DF,TF) are set by code.
 
 // utilities
-#ifdef _DEBUG
-// utilities for debug builds only
-const char* i8086_RegToString(uint8_t reg);
-const char* i8086_RmToString(uint8_t rm);
-#endif
 
 // instructions both filtered through immediates and MOdR/m
 
