@@ -2,6 +2,13 @@
 
 #pragma once
 
+// compiler-independent debug define
+#if defined(_DEBUG) || !defined(NDEBUG)
+#define		X86_DEBUG	1
+#else
+#define		X86_DEBUG	0
+#endif
+
 #define X86_VERSION			"0.1"
 
 // used for ordering our registers

@@ -82,10 +82,8 @@ int main(int argc, char* argv[])
 	// init complete, run
 	machine_running = true;
 	
-	while (machine_running)
-	{
-		i8086_Update();
-	}
+	// machine_running checked inside of this func
+	i8086_Update();
 
 	return 0;
 }
