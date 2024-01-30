@@ -92,7 +92,7 @@ void i8086_Update()
 			case 0x00:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
-				modrm_info = i8086_ModRM(false, next_opcode, temp_imm8u);
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
 
 				i8086_Add8(modrm_info.final_offset, modrm_info.reg_ptr8, false);
 				cpu_8086.IP += 2;
@@ -103,7 +103,7 @@ void i8086_Update()
 			case 0x01:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
-				modrm_info = i8086_ModRM(true, next_opcode, temp_imm8u);
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
 
 				i8086_Add16(modrm_info.final_offset, modrm_info.reg_ptr16, false);
 				cpu_8086.IP += 2;
@@ -114,7 +114,7 @@ void i8086_Update()
 			case 0x02:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
-				modrm_info = i8086_ModRM(false, next_opcode, temp_imm8u);
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
 
 				i8086_Add8(modrm_info.reg_ptr8, modrm_info.final_offset, false);
 				cpu_8086.IP += 2;
@@ -125,7 +125,7 @@ void i8086_Update()
 			case 0x03:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
-				modrm_info = i8086_ModRM(true, next_opcode, temp_imm8u);
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
 
 				i8086_Add16(modrm_info.reg_ptr16, modrm_info.final_offset, false);
 				cpu_8086.IP += 2;
@@ -178,7 +178,7 @@ void i8086_Update()
 			case 0x10:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
-				modrm_info = i8086_ModRM(false, next_opcode, temp_imm8u);
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
 
 				i8086_Add8(modrm_info.final_offset, modrm_info.reg_ptr8, true);
 				cpu_8086.IP += 2;
@@ -189,7 +189,7 @@ void i8086_Update()
 			case 0x11:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
-				modrm_info = i8086_ModRM(true, next_opcode, temp_imm8u);
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
 
 				i8086_Add16(modrm_info.final_offset, modrm_info.reg_ptr16, true);
 				cpu_8086.IP += 2;
@@ -200,7 +200,7 @@ void i8086_Update()
 			case 0x12:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
-				modrm_info = i8086_ModRM(false, next_opcode, temp_imm8u);
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
 
 				i8086_Add8(modrm_info.reg_ptr8, modrm_info.final_offset, true);
 				cpu_8086.IP += 2;
@@ -211,7 +211,7 @@ void i8086_Update()
 			case 0x13:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
-				modrm_info = i8086_ModRM(true, next_opcode, temp_imm8u);
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
 
 				i8086_Add16(modrm_info.reg_ptr16, modrm_info.final_offset, true);
 				cpu_8086.IP += 2;
@@ -247,7 +247,7 @@ void i8086_Update()
 			case 0x18:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
-				modrm_info = i8086_ModRM(false, next_opcode, temp_imm8u);
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
 
 				i8086_Sub8(modrm_info.final_offset, modrm_info.reg_ptr8, true);
 				cpu_8086.IP += 2;
@@ -258,7 +258,7 @@ void i8086_Update()
 			case 0x19:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
-				modrm_info = i8086_ModRM(true, next_opcode, temp_imm8u);
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
 
 				i8086_Sub16(modrm_info.final_offset, modrm_info.reg_ptr16, true);
 				cpu_8086.IP += 2;
@@ -269,7 +269,7 @@ void i8086_Update()
 			case 0x1A:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
-				modrm_info = i8086_ModRM(false, next_opcode, temp_imm8u);
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
 
 				i8086_Sub8(modrm_info.reg_ptr8, modrm_info.final_offset, true);
 				cpu_8086.IP += 2;
@@ -280,7 +280,7 @@ void i8086_Update()
 			case 0x1B:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
-				modrm_info = i8086_ModRM(true, next_opcode, temp_imm8u);
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
 
 				i8086_Sub16(modrm_info.reg_ptr16, modrm_info.final_offset, true);
 				cpu_8086.IP += 2;
@@ -317,7 +317,7 @@ void i8086_Update()
 			case 0x28:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
-				modrm_info = i8086_ModRM(false, next_opcode, temp_imm8u);
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
 
 				i8086_Sub8(modrm_info.final_offset, modrm_info.reg_ptr8, false);
 				cpu_8086.IP += 2;
@@ -328,7 +328,7 @@ void i8086_Update()
 			case 0x29:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
-				modrm_info = i8086_ModRM(true, next_opcode, temp_imm8u);
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
 
 				i8086_Sub16(modrm_info.final_offset, modrm_info.reg_ptr16, false);
 				cpu_8086.IP += 2;
@@ -339,7 +339,7 @@ void i8086_Update()
 			case 0x2A:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
-				modrm_info = i8086_ModRM(false, next_opcode, temp_imm8u);
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
 
 				i8086_Sub8(modrm_info.reg_ptr8, modrm_info.final_offset, false);
 				cpu_8086.IP += 2;
@@ -350,7 +350,7 @@ void i8086_Update()
 			case 0x2B:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
-				modrm_info = i8086_ModRM(true, next_opcode, temp_imm8u);
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
 
 				i8086_Sub16(modrm_info.reg_ptr16, modrm_info.final_offset, false);
 				cpu_8086.IP += 2;
@@ -377,7 +377,7 @@ void i8086_Update()
 			case 0x38:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
-				modrm_info = i8086_ModRM(false, next_opcode, temp_imm8u);
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
 
 				i8086_Cmp8(modrm_info.final_offset, modrm_info.reg_ptr8);
 				cpu_8086.IP += 2;
@@ -388,7 +388,7 @@ void i8086_Update()
 			case 0x39:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
-				modrm_info = i8086_ModRM(true, next_opcode, temp_imm8u);
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
 
 				i8086_Cmp16(modrm_info.final_offset, modrm_info.reg_ptr16);
 				cpu_8086.IP += 2;
@@ -399,7 +399,7 @@ void i8086_Update()
 			case 0x3A:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
-				modrm_info = i8086_ModRM(false, next_opcode, temp_imm8u);
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
 
 				i8086_Cmp8(modrm_info.reg_ptr8, modrm_info.final_offset);
 				cpu_8086.IP += 2;
@@ -410,7 +410,7 @@ void i8086_Update()
 			case 0x3B:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
-				modrm_info = i8086_ModRM(true, next_opcode, temp_imm8u);
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
 
 				i8086_Cmp16(modrm_info.reg_ptr16, modrm_info.final_offset);
 				cpu_8086.IP += 2;
@@ -712,10 +712,16 @@ void i8086_Update()
 
 				(temp_imm8s < 0) ? Logging_LogChannel("JG -%02Xh", LogChannel_Debug, temp_imm8s) : Logging_LogChannel("JG +%02Xh", LogChannel_Debug, temp_imm8s);
 				break;
+			case 0x80: // grp1
+			case 0x81:
+			case 0x82:
+			case 0x83:
+				i8086_Grp1(next_opcode);
+				break;
 			case 0x88:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
-				modrm_info = i8086_ModRM(false, next_opcode, temp_imm8u);
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
 
 				*modrm_info.final_offset = *modrm_info.reg_ptr8;
 				
@@ -727,7 +733,7 @@ void i8086_Update()
 			case 0x89:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
-				modrm_info = i8086_ModRM(true, next_opcode, temp_imm8u);
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
 
 				*modrm_info.final_offset = *modrm_info.reg_ptr16;
 
@@ -739,7 +745,7 @@ void i8086_Update()
 			case 0x8A:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
-				modrm_info = i8086_ModRM(false, next_opcode, temp_imm8u);
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
 
 				*modrm_info.reg_ptr8 = &modrm_info.final_offset;
 
@@ -751,7 +757,7 @@ void i8086_Update()
 			case 0x8B:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
-				modrm_info = i8086_ModRM(true, next_opcode, temp_imm8u);
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
 
 				*modrm_info.reg_ptr16 = *modrm_info.final_offset;
 
@@ -763,7 +769,7 @@ void i8086_Update()
 			case 0x8C: // merge with 8b? what is the different (MOV Ew, Sw)
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
-				modrm_info = i8086_ModRM(true, next_opcode, temp_imm8u);
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
 
 				*modrm_info.reg_ptr16 = *modrm_info.final_offset;
 
@@ -775,9 +781,9 @@ void i8086_Update()
 			case 0x8E:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
-				modrm_info = i8086_ModRM(true, next_opcode, temp_imm8u);
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
 
-				*modrm_info.final_offset = *modrm_info.reg_ptr16;
+				*modrm_info.final_offset = *modrm_info.reg_ptr8;
 
 				cpu_8086.IP += 2; // 1 modrm byte
 #if X86_DEBUG
@@ -1019,7 +1025,7 @@ void i8086_Update()
 			case 0xC6:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
-				modrm_info = i8086_ModRM(false, next_opcode, temp_imm8u);
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
 
 				// we don't need the previous temp_imm8u value
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
@@ -1033,7 +1039,7 @@ void i8086_Update()
 			case 0xC7:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
-				modrm_info = i8086_ModRM(true, next_opcode, temp_imm8u);
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
 
 				// we don't need the previous temp_imm8u value
 				temp_imm16u_01 = i8086_ReadU16(cpu_8086._PC);
