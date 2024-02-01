@@ -130,6 +130,10 @@ i8086_modrm_t i8086_ModRM(uint8_t opcode, uint8_t modrm);		// Parse ModR/M byte
 
 // group instruction decode. Some instructions use the reg as an extended opcode instead.
 void i8086_Grp1(uint8_t opcode);										// 0x80..0x83
+void i8086_Grp2(uint8_t opcode);										
+void i8086_Grp3(uint8_t opcode);										// GRP3A+B
+void i8086_Grp4(uint8_t opcode);
+void i8086_Grp5(uint8_t opcode);
 
 // loop
 void i8086_Loop(uint8_t destination_offset, bool condition);			// Loop instruction

@@ -260,7 +260,7 @@ void i8086_Loop(uint8_t destination_offset, bool condition)
 	else
 	{
 		// move CPU on to the next instruction
-		cpu_8086.IP++;
+		cpu_8086.IP += 2;
 	}
 }
 
@@ -273,7 +273,7 @@ void i8086_JumpConditional(uint8_t destination_offset, bool condition)
 	else
 	{
 		// onto next instruction
-		cpu_8086.IP++;
+		cpu_8086.IP += 2;
 	}
 }
 
@@ -299,7 +299,23 @@ i8086_modrm_t i8086_ModRM(uint8_t opcode, uint8_t modrm)
 
 	i8086_modrm_t modrm_info = { 0 };
 	bool direction = ((opcode >> 1) & 0x01); // pull out bit 1 of opcode for direction flag
-	bool w = (opcode) & 0x01;
+	bool w = false; // false = 8-bit word length for oeprands, true=16-bit
+
+	// HACK warning: for some reason, the reg field means something entirely different for SPECIFICALLY these two instructions. Fuck Intel!
+	// They are always 16-bit, even though the w-field of the opcod register indicates the precise opposite, and the reg field selects segment registers
+	// using an entirely different coding
+	// INTEL? MORE LIKE UnIntelligent
+	bool intel_moron_instructions = (opcode == 0x8C
+		|| opcode == 0x8E);
+
+	if (intel_moron_instructions)
+	{
+		w = true; // they are encoded as 8-bit but take 16-bit segment registers
+	}
+	else
+	{
+		w = (opcode) & 0x01;
+	}
 
 	modrm_info.mod = (modrm >> 6); // pull out bits 6-7
 	uint8_t reg_temp = ((uint8_t)(modrm << 2) >> 5); // pull out bits 3-5
@@ -319,141 +335,178 @@ i8086_modrm_t i8086_ModRM(uint8_t opcode, uint8_t modrm)
 	char operand2_string[DISASM_STR_SIZE] = { 0 };
 #endif
 
-	// determine the register we are modifying
-	switch (reg_temp)
+	// 8c and 8e segment-register moves.
+	if (intel_moron_instructions)
 	{
-	case 0:
-		if (w)
+		// appears to be simply masked off for invalid options
+		reg_temp = reg_temp & 0x03;
+		switch (reg_temp)
 		{
-			modrm_info.reg_ptr16 = &cpu_8086.AX;
+		case 0:
+			modrm_info.reg_ptr16 = &cpu_8086.ES;
 #if X86_DEBUG
-			strncat(operand1_string, "AX", 2);
+			strncat(operand1_string, "ES", 2);
 #endif
+			break;
+		case 1:
+			modrm_info.reg_ptr16 = &cpu_8086.CS;
+#if X86_DEBUG
+			strncat(operand1_string, "CS", 2);
+#endif
+			break;
+		case 2:
+			modrm_info.reg_ptr16 = &cpu_8086.SS;
+#if X86_DEBUG
+			strncat(operand1_string, "SS", 2);
+#endif
+			break;
+		case 3:
+			modrm_info.reg_ptr16 = &cpu_8086.DS;
+#if X86_DEBUG
+			strncat(operand1_string, "DS", 2);
+#endif
+			break;
 		}
-		else
-		{
-			modrm_info.reg_ptr8 = &cpu_8086.AL;
-#if X86_DEBUG
-			strncat(operand1_string, "AL", 2);
-#endif
-		}
-		break;
-	case 1:
-		if (w)
-		{
-			modrm_info.reg_ptr16 = &cpu_8086.CX;
-#if X86_DEBUG
-			strncat(operand1_string, "CX", 2);
-#endif
-		}
-		else
-		{
-			modrm_info.reg_ptr8 = &cpu_8086.CL;
-#if X86_DEBUG
-			strncat(operand1_string, "CL", 2);
-#endif
-		}
-		break;
-	case 2:
-		if (w)
-		{
-			modrm_info.reg_ptr16 = &cpu_8086.DX;
-#if X86_DEBUG
-			strncat(operand1_string, "DX", 2);
-#endif
-		}
-		else
-		{
-			modrm_info.reg_ptr8 = &cpu_8086.DL;
-#if X86_DEBUG
-			strncat(operand1_string, "DL", 2);
-#endif
-		}
-		break;
-	case 3:
-		if (w)
-		{
-			modrm_info.reg_ptr16 = &cpu_8086.BX;
-#if X86_DEBUG
-			strncat(operand1_string, "BX", 2);
-#endif
-		}
-		else
-		{
-			modrm_info.reg_ptr8 = &cpu_8086.BL;
-#if X86_DEBUG
-			strncat(operand1_string, "BL", 2);
-#endif
-		}
-
-		break;
-	case 4:
-		if (w)
-		{
-			modrm_info.reg_ptr16 = &cpu_8086.SP;
-#if X86_DEBUG
-			strncat(operand1_string, "SP", 2);
-#endif
-		}
-		else
-		{
-			modrm_info.reg_ptr8 = &cpu_8086.AH;
-#if X86_DEBUG
-			strncat(operand1_string, "AH", 2);
-#endif
-		}
-		break;
-	case 5:
-		if (w)
-		{
-			modrm_info.reg_ptr16 = &cpu_8086.BP;
-#if X86_DEBUG
-			strncat(operand1_string, "BP", 2);
-#endif
-		}
-		else
-		{
-			 modrm_info.reg_ptr8 = &cpu_8086.CH;
-#if X86_DEBUG
-			 strncat(operand1_string, "CH", 2);
-#endif
-		}
-		break;
-	case 6:
-		if (w)
-		{
-			modrm_info.reg_ptr16 = &cpu_8086.SI;
-#if X86_DEBUG
-			strncat(operand1_string, "SI", 2);
-#endif
-		}
-		else
-		{
-			modrm_info.reg_ptr8 = &cpu_8086.DH;
-#if X86_DEBUG
-			strncat(operand1_string, "DH", 2);
-#endif
-		}
-
-		break;
-	case 7:
-		if (w)
-		{
-			modrm_info.reg_ptr16 = &cpu_8086.DI;
-#if X86_DEBUG
-			strncat(operand1_string, "DI", 2);
-#endif
-		} 
-		else
-		{
-			modrm_info.reg_ptr8 = &cpu_8086.BH;
-#if X86_DEBUG
-			strncat(operand1_string, "BH", 2);
-#endif
-
-		}
-		break;
 	}
+	else // normally encoded instructions
+	{
+		// determine the register we are modifying
+		switch (reg_temp)
+		{
+		case 0:
+			if (w)
+			{
+				modrm_info.reg_ptr16 = &cpu_8086.AX;
+#if X86_DEBUG
+				strncat(operand1_string, "AX", 2);
+#endif
+			}
+			else
+			{
+				modrm_info.reg_ptr8 = &cpu_8086.AL;
+#if X86_DEBUG
+				strncat(operand1_string, "AL", 2);
+#endif
+			}
+			break;
+		case 1:
+			if (w)
+			{
+				modrm_info.reg_ptr16 = &cpu_8086.CX;
+#if X86_DEBUG
+				strncat(operand1_string, "CX", 2);
+#endif
+			}
+			else
+			{
+				modrm_info.reg_ptr8 = &cpu_8086.CL;
+#if X86_DEBUG
+				strncat(operand1_string, "CL", 2);
+#endif
+			}
+			break;
+		case 2:
+			if (w)
+			{
+				modrm_info.reg_ptr16 = &cpu_8086.DX;
+#if X86_DEBUG
+				strncat(operand1_string, "DX", 2);
+#endif
+			}
+			else
+			{
+				modrm_info.reg_ptr8 = &cpu_8086.DL;
+#if X86_DEBUG
+				strncat(operand1_string, "DL", 2);
+#endif
+			}
+			break;
+		case 3:
+			if (w)
+			{
+				modrm_info.reg_ptr16 = &cpu_8086.BX;
+#if X86_DEBUG
+				strncat(operand1_string, "BX", 2);
+#endif
+			}
+			else
+			{
+				modrm_info.reg_ptr8 = &cpu_8086.BL;
+#if X86_DEBUG
+				strncat(operand1_string, "BL", 2);
+#endif
+			}
+
+			break;
+		case 4:
+			if (w)
+			{
+				modrm_info.reg_ptr16 = &cpu_8086.SP;
+#if X86_DEBUG
+				strncat(operand1_string, "SP", 2);
+#endif
+			}
+			else
+			{
+				modrm_info.reg_ptr8 = &cpu_8086.AH;
+#if X86_DEBUG
+				strncat(operand1_string, "AH", 2);
+#endif
+			}
+			break;
+		case 5:
+			if (w)
+			{
+				modrm_info.reg_ptr16 = &cpu_8086.BP;
+#if X86_DEBUG
+				strncat(operand1_string, "BP", 2);
+#endif
+			}
+			else
+			{
+				modrm_info.reg_ptr8 = &cpu_8086.CH;
+#if X86_DEBUG
+				strncat(operand1_string, "CH", 2);
+#endif
+			}
+			break;
+		case 6:
+			if (w)
+			{
+				modrm_info.reg_ptr16 = &cpu_8086.SI;
+#if X86_DEBUG
+				strncat(operand1_string, "SI", 2);
+#endif
+			}
+			else
+			{
+				modrm_info.reg_ptr8 = &cpu_8086.DH;
+#if X86_DEBUG
+				strncat(operand1_string, "DH", 2);
+#endif
+			}
+
+			break;
+		case 7:
+			if (w)
+			{
+				modrm_info.reg_ptr16 = &cpu_8086.DI;
+#if X86_DEBUG
+				strncat(operand1_string, "DI", 2);
+#endif
+			}
+			else
+			{
+				modrm_info.reg_ptr8 = &cpu_8086.BH;
+#if X86_DEBUG
+				strncat(operand1_string, "BH", 2);
+#endif
+
+			}
+			break;
+		}
+	}
+
 
 	if (modrm_info.mod != 0b11)
 	{
@@ -889,18 +942,18 @@ void i8086_Grp1(uint8_t opcode)
 			temp_imm8u_02 = i8086_ReadU8(cpu_8086._PC);
 			i8086_Add8(modrm_info.reg_ptr8, &temp_imm8u_02, false);
 			cpu_8086.IP += 3;
-			Logging_LogChannel("ADD %s, %d", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
+			Logging_LogChannel("ADD %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
 			break;
 		case 0x81:
 			temp_imm16u_01 = i8086_ReadU16(cpu_8086._PC);
 			i8086_Add16(modrm_info.reg_ptr16, &temp_imm16u_01, false);
-			Logging_LogChannel("ADD %s, %d", LogChannel_Debug, modrm_info.disasm, temp_imm16u_01);
+			Logging_LogChannel("ADD %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm16u_01);
 			cpu_8086.IP += 4;
 			break;
 		case 0x83:
 			temp_imm8u_02 = i8086_ReadU8(cpu_8086._PC);
 			i8086_Add16(modrm_info.reg_ptr16, (uint16_t*)&temp_imm8u_02, false);
-			Logging_LogChannel("ADD %s, %d", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
+			Logging_LogChannel("ADD %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
 			cpu_8086.IP += 3;
 			break;
 
@@ -914,19 +967,19 @@ void i8086_Grp1(uint8_t opcode)
 			temp_imm8u_02 = i8086_ReadU8(cpu_8086._PC);
 			i8086_Or8(modrm_info.reg_ptr8, &temp_imm8u_02);
 			cpu_8086.IP += 3;
-			Logging_LogChannel("OR %s, %d", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
+			Logging_LogChannel("OR %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
 			break;
 		case 0x81:
 			temp_imm16u_01 = i8086_ReadU16(cpu_8086._PC);
 			i8086_Or16(modrm_info.reg_ptr16, &temp_imm16u_01);
 			cpu_8086.IP += 4;
-			Logging_LogChannel("OR %s, %d", LogChannel_Debug, modrm_info.disasm, temp_imm16u_01);
+			Logging_LogChannel("OR %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm16u_01);
 			break;
 		case 0x83:
 			temp_imm8u_02 = i8086_ReadU8(cpu_8086._PC);
 			i8086_Or16(modrm_info.reg_ptr16, (uint16_t*)temp_imm8u_02);
 			cpu_8086.IP += 3;
-			Logging_LogChannel("OR %s, %d", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
+			Logging_LogChannel("OR %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
 			break;
 
 		}
@@ -939,18 +992,18 @@ void i8086_Grp1(uint8_t opcode)
 			temp_imm8u_02 = i8086_ReadU8(cpu_8086._PC);
 			i8086_Add8(modrm_info.reg_ptr8, &temp_imm8u_02, true);
 			cpu_8086.IP += 3;
-			Logging_LogChannel("ADC %s, %d", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
+			Logging_LogChannel("ADC %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
 			break;
 		case 0x81:
 			temp_imm16u_01 = i8086_ReadU16(cpu_8086._PC);
 			i8086_Add16(modrm_info.reg_ptr16, &temp_imm16u_01, true);
-			Logging_LogChannel("ADC %s, %d", LogChannel_Debug, modrm_info.disasm, temp_imm16u_01);
+			Logging_LogChannel("ADC %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm16u_01);
 			cpu_8086.IP += 4;
 			break;
 		case 0x83:
 			temp_imm8u_02 = i8086_ReadU8(cpu_8086._PC);
 			i8086_Add16(modrm_info.reg_ptr16, (uint16_t*)&temp_imm8u_02, true);
-			Logging_LogChannel("ADC %s, %d", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
+			Logging_LogChannel("ADC %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
 			cpu_8086.IP += 3;
 			break;
 
@@ -963,19 +1016,19 @@ void i8086_Grp1(uint8_t opcode)
 		case 0x82:
 			temp_imm8u_02 = i8086_ReadU8(cpu_8086._PC);
 			i8086_Sub8(modrm_info.reg_ptr8, &temp_imm8u_02, true);
-			Logging_LogChannel("SBB %s, %d", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
+			Logging_LogChannel("SBB %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
 			cpu_8086.IP += 3;
 			break;
 		case 0x81:
 			temp_imm16u_01 = i8086_ReadU16(cpu_8086._PC);
 			i8086_Sub16(modrm_info.reg_ptr16, &temp_imm16u_01, true);
-			Logging_LogChannel("SBB %s, %d", LogChannel_Debug, modrm_info.disasm, temp_imm16u_01);
+			Logging_LogChannel("SBB %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm16u_01);
 			cpu_8086.IP += 4;
 			break;
 		case 0x83:
 			temp_imm8u_02 = i8086_ReadU8(cpu_8086._PC);
 			i8086_Sub16(modrm_info.reg_ptr16, (uint16_t*)&temp_imm8u_02, true);
-			Logging_LogChannel("SBB %s, %d", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
+			Logging_LogChannel("SBB %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
 			cpu_8086.IP += 3;
 			break;
 
@@ -988,19 +1041,19 @@ void i8086_Grp1(uint8_t opcode)
 		case 0x82:
 			temp_imm8u_02 = i8086_ReadU8(cpu_8086._PC);
 			i8086_And8(modrm_info.reg_ptr8, &temp_imm8u_02);
-			Logging_LogChannel("AND %s, %d", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
+			Logging_LogChannel("AND %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
 			cpu_8086.IP += 3;
 			break;
 		case 0x81:
 			temp_imm16u_01 = i8086_ReadU16(cpu_8086._PC);
 			i8086_And16(modrm_info.reg_ptr16, &temp_imm16u_01);
-			Logging_LogChannel("AND %s, %d", LogChannel_Debug, modrm_info.disasm, temp_imm16u_01);
+			Logging_LogChannel("AND %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm16u_01);
 			cpu_8086.IP += 4;
 			break;
 		case 0x83:
 			temp_imm8u_02 = i8086_ReadU8(cpu_8086._PC);
 			i8086_And16(modrm_info.reg_ptr16, (uint16_t*)&temp_imm8u_02);
-			Logging_LogChannel("AND %s, %d", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
+			Logging_LogChannel("AND %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
 			cpu_8086.IP += 3;
 			break;
 
@@ -1013,19 +1066,19 @@ void i8086_Grp1(uint8_t opcode)
 		case 0x82:
 			temp_imm8u_02 = i8086_ReadU8(cpu_8086._PC);
 			i8086_Sub8(modrm_info.reg_ptr8, &temp_imm8u_02, false);
-			Logging_LogChannel("SUB %s, %d", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
+			Logging_LogChannel("SUB %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
 			cpu_8086.IP += 3;
 			break;
 		case 0x81:
 			temp_imm16u_01 = i8086_ReadU16(cpu_8086._PC);
 			i8086_Sub16(modrm_info.reg_ptr16, &temp_imm16u_01, false);
-			Logging_LogChannel("SUB %s, %d", LogChannel_Debug, modrm_info.disasm, temp_imm16u_01);
+			Logging_LogChannel("SUB %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm16u_01);
 			cpu_8086.IP += 4;
 			break;
 		case 0x83:
 			temp_imm8u_02 = i8086_ReadU8(cpu_8086._PC);
 			i8086_Sub16(modrm_info.reg_ptr16, (uint16_t*)&temp_imm8u_02, false);
-			Logging_LogChannel("SUB %s, %d", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
+			Logging_LogChannel("SUB %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
 			cpu_8086.IP += 3;
 			break;
 
@@ -1038,19 +1091,19 @@ void i8086_Grp1(uint8_t opcode)
 		case 0x82:
 			temp_imm8u_02 = i8086_ReadU8(cpu_8086._PC);
 			i8086_Xor8(modrm_info.reg_ptr8, &temp_imm8u_02);
-			Logging_LogChannel("XOR %s, %d", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
+			Logging_LogChannel("XOR %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
 			cpu_8086.IP += 3;
 			break;
 		case 0x81:
 			temp_imm16u_01 = i8086_ReadU16(cpu_8086._PC);
 			i8086_Xor16(modrm_info.reg_ptr16, &temp_imm16u_01);
-			Logging_LogChannel("XOR %s, %d", LogChannel_Debug, modrm_info.disasm, temp_imm16u_01);
+			Logging_LogChannel("XOR %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm16u_01);
 			cpu_8086.IP += 4;
 			break;
 		case 0x83:
 			temp_imm8u_02 = i8086_ReadU8(cpu_8086._PC);
 			i8086_Xor16(modrm_info.reg_ptr16, (uint16_t*)&temp_imm8u_02);
-			Logging_LogChannel("XOR %s, %d", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
+			Logging_LogChannel("XOR %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
 			cpu_8086.IP += 3;
 			break;
 
@@ -1063,19 +1116,19 @@ void i8086_Grp1(uint8_t opcode)
 		case 0x82:
 			temp_imm8u_02 = i8086_ReadU8(cpu_8086._PC);
 			i8086_Cmp8(modrm_info.reg_ptr8, &temp_imm8u_02, true);
-			Logging_LogChannel("CMP %s, %d", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
+			Logging_LogChannel("CMP %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
 			cpu_8086.IP += 3;
 			break;
 		case 0x81:
 			temp_imm16u_01 = i8086_ReadU16(cpu_8086._PC);
 			i8086_Cmp16(modrm_info.reg_ptr16, &temp_imm16u_01, true);
-			Logging_LogChannel("CMP %s, %d", LogChannel_Debug, modrm_info.disasm, temp_imm16u_01);
+			Logging_LogChannel("CMP %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm16u_01);
 			cpu_8086.IP += 4;
 			break;
 		case 0x83:
 			temp_imm8u_02 = i8086_ReadU8(cpu_8086._PC);
 			i8086_Cmp16(modrm_info.reg_ptr16, (uint16_t*)&temp_imm8u_02, true);
-			Logging_LogChannel("CMP %s, %d", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
+			Logging_LogChannel("CMP %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
 			cpu_8086.IP += 3;
 			break;
 
@@ -1083,3 +1136,35 @@ void i8086_Grp1(uint8_t opcode)
 		break;
 	}
 }
+
+void i8086_Grp2(uint8_t opcode)
+{
+	uint8_t temp_imm8u_01 = i8086_ReadU8(cpu_8086._PC);
+	uint8_t temp_imm8u_02 = 0x00;
+	uint16_t temp_imm16u_01 = 0x00;
+
+	cpu_8086._PC++;
+
+	i8086_modrm_t modrm_info = i8086_ModRM(opcode, temp_imm8u_01);
+
+	switch (modrm_info.ext_opcode)
+	{
+
+	}
+}
+
+void i8086_Grp3(uint8_t opcode)
+{
+
+}
+
+void i8086_Grp4(uint8_t opcode)
+{
+
+}
+
+void i8086_Grp5(uint8_t opcode)
+{
+
+}
+
