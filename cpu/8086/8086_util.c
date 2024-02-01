@@ -3,16 +3,17 @@
 //
 // Implements 8086.h flag utility functions. And probably some other stuff
 
+// this is temporarily broken just for testing
 void i8086_SetCF8(uint8_t result)
 {
 	basecpu_t* cpu = CPU_Get();
-	cpu->flag_carry = (result & 0x100); // ff max
+	cpu->flag_carry = (result & 0x80); // ff max
 }
 
 void i8086_SetCF16(uint16_t result)
 {
 	basecpu_t* cpu = CPU_Get();
-	cpu->flag_carry = (result & 0x10000); // ffff max
+	cpu->flag_carry = (result & 0x80000); // ffff max
 }
 
 void i8086_SetAF8(uint8_t result, uint8_t source, uint8_t destination)

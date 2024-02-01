@@ -617,9 +617,17 @@ bool MSDOS_Init();				// Initialise boring DOS.
 bool MTDOS_Init();				// Initialise exciting DOS.
 
 //
-// Trapped APIs
+// API: Int 21h
 //
 
-void MSDOS_Int21(uint16_t ax);
+void MSDOS_Int21();
+
+void MSDOS_PrintString();		// INT 21h,AH=09h - Prints a $-terminated string beginning at [DS:DX]
+void MSDOS_GetVersion();		// INT 21h,AH=30h
+
+// exiting
+void MSDOS_Exit();				// INT 21h,AH=0 - exit
+void MSDOS_ExitWithExitCode();		// INT 21h,AH=4Ah - Exits with an exit code.
+
 
 #pragma pack (pop)
