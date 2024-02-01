@@ -66,6 +66,7 @@ void i8086_Update()
 				break;
 			case 0x3E:
 				cpu_8086.last_prefix = override_ds;
+				increment = true;
 				break;
 			}
 
@@ -73,9 +74,9 @@ void i8086_Update()
 
 			if (increment)
 			{
+				next_opcode = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086.IP++;
 				cpu_8086._PC++;
-				next_opcode = i8086_ReadU8(cpu_8086._PC);
 			}
 
 			uint16_t		interrupt_num = 0x00;
