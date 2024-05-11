@@ -20,7 +20,6 @@ void Util_DateGetCurrentString(char *str)
 	if (final_text == NULL) return; // shut up the compiler again
 
 	strcpy(str, final_text);
-	free(current_time_info_ptr);
 }
 
 bool Util_EnumHasFlag(int32_t enum_value, int32_t flag)
@@ -32,11 +31,11 @@ bool Util_StringFromBoolean(char* str)
 {
 	assert(str != NULL);
 
-	if (strncmp(str, 4, "true"))
+	if (strncmp(str, "true", 4))
 	{
 		return true;
 	}
-	else if (strncmp(str, 5, "false"))
+	else if (strncmp(str, "false", 5))
 	{
 		return false;
 	}
@@ -60,13 +59,13 @@ char* Util_StringLTrim(char* string)
 	// check the string is not a null ptr
 	if (string == NULL)	return NULL;
 
-	int length = strlen(string);
+	size_t length = strlen(string);
 
 	// if the string is zero length, just return the string
 	if (length == 0) return string;
 
 	// remove whitespace chars by incrementing the pointer
-	for (int chNum = 0; chNum < length; chNum++)
+	for (size_t chNum = 0; chNum < length; chNum++)
 	{
 		if (isspace(string[chNum]))
 		{
@@ -87,13 +86,13 @@ char* Util_StringRTrim(char* string)
 	// check the string is not a null ptr
 	if (string == NULL)	return NULL;
 
-	int length = strlen(string);
+	size_t length = strlen(string);
 
-	// if the string is zero length, just return the string
-	if (length == 0) return string;
+	// if the string is zero length, or just one character just return the string
+	if (length <= 1) return string;
 
 	// remove whitespace chars by incrementing the pointer
-	for (int chNum = length - 1; chNum >= 0; chNum--)
+	for (size_t chNum = length - 1; chNum >= 0; chNum--)
 	{
 		if (isspace(string[chNum]))
 		{

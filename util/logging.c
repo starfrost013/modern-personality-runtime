@@ -171,11 +171,11 @@ void Logging_Log(const char* text, LogChannel channel, va_list args)
 
 	assert(date_buffer[0] != NULL);
 
-	strncat(log_string_buffer, sizeof(log_string_buffer), prefix);
-	strncat(log_string_buffer, sizeof(log_string_buffer), date_buffer);
-	strncat(log_string_buffer, sizeof(log_string_buffer), date_suffix);
-	strncat(log_string_buffer, sizeof(log_string_buffer), text);
-	strncat(log_string_buffer, sizeof(log_string_buffer), suffix);
+	strncat(log_string_buffer, prefix, sizeof(log_string_buffer));
+	strncat(log_string_buffer, date_buffer, sizeof(log_string_buffer));
+	strncat(log_string_buffer, date_suffix, sizeof(log_string_buffer));
+	strncat(log_string_buffer, text, sizeof(log_string_buffer));
+	strncat(log_string_buffer, suffix, sizeof(log_string_buffer));
 
 	if (Util_EnumHasFlag(sys_logger->settings->source, LogSource_Printf))
 	{
