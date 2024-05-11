@@ -17,9 +17,9 @@ const char help_message[] =
 { 
 	"modern:personality Runtime Help\n\n" 
 	"--REQUIRED USAGE--\n"
-	"x86-16 [-dosver] [filename]\n\n"
+	"x86-16 -dosver filename\n\n"
 	"--OPTIONAL USAGE--\n"
-	"x86-16 [-dosver] <-mtdosver> filename]\n\n"
+	"x86-16 [-mtdosver] filename\n\n"
 	"--REQUIRED ARGUMENTS--\n"
 	"-filename: Provides a .COM, .EXE (MZ or NE) file to run.\n"
 	"-dosver: Provides a (non-multitasking) MS-DOS API level.\n\n"
