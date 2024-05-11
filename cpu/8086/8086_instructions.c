@@ -398,7 +398,7 @@ i8086_modrm_t i8086_ModRM(bool w, uint8_t opcode, uint8_t modrm)
 			// BP based indexing uses SS by default, for stack frames
 			if (modrm_info.rm == 2
 				|| modrm_info.rm == 3
-				|| modrm_info.rm == 6)
+				|| (modrm_info.rm == 6 && modrm_info.mod != 0)) // rm=6,mod=0 hardcoded to add a disp16 in microcode.
 			{
 				segreg_default = &cpu_8086.address_space[cpu_8086.SS];
 #if X86_DEBUG
@@ -469,8 +469,8 @@ i8086_modrm_t i8086_ModRM(bool w, uint8_t opcode, uint8_t modrm)
 				cpu_8086._PC += 2;
 #if X86_DEBUG
 				char temp_offset[8] = { 0 };
-				sprintf(temp_offset, "+%xh", offset);
-				strncat(operand2_string, temp_offset, 6);
+				sprintf(temp_offset, "[%04Xh", offset);
+				strncat(operand2_string, temp_offset, 8);
 #endif
 
 			}
@@ -500,8 +500,8 @@ i8086_modrm_t i8086_ModRM(bool w, uint8_t opcode, uint8_t modrm)
 #if X86_DEBUG
 			char temp_string_offset8[12];
 
-			sprintf(temp_string_offset8, "+%xh", offset_8);
-			strncat(operand2_string, temp_string_offset8, 4);
+			sprintf(temp_string_offset8, "[%04Xh", offset_8);
+			strncat(operand2_string, temp_string_offset8, 12);
 #endif
 
 		}
@@ -514,8 +514,8 @@ i8086_modrm_t i8086_ModRM(bool w, uint8_t opcode, uint8_t modrm)
 #if X86_DEBUG
 			char temp_string_offset16[12];
 
-			sprintf(temp_string_offset16, "+%xh", offset_16);
-			strncat(operand2_string, temp_string_offset16, 6);
+			sprintf(temp_string_offset16, "[%04Xh", offset_16);
+			strncat(operand2_string, temp_string_offset16, 12);
 #endif
 		}
 

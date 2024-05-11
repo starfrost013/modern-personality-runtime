@@ -113,15 +113,3 @@ void i8086_SetSF16(uint16_t result)
 	// this works because we only have an 16-bit number, basically checks if first bit is 1 or not (which is how twos complement determines negative or not)
 	cpu->flag_sign = (result & 0x8000);
 }
-
-#ifdef _DEBUG
-const char* i8086_RegToString(uint8_t reg)
-{
-	// not implemented function rn
-}
-
-const char* i8086_RmToString(uint8_t rm)
-{
-	// not implemented function rn
-}
-#endif
