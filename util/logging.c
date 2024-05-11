@@ -1,7 +1,7 @@
 #include "logging.h"
 #include "util/util.h"
 #include "util/util_console.h"
-
+#include "macros.h"
 #include <assert.h>
 #include <ctype.h>
 #include <errno.h>
@@ -107,7 +107,7 @@ void Logging_Log(const char* text, LogChannel channel, va_list args)
 	}
 
 // if solely printing debug channel, return on release build
-#if !_DEBUG
+#if !X86_DEBUG
 	if (channel == LogChannel_Debug)
 	{
 		return;

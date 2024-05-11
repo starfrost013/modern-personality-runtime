@@ -9,18 +9,26 @@
 // Defines intel 8086 specific stuff, on top of basecpu.
 //
 
-#define ADDRESS_SPACE_8086		1048576
+#define ADDRESS_SPACE_8086		1048576					// Size of the Intel 8086 address space.
+
+#if X86_DEBUG
+#define DISASM_STR_SIZE			48						// Size of the disassembly string for ModR/M in debug builds.
+#endif
 
 typedef struct i8086_modrm_s
 {
-	bool		w;				//derived from opcode map, not decoded (word length, 0=8bit, 1=16bit)
-	uint8_t		mod;			//bits6-7
-	uint8_t*	reg_ptr8;		//bits3-5 for reg if w=0
-	uint16_t*	reg_ptr16;		//bits3-5 for reg if w=1
-	uint8_t		ext_opcode;		//bits3-5 for some opcodes
-	uint8_t		rm;				//bits0-2
+	bool		w;							//derived from opcode map, not decoded (word length, 0=8bit, 1=16bit)
+	uint8_t		mod;						//bits6-7
+	uint8_t*	reg_ptr8;					//bits3-5 for reg if w=0
+	uint16_t*	reg_ptr16;					//bits3-5 for reg if w=1
+	uint8_t		ext_opcode;					//bits3-5 for some opcodes
+	uint8_t		rm;							//bits0-2
 
-	uint8_t*	final_offset;	//filled in for memory-referencing instructions
+	uint8_t*	final_offset;				//filled in for memory-referencing instructions
+	
+#if X86_DEBUG
+	char		disasm[DISASM_STR_SIZE];	//disassembled string
+#endif
 } i8086_modrm_t;
 
 typedef enum i8086_prefix_s
@@ -111,6 +119,7 @@ void i8086_Sub16(uint16_t* destination, uint16_t* source, bool sbb);	// 16-bit S
 
 void i8086_Cmp8(uint8_t* destination, uint8_t* source);					// 8-bit compare: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
 void i8086_Cmp16(uint16_t* destination, uint16_t* source);				// 16-bit compare: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+
 // instruction decode
 i8086_modrm_t i8086_ModRM(bool w, uint8_t opcode, uint8_t modrm);	// Parse ModR/M byte
 
