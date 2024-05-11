@@ -43,7 +43,7 @@ void i8086_Add16(uint16_t* destination, uint16_t* source, bool adc)
 	*destination = *source + *destination;
 
 	// save the final value
-	uint8_t final_value = *destination;
+	uint16_t final_value = *destination;
 
 	i8086_SetOF16(final_value, *source, original_value, false); // we are not subtracting
 	i8086_SetCF16(final_value);
@@ -94,9 +94,9 @@ void i8086_Sub8(uint8_t* destination, uint8_t* source, bool sbb)
 
 void i8086_Sub16(uint16_t* destination, uint16_t* source, bool sbb)
 {
-	uint8_t original_value = 0;
+	uint16_t original_value = 0;
 	// so the original value doesn't get overwritten
-	memcpy(&original_value, destination, sizeof(uint8_t));
+	memcpy(&original_value, destination, sizeof(uint16_t));
 
 	// do the subtraction
 	if (sbb)
@@ -109,7 +109,7 @@ void i8086_Sub16(uint16_t* destination, uint16_t* source, bool sbb)
 	}
 
 	// save the final value
-	uint8_t final_value = *destination;
+	uint16_t final_value = *destination;
 
 	i8086_SetOF16(final_value, *source, original_value, false); // we are not subtracting
 	i8086_SetCF16(final_value);
@@ -138,12 +138,12 @@ void i8086_Cmp8(uint8_t* destination, uint8_t* source)
 
 void i8086_Cmp16(uint16_t* destination, uint16_t* source)
 {
-	uint8_t original_value = 0;
+	uint16_t original_value = 0;
 	// so it doesn't get overwritten
-	memcpy(&original_value, destination, sizeof(uint8_t));
+	memcpy(&original_value, destination, sizeof(uint16_t));
 
 	// CMP is the same as SUB, but it doesn't save final result and just sets flags
-	uint8_t final_value = *destination - *source;
+	uint16_t final_value = *destination - *source;
 
 	// cmp doesn't save the final result and just sets flags
 	i8086_SetOF16(final_value, *source, original_value, false); // we are not subtracting
@@ -169,9 +169,9 @@ void i8086_Or8(uint8_t* destination, uint8_t* source)
 
 void i8086_Or16(uint16_t* destination, uint16_t* source)
 {
-	uint8_t original_value = 0;
+	uint16_t original_value = 0;
 	// so it doesn't get overwritten
-	memcpy(&original_value, destination, sizeof(uint8_t));
+	memcpy(&original_value, destination, sizeof(uint16_t));
 
 	*destination = *destination | *source;
 
@@ -200,7 +200,7 @@ void i8086_And8(uint8_t* destination, uint8_t* source)
 
 void i8086_And16(uint16_t* destination, uint16_t* source)
 {
-	uint8_t original_value = 0;
+	uint16_t original_value = 0;
 	// so it doesn't get overwritten
 	memcpy(&original_value, destination, sizeof(uint8_t));
 
@@ -231,7 +231,7 @@ void i8086_Xor8(uint8_t* destination, uint8_t* source)
 
 void i8086_Xor16(uint16_t* destination, uint16_t* source)
 {
-	uint8_t original_value = 0;
+	uint16_t original_value = 0;
 	// so it doesn't get overwritten
 	memcpy(&original_value, destination, sizeof(uint8_t));
 
@@ -245,6 +245,266 @@ void i8086_Xor16(uint16_t* destination, uint16_t* source)
 	i8086_SetZF16(*destination);
 	i8086_SetPF16(*destination);
 	i8086_SetSF16(*destination);
+}
+
+// SAL DOES NOT EXIST ON 8086!
+void i8086_Shl8(uint8_t* destination, uint8_t amount)
+{
+	uint8_t original_value = *destination;
+
+	*destination = *destination << amount;
+
+	if (amount == 1)
+	{
+		// OF set if top two bits are identical
+		cpu_8086.flag_carry = (original_value & 0x80);
+
+		// why is this here??? we'll find out
+		cpu_8086.flag_overflow = ((amount ^ *destination) & 0x80) == cpu_8086.flag_carry;
+	}
+
+	// set flags
+	i8086_SetSF8(*destination);
+	i8086_SetPF8(*destination);
+	i8086_SetZF8(*destination);
+	cpu_8086.flag_aux_carry = true;
+}
+
+void i8086_Shl16(uint16_t* destination, uint8_t amount)
+{
+	uint16_t original_value = *destination;
+
+	*destination = *destination << amount;
+
+	if (amount == 1)
+	{
+		// OF set if top two bits are identical
+		cpu_8086.flag_carry = (original_value & 0x80);
+
+		// why is this here??? we'll find out
+		cpu_8086.flag_overflow = ((amount ^ *destination) & 0x80) == cpu_8086.flag_carry;
+	}
+
+	// set flags
+	i8086_SetSF16(*destination);
+	i8086_SetPF16(*destination);
+	i8086_SetZF16(*destination);
+	cpu_8086.flag_aux_carry = true;
+}
+
+void i8086_Shr8(uint8_t* destination, uint8_t amount, bool sar)
+{
+	uint8_t original_value = *destination;
+	bool original_sign = false;  // ignored on SHR
+
+	if (sar)
+	{
+		original_sign = (sar & 0x80);
+	}
+
+	*destination = *destination >> amount;
+
+	if (amount == 1)
+	{
+		// OF set if top two bits are identical
+		cpu_8086.flag_carry = (original_value & 0x01);
+
+		// why is this here??? we'll find out
+		cpu_8086.flag_overflow = (*destination & 0x80) == cpu_8086.flag_carry;
+	}
+
+	// restore the original sign
+	if (sar)
+	{
+		//true=negative
+		//false=positive
+		if (original_sign
+			&& *destination < 0x80) *destination += 0x80;
+	}
+
+	// set flags
+	i8086_SetSF8(*destination);
+	i8086_SetPF8(*destination);
+	i8086_SetZF8(*destination);
+	cpu_8086.flag_aux_carry = true;
+}
+
+void i8086_Shr16(uint16_t* destination, uint8_t amount, bool sar)
+{
+	uint16_t original_value = *destination;
+
+	*destination = *destination >> amount;
+
+	if (amount == 1)
+	{
+		// OF set if top two bits are identical
+		cpu_8086.flag_carry = (original_value & 0x01);
+
+		// why is this here??? we'll find out
+		cpu_8086.flag_overflow = (*destination & 0x80) == cpu_8086.flag_carry;
+	}
+
+	// set flags
+	i8086_SetSF16(*destination);
+	i8086_SetPF16(*destination);
+	i8086_SetZF16(*destination);
+	cpu_8086.flag_aux_carry = true;
+}
+
+void i8086_Rol8(uint8_t* destination, uint8_t amount, bool rcl)
+{
+	uint8_t original_value = *destination;
+
+	for (int32_t n = 0; n < amount; n++)
+	{
+		bool msb = false;
+
+		if (rcl)
+		{
+			msb = (*destination & 0x80);
+			*destination = ((*destination << amount) << 1);
+			if (msb) *destination++;
+		}
+		else
+		{
+			msb = (*destination & 0x80);
+			*destination = (*destination << amount) << 1;
+			cpu_8086.flag_carry = msb;
+			if (msb) *destination++;
+		}
+		// get the most significant bit and make it the least significant
+
+	}
+
+	cpu_8086.flag_carry = (*destination & 0x01);
+
+	if (amount == 1)
+	{
+		// OF set if top two bits are identical
+		// why is this here??? we'll find out
+		cpu_8086.flag_overflow = ((amount ^ cpu_8086.flag_carry) & 0x80) == cpu_8086.flag_carry;
+	}
+}
+
+void i8086_Rol16(uint16_t* destination, uint8_t amount, bool rcl)
+{
+	uint16_t original_value = *destination;
+
+	for (int32_t n = 0; n < amount; n++)
+	{
+		bool msb = false;
+
+		if (rcl)
+		{
+			msb = (*destination & 0x8000);
+			*destination = ((*destination << amount) << 1) + cpu_8086.flag_carry;
+			cpu_8086.flag_carry = msb;
+			if (msb) *destination++;
+		}
+		else
+		{
+			msb = (*destination & 0x8000);
+			*destination = (*destination << amount) << 1;
+
+			if (msb) *destination++;
+		}
+		// get the most significant bit and make it the least significant
+
+	}
+
+	cpu_8086.flag_carry = (*destination & 0x01);
+
+	if (amount == 1)
+	{
+		// OF set if top two bits are identical
+		// why is this here??? we'll find out
+		cpu_8086.flag_overflow = ((amount ^ cpu_8086.flag_carry) & 0x8000) == cpu_8086.flag_carry;
+	}
+}
+
+void i8086_Ror8(uint8_t* destination, uint8_t amount, bool rcr)
+{
+	uint8_t original_value = *destination;
+
+	if (rcr)
+	{
+		cpu_8086.flag_overflow = ((amount ^ cpu_8086.flag_carry) & 0x80) == cpu_8086.flag_carry;
+	}
+
+	for (int32_t n = 0; n < amount; n++)
+	{
+		bool lsb = false;
+
+		// get the least significant bit and make it the most significant
+
+		if (rcr)
+		{
+			lsb = (*destination & 0x01);
+			*destination = ((*destination >> amount) >> 1) + (cpu_8086.flag_carry << 7);
+			cpu_8086.flag_carry = lsb;
+			if (lsb) *destination++;
+		}
+		else
+		{
+			lsb = (*destination & 0x01);
+			*destination = ((*destination >> amount) >> 1) + (lsb << 7);
+			if (lsb) *destination++;
+		}
+
+	}
+
+	// OF set if top two bits are identical
+	cpu_8086.flag_carry = (original_value & 0x80);
+
+	if (!rcr
+		&& amount == 1)
+	{
+		// why is this here??? we'll find out
+		cpu_8086.flag_overflow = ((amount ^ cpu_8086.flag_carry) & 0x80) == cpu_8086.flag_carry;
+	}
+}
+
+void i8086_Ror16(uint16_t* destination, uint8_t amount, bool rcr)
+{
+	uint16_t original_value = *destination;
+
+	if (rcr)
+	{
+		cpu_8086.flag_overflow = ((amount ^ cpu_8086.flag_carry) & 0x80) == cpu_8086.flag_carry;
+	}
+
+	for (int32_t n = 0; n < amount; n++)
+	{
+		bool lsb = false;
+
+		// get the least significant bit and make it the most significant
+
+		if (rcr)
+		{
+			lsb = (*destination & 0x01);
+			*destination = ((*destination >> amount) >> 1) + (cpu_8086.flag_carry << 7);
+			cpu_8086.flag_carry = lsb;
+			if (lsb) *destination++;
+		}
+		else
+		{
+			lsb = (*destination & 0x01);
+			*destination = ((*destination >> amount) >> 1) + (lsb << 7);
+			if (lsb) *destination++;
+		}
+
+	}
+
+	// OF set if top two bits are identical
+	cpu_8086.flag_carry = (original_value & 0x8000);
+
+	if (!rcr
+		&& amount == 1)
+	{
+		// why is this here??? we'll find out
+		cpu_8086.flag_overflow = ((amount ^ cpu_8086.flag_carry) & 0x8000) == cpu_8086.flag_carry;
+
+	}
 }
 
 
@@ -289,8 +549,9 @@ void i8086_Push(uint16_t value)
 
 uint16_t i8086_Pop()
 {
-	uint16_t ret_val = cpu_8086.address_space[cpu_8086._realSP + 1] >> 8 + cpu_8086.address_space[cpu_8086._realSP];
 	cpu_8086.SP += 2;
+	cpu_8086._realSP += 2;
+	uint16_t ret_val = (cpu_8086.address_space[cpu_8086._realSP + 1] << 8) + cpu_8086.address_space[cpu_8086._realSP];
 	return ret_val;
 }
 
@@ -880,20 +1141,22 @@ void i8086_MoveSegOff8(uint8_t value, bool direction)
 	{
 		*seg_ptr = cpu_8086.AL;
 	}
+
+	cpu_8086.IP += 2;
 }
 
 void i8086_MoveSegOff16(uint16_t value, bool direction)
 {
 	// modrm but for some reason both mod and reg are avoided, so it has to have its own implementation only for opcodes a0-a3. also only for the AH register.
 
-	// default register for this is DS
+	// default register for this instruction is DS
 	uint16_t* seg_ptr = &cpu_8086.address_space[(cpu_8086.DS * X86_PARAGRAPH_SIZE) + value];
 
 	switch (cpu_8086.last_prefix)
 	{
 	case override_es:
 		seg_ptr = &cpu_8086.address_space[(cpu_8086.ES * X86_PARAGRAPH_SIZE) + value];
-		Logging_LogChannel("MOV AL, [ES:%02x]", value);
+		Logging_LogChannel("MOV AL, [ES:%02x]", LogChannel_Debug, value);
 		break;
 	case override_cs:
 		seg_ptr = &cpu_8086.address_space[(cpu_8086.CS * X86_PARAGRAPH_SIZE) + value];
@@ -901,7 +1164,12 @@ void i8086_MoveSegOff16(uint16_t value, bool direction)
 		break;
 	case override_ss:
 		seg_ptr = &cpu_8086.address_space[(cpu_8086.SS * X86_PARAGRAPH_SIZE) + value];
-		Logging_LogChannel("MOV AL, [SS:%02x]", LogChannel_Warning, value);
+		Logging_LogChannel("MOV AL, [SS:%02x]", LogChannel_Debug, value);
+		break;
+	case override_ds:
+	case override_none:
+		seg_ptr = &cpu_8086.address_space[(cpu_8086.SS * X86_PARAGRAPH_SIZE) + value];
+		Logging_LogChannel("MOV AL, [DS:%02x]", LogChannel_Debug, value);
 		break;
 	}
 
@@ -914,6 +1182,8 @@ void i8086_MoveSegOff16(uint16_t value, bool direction)
 	{
 		*seg_ptr = cpu_8086.AX;
 	}
+
+	cpu_8086.IP += 3;
 }
 
 void i8086_Grp1(uint8_t opcode)
@@ -1118,19 +1388,19 @@ void i8086_Grp1(uint8_t opcode)
 		case 0x80:
 		case 0x82:
 			temp_imm8u_02 = i8086_ReadU8(cpu_8086._PC);
-			i8086_Cmp8(modrm_info.reg_ptr8, &temp_imm8u_02, true);
+			i8086_Cmp8(modrm_info.reg_ptr8, &temp_imm8u_02);
 			Logging_LogChannel("CMP %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
 			cpu_8086.IP += 2;
 			break;
 		case 0x81:
 			temp_imm16u_01 = i8086_ReadU16(cpu_8086._PC);
-			i8086_Cmp16(modrm_info.reg_ptr16, &temp_imm16u_01, true);
+			i8086_Cmp16(modrm_info.reg_ptr16, &temp_imm16u_01);
 			Logging_LogChannel("CMP %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm16u_01);
 			cpu_8086.IP += 3;
 			break;
 		case 0x83:
 			temp_imm8u_02 = i8086_ReadU8(cpu_8086._PC);
-			i8086_Cmp16(modrm_info.reg_ptr16, (uint16_t*)&temp_imm8u_02, true);
+			i8086_Cmp16(modrm_info.reg_ptr16, (uint16_t*)&temp_imm8u_02);
 			Logging_LogChannel("CMP %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
 			cpu_8086.IP += 2;
 			break;
@@ -1150,10 +1420,189 @@ void i8086_Grp2(uint8_t opcode)
 
 	i8086_modrm_t modrm_info = i8086_ModRM(opcode, temp_imm8u_01);
 
+	// switch operation based on ext_opcode value
 	switch (modrm_info.ext_opcode)
 	{
+	case 0:
+		switch (opcode)
+		{
+		case 0xD0:
+			i8086_Rol8(modrm_info.reg_ptr8, 1, false);
 
+			Logging_LogChannel("ROL %s, 1", LogChannel_Debug, modrm_info.disasm);
+			break;
+		case 0xD1:
+			i8086_Rol16(modrm_info.final_offset, 1, false);
+			
+			Logging_LogChannel("ROL %s, 1", LogChannel_Debug, modrm_info.disasm);
+			break;
+		case 0xD2:
+			i8086_Rol8(modrm_info.reg_ptr8, &cpu_8086.CL, false);
+			
+			Logging_LogChannel("ROL %s, CL", LogChannel_Debug, modrm_info.disasm);
+			break;
+		case 0xD3:
+			i8086_Rol16(modrm_info.final_offset, &cpu_8086.CL, false);
+			
+			Logging_LogChannel("ROL %s, CL", LogChannel_Debug, modrm_info.disasm);
+			break;
+		}
+		break;
+	case 1:
+		switch (opcode)
+		{
+		case 0xD0:
+			i8086_Ror8(modrm_info.reg_ptr8, 1, false);
+			
+			Logging_LogChannel("ROR %s, 1", LogChannel_Debug, modrm_info.disasm);
+			break;
+		case 0xD1:
+			i8086_Ror16(modrm_info.final_offset, 1, false);
+			
+			Logging_LogChannel("ROR %s, 1", LogChannel_Debug, modrm_info.disasm);
+			break;
+		case 0xD2:
+			i8086_Ror8(modrm_info.reg_ptr8, &cpu_8086.CL, false);
+			
+			Logging_LogChannel("ROR %s, CL", LogChannel_Debug, modrm_info.disasm);
+			break;
+		case 0xD3:
+			i8086_Ror16(modrm_info.final_offset, &cpu_8086.CL, false);
+			
+			Logging_LogChannel("ROR %s, CL", LogChannel_Debug, modrm_info.disasm);
+			break;
+
+		}
+		break;
+	case 2:
+		switch (opcode)
+		{
+		case 0xD0:
+			i8086_Rol8(modrm_info.reg_ptr8, 1, true);
+			
+			Logging_LogChannel("RCL %s, 1", LogChannel_Debug, modrm_info.disasm);
+			break;
+		case 0xD1:
+			i8086_Rol16(modrm_info.final_offset, 1, true);
+			
+			Logging_LogChannel("RCL %s, 1", LogChannel_Debug, modrm_info.disasm);
+			break;
+		case 0xD2:
+			i8086_Rol8(modrm_info.reg_ptr8, &cpu_8086.CL, true);
+			
+			Logging_LogChannel("RCL %s, CL", LogChannel_Debug, modrm_info.disasm);
+			break;
+		case 0xD3:
+			i8086_Rol16(modrm_info.final_offset, &cpu_8086.CL, true);
+			
+			Logging_LogChannel("RCL %s, CL", LogChannel_Debug, modrm_info.disasm);
+			break;
+		}
+		break;
+	case 3:
+		switch (opcode)
+		{
+		case 0xD0:
+			i8086_Ror8(modrm_info.reg_ptr8, 1, true);
+			
+			Logging_LogChannel("RCR %s, 1", LogChannel_Debug, modrm_info.disasm);
+			break;
+		case 0xD1:
+			i8086_Ror16(modrm_info.final_offset, 1, true);
+			
+			Logging_LogChannel("RCR %s, 1", LogChannel_Debug, modrm_info.disasm);
+			break;
+		case 0xD2:
+			i8086_Ror8(modrm_info.reg_ptr8, &cpu_8086.CL, true);
+			
+			Logging_LogChannel("RCR %s, CL", LogChannel_Debug, modrm_info.disasm);
+			break;
+		case 0xD3:
+			i8086_Ror16(modrm_info.final_offset, &cpu_8086.CL, true);
+			
+			Logging_LogChannel("RCR %s, CL", LogChannel_Debug, modrm_info.disasm);
+			break;
+
+		}
+		break;
+	case 4:
+	case 6: // i believe SHL is the same
+		switch (opcode)
+		{
+		case 0xD0:
+			i8086_Shl8(modrm_info.reg_ptr8, 1, false);
+			
+			Logging_LogChannel("SHL %s, 1", LogChannel_Debug, modrm_info.disasm);
+			break;
+		case 0xD1:
+			i8086_Shl16(modrm_info.final_offset, 1, false);
+			
+			Logging_LogChannel("SHL %s, 1", LogChannel_Debug, modrm_info.disasm);
+			break;
+		case 0xD2:
+			i8086_Shl8(modrm_info.reg_ptr8, &cpu_8086.CL, false);
+			
+			Logging_LogChannel("SHL %s, CL", LogChannel_Debug, modrm_info.disasm);
+			break;
+		case 0xD3:
+			i8086_Shl16(modrm_info.final_offset, &cpu_8086.CL, false);
+			
+			Logging_LogChannel("SHL %s, CL", LogChannel_Debug, modrm_info.disasm);
+			break;
+		}
+		break;
+	case 5:
+		switch (opcode)
+		{
+		case 0xD0:
+			i8086_Shr8(modrm_info.reg_ptr8, 1, false);
+			
+			Logging_LogChannel("SHR %s, 1", LogChannel_Debug, modrm_info.disasm);
+			break;
+		case 0xD1:
+			i8086_Shr16(modrm_info.final_offset, 1, false);
+			
+			Logging_LogChannel("SHR %s, 1", LogChannel_Debug, modrm_info.disasm);
+			break;
+		case 0xD2:
+			i8086_Shr8(modrm_info.reg_ptr8, &cpu_8086.CL, false);
+			
+			Logging_LogChannel("SHR %s, CL", LogChannel_Debug, modrm_info.disasm);
+			break;
+		case 0xD3:
+			i8086_Shr16(modrm_info.final_offset, &cpu_8086.CL, false);
+			
+			Logging_LogChannel("SHR %s, CL", LogChannel_Debug, modrm_info.disasm);
+			break;
+		}
+		break;
+	case 7:
+		switch (opcode)
+		{
+		case 0xD0:
+			i8086_Shr8(modrm_info.reg_ptr8, 1, true);
+			
+			Logging_LogChannel("SAR %s, 1", LogChannel_Debug, modrm_info.disasm);
+			break;
+		case 0xD1:
+			i8086_Shr16(modrm_info.final_offset, 1, true);
+			
+			Logging_LogChannel("SAR %s, 1", LogChannel_Debug, modrm_info.disasm);
+			break;
+		case 0xD2:
+			i8086_Shr8(modrm_info.reg_ptr8, &cpu_8086.CL, true);
+			
+			Logging_LogChannel("SAR %s, CL", LogChannel_Debug, modrm_info.disasm);
+			break;
+		case 0xD3:
+			i8086_Shr16(modrm_info.final_offset, &cpu_8086.CL, true);
+			Logging_LogChannel("SAR %s, CL", LogChannel_Debug, modrm_info.disasm);
+			break;
+		}
+		break;
 	}
+
+	cpu_8086.IP += 2; // all of these are two byte instructions
 }
 
 void i8086_Grp3(uint8_t opcode)

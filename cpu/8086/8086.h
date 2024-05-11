@@ -125,6 +125,20 @@ void i8086_And16(uint16_t* destination, uint16_t* source);				// 16-bit AND: Des
 void i8086_Xor8(uint8_t* destination, uint8_t* source);					// 8-bit XOR: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
 void i8086_Xor16(uint16_t* destination, uint16_t* source);				// 16-bit XOR: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
 
+// bit manip
+// no, sal doesn't exist on 8086.
+void i8086_Shl8(uint8_t* destination, uint8_t amount);					// 8-bit SHL: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+void i8086_Shl16(uint16_t* destination, uint8_t amount);				// 16-bit SHL: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+
+void i8086_Shr8(uint8_t* destination, uint8_t amount, bool sar);		// 8-bit SHL: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+void i8086_Shr16(uint16_t* destination, uint8_t amount, bool sar);		// 16-bit SHL: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+
+void i8086_Rol8(uint8_t* destination, uint8_t amount, bool rcl);		// 8-bit SHL: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+void i8086_Rol16(uint16_t* destination, uint8_t amount, bool rcl);		// 16-bit SHL: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+
+void i8086_Ror8(uint8_t* destination, uint8_t amount, bool rcr);		// 8-bit ROR: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+void i8086_Ror16(uint16_t* destination, uint8_t amount, bool rcr);		// 16-bit ROR: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+
 // instruction decode
 i8086_modrm_t i8086_ModRM(uint8_t opcode, uint8_t modrm);		// Parse ModR/M byte
 
@@ -136,14 +150,14 @@ void i8086_Grp4(uint8_t opcode);
 void i8086_Grp5(uint8_t opcode);
 
 // loop
-void i8086_Loop(int8_t destination_offset, bool condition);			// Loop instruction
+void i8086_Loop(uint8_t destination_offset, bool condition);			// Loop instruction
 
 // move
 void i8086_MoveSegOff8(uint8_t value, bool direction);					// modrm but for some reason both mod and reg are avoided, so it has to have its own implementation only for opcodes a0-a3. also only for the AH register.
 void i8086_MoveSegOff16(uint16_t value, bool direction);				// modrm but for some reason both mod and reg are avoided, so it has to have its own implementation only for opcodes a0-a3. also only for the AX register.
 
 // jump
-void i8086_JumpConditional(int8_t destination_offset, bool condition); // Jump conditional instruction
+void i8086_JumpConditional(uint8_t destination_offset, bool condition); // Jump conditional instruction
 
 // stack
 void i8086_Push(uint16_t value);
