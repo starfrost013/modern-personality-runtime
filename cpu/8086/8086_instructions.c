@@ -63,7 +63,7 @@ void i8086_Add16(uint16_t* destination, uint16_t* source, bool adc)
 }
 
 
-void i8086_Sub8(uint8_t* destination, uint8_t* source)
+void i8086_Sub8(uint8_t* destination, uint8_t* source, bool sbb)
 {
 	uint8_t original_value = 0;
 	// so the original value doesn't get overwritten
@@ -136,7 +136,7 @@ void i8086_Cmp8(uint8_t* destination, uint8_t* source)
 	i8086_SetSF8(final_value);
 }
 
-void i8086_Cmp16(uint16_t* destination, uint16_t* source, bool sbb)
+void i8086_Cmp16(uint16_t* destination, uint16_t* source)
 {
 	uint8_t original_value = 0;
 	// so it doesn't get overwritten
