@@ -766,12 +766,12 @@ void i8086_Update()
 				Logging_LogChannel("MOV %s", LogChannel_Debug, modrm_info.disasm);
 #endif
 				break;
-			case 0x8C: // merge with 8b? what is the different (MOV Ew, Sw)
+			case 0x8C:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
 				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
 
-				*modrm_info.reg_ptr16 = *modrm_info.final_offset;
+				*modrm_info.final_offset = *modrm_info.reg_ptr16;
 
 				cpu_8086.IP += 2; // 1 modrm byte
 #if X86_DEBUG
@@ -783,7 +783,7 @@ void i8086_Update()
 				cpu_8086._PC++;
 				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
 
-				*modrm_info.final_offset = *modrm_info.reg_ptr8;
+				*modrm_info.reg_ptr16 = *modrm_info.final_offset;
 
 				cpu_8086.IP += 2; // 1 modrm byte
 #if X86_DEBUG
@@ -1033,7 +1033,7 @@ void i8086_Update()
 				*modrm_info.reg_ptr8 = temp_imm8u;
 				cpu_8086.IP += 3;
 #if X86_DEBUG
-				Logging_LogChannel("MOV %s, %d", LogChannel_Debug, modrm_info.disasm, temp_imm8u);
+				Logging_LogChannel("MOV %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm8u);
 #endif
 				break;
 			case 0xC7:
@@ -1047,7 +1047,7 @@ void i8086_Update()
 				*modrm_info.reg_ptr16 = temp_imm16u_01;
 				cpu_8086.IP += 4;
 #if X86_DEBUG
-				Logging_LogChannel("MOV %s, %d", LogChannel_Debug, modrm_info.disasm, temp_imm16u_01);
+				Logging_LogChannel("MOV %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm16u_01);
 #endif
 				break;
 			case 0xC8: // undocumented alias
