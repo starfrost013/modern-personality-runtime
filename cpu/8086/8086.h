@@ -65,7 +65,7 @@ typedef struct i8086_s
 	i8086_prefix_t	last_prefix;		// holds the last prefix (ES:/SS:)
 } i8086_t;
 
-i8086_t cpu_8086;
+extern i8086_t cpu_8086;
 
 void i8086_Init();
 void i8086_Update();

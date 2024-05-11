@@ -1,7 +1,7 @@
 #pragma once
 #include "cmd.h"
 
-extern cmd_t cmd;
+cmd_t cmd;
 
 bool CMD_Parse(int argc, char* argv[])
 {
