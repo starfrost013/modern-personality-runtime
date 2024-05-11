@@ -81,8 +81,8 @@ bool MZ_Load()
 	Logging_LogChannel("Loading code...\n", LogChannel_Debug);
 
 	// figure out where the code starts and ends in the binary
-	int32_t  code_start = mz_header.header_size * X86_PARAGRAPH_SIZE;
-	int32_t  code_end = (mz_header.pages * MSDOS_PAGE_SIZE);
+	uint32_t  code_start = mz_header.header_size * X86_PARAGRAPH_SIZE;
+	uint32_t  code_end = (mz_header.pages * MSDOS_PAGE_SIZE);
 
 	// take into account that the last page may not be 512 bytes
 	if (mz_header.last_page_bytes > 0)
@@ -91,7 +91,7 @@ bool MZ_Load()
 		code_end += mz_header.last_page_bytes;
 	}
 
-	int32_t code_size = code_end - code_start;
+	uint32_t code_size = code_end - code_start;
 
 	Logging_LogChannel("Binary is of size 0x%X bytes", LogChannel_Debug, code_size);
 
@@ -132,13 +132,13 @@ bool MZ_Load()
 
 		fseek(cmd.handle, mz_header.reloc_ptr, SEEK_SET);
 
-		for (int32_t reloc_num = 0; reloc_num < mz_header.num_relocs; reloc_num++)
+		for (uint32_t reloc_num = 0; reloc_num < mz_header.num_relocs; reloc_num++)
 		{
 			fread(&reloc_table->entries[reloc_num].offset, 1, 2, cmd.handle);
 			fread(&reloc_table->entries[reloc_num].segment, 1, 2, cmd.handle);
 
 			// calculate the address of the far call we are fixing up
-			int32_t final_address = (reloc_table->entries[reloc_num].segment * X86_PARAGRAPH_SIZE) + reloc_table->entries[reloc_num].offset;
+			uint32_t final_address = (reloc_table->entries[reloc_num].segment * X86_PARAGRAPH_SIZE) + reloc_table->entries[reloc_num].offset;
 
 			//this part prevents overflow issues 
 
