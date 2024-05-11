@@ -28,7 +28,7 @@ void i8086_Add8(uint8_t* destination, uint8_t* source, bool adc)
 		if (cpu_8086.flag_carry)
 		{
 			// increment the destination value
-			*destination++;
+			(*destination)++;
 		}
 	}
 }
@@ -57,7 +57,7 @@ void i8086_Add16(uint16_t* destination, uint16_t* source, bool adc)
 		if (cpu_8086.flag_carry)
 		{
 			// increment the destination value
-			*destination++;
+			(*destination)++;
 		}
 	}
 }
@@ -363,14 +363,14 @@ void i8086_Rol8(uint8_t* destination, uint8_t amount, bool rcl)
 		{
 			msb = (*destination & 0x80);
 			*destination = ((*destination << amount) << 1);
-			if (msb) *destination++;
+			if (msb) (*destination)++;
 		}
 		else
 		{
 			msb = (*destination & 0x80);
 			*destination = (*destination << amount) << 1;
 			cpu_8086.flag_carry = msb;
-			if (msb) *destination++;
+			if (msb) (*destination)++;
 		}
 		// get the most significant bit and make it the least significant
 
@@ -399,14 +399,14 @@ void i8086_Rol16(uint16_t* destination, uint8_t amount, bool rcl)
 			msb = (*destination & 0x8000);
 			*destination = ((*destination << amount) << 1) + cpu_8086.flag_carry;
 			cpu_8086.flag_carry = msb;
-			if (msb) *destination++;
+			if (msb) (*destination)++;
 		}
 		else
 		{
 			msb = (*destination & 0x8000);
 			*destination = (*destination << amount) << 1;
 
-			if (msb) *destination++;
+			if (msb) (*destination)++;
 		}
 		// get the most significant bit and make it the least significant
 
@@ -442,13 +442,13 @@ void i8086_Ror8(uint8_t* destination, uint8_t amount, bool rcr)
 			lsb = (*destination & 0x01);
 			*destination = ((*destination >> amount) >> 1) + (cpu_8086.flag_carry << 7);
 			cpu_8086.flag_carry = lsb;
-			if (lsb) *destination++;
+			if (lsb) (*destination)++;
 		}
 		else
 		{
 			lsb = (*destination & 0x01);
 			*destination = ((*destination >> amount) >> 1) + (lsb << 7);
-			if (lsb) *destination++;
+			if (lsb) (*destination)++;
 		}
 
 	}
@@ -484,15 +484,14 @@ void i8086_Ror16(uint16_t* destination, uint8_t amount, bool rcr)
 			lsb = (*destination & 0x01);
 			*destination = ((*destination >> amount) >> 1) + (cpu_8086.flag_carry << 7);
 			cpu_8086.flag_carry = lsb;
-			if (lsb) *destination++;
+			if (lsb) (*destination)++;
 		}
 		else
 		{
 			lsb = (*destination & 0x01);
 			*destination = ((*destination >> amount) >> 1) + (lsb << 7);
-			if (lsb) *destination++;
+			if (lsb) (*destination)++;
 		}
-
 	}
 
 	// OF set if top two bits are identical
@@ -809,7 +808,7 @@ i8086_modrm_t i8086_ModRM(uint8_t opcode, uint8_t modrm)
 				|| modrm_info.rm == 3
 				|| (modrm_info.rm == 6 && modrm_info.mod != 0)) // rm=6,mod=0 hardcoded to add a disp16 in microcode.
 			{
-				segreg_default = &cpu_8086.address_space[cpu_8086.SS];
+				segreg_default = cpu_8086.address_space[cpu_8086.SS];
 #if X86_DEBUG
 				// decided to make it always obvious which segment is being used
 				strncat(operand2_string, "SS:", 3);
@@ -817,7 +816,7 @@ i8086_modrm_t i8086_ModRM(uint8_t opcode, uint8_t modrm)
 			}
 			else
 			{
-				segreg_default = &cpu_8086.address_space[cpu_8086.DS];
+				segreg_default = cpu_8086.address_space[cpu_8086.DS];
 #if X86_DEBUG
 				// decided to make it always obvious which segment is being used
 				strncat(operand2_string, "DS:", 3);
@@ -916,7 +915,7 @@ i8086_modrm_t i8086_ModRM(uint8_t opcode, uint8_t modrm)
 		}
 		else if (modrm_info.mod == 0b10)
 		{
-			uint8_t offset_16 = i8086_ReadS16(cpu_8086._PC);
+			uint16_t offset_16 = i8086_ReadS16(cpu_8086._PC);
 			modrm_info.final_offset += offset_16;
 			cpu_8086.IP += 2;
 			cpu_8086._PC += 2;
@@ -940,7 +939,7 @@ i8086_modrm_t i8086_ModRM(uint8_t opcode, uint8_t modrm)
 		case 0:
 			if (w)
 			{
-				modrm_info.final_offset = &cpu_8086.AX;
+				modrm_info.final_offset = (uint8_t*)&cpu_8086.AX;
 #if X86_DEBUG
 				strncat(operand2_string, "AX", 2);
 #endif
@@ -956,7 +955,7 @@ i8086_modrm_t i8086_ModRM(uint8_t opcode, uint8_t modrm)
 		case 1:
 			if (w)
 			{
-				modrm_info.final_offset = &cpu_8086.CX;
+				modrm_info.final_offset = (uint8_t*)&cpu_8086.CX;
 #if X86_DEBUG
 				strncat(operand2_string, "CX", 2);
 #endif
@@ -972,7 +971,7 @@ i8086_modrm_t i8086_ModRM(uint8_t opcode, uint8_t modrm)
 		case 2:
 			if (w)
 			{
-				modrm_info.final_offset = &cpu_8086.DX;
+				modrm_info.final_offset = (uint8_t*)&cpu_8086.DX;
 #if X86_DEBUG
 				strncat(operand2_string, "DX", 2);
 #endif
@@ -988,7 +987,7 @@ i8086_modrm_t i8086_ModRM(uint8_t opcode, uint8_t modrm)
 		case 3:
 			if (w)
 			{
-				modrm_info.final_offset = &cpu_8086.BX;
+				modrm_info.final_offset = (uint8_t*)&cpu_8086.BX;
 #if X86_DEBUG
 				strncat(operand2_string, "BX", 2);
 #endif
@@ -1004,7 +1003,7 @@ i8086_modrm_t i8086_ModRM(uint8_t opcode, uint8_t modrm)
 		case 4:
 			if (w)
 			{
-				modrm_info.final_offset = &cpu_8086.SP;
+				modrm_info.final_offset = (uint8_t*)&cpu_8086.SP;
 #if X86_DEBUG
 				strncat(operand2_string, "SP", 2);
 #endif
@@ -1020,7 +1019,7 @@ i8086_modrm_t i8086_ModRM(uint8_t opcode, uint8_t modrm)
 		case 5:
 			if (w)
 			{
-				modrm_info.final_offset = &cpu_8086.BP;
+				modrm_info.final_offset = (uint8_t*)&cpu_8086.BP;
 #if X86_DEBUG
 				strncat(operand2_string, "BP", 2);
 #endif
@@ -1036,7 +1035,7 @@ i8086_modrm_t i8086_ModRM(uint8_t opcode, uint8_t modrm)
 		case 6:
 			if (w)
 			{
-				modrm_info.final_offset = &cpu_8086.SI;
+				modrm_info.final_offset = (uint8_t*)&cpu_8086.SI;
 #if X86_DEBUG
 				strncat(operand2_string, "SI", 2);
 #endif
@@ -1052,7 +1051,7 @@ i8086_modrm_t i8086_ModRM(uint8_t opcode, uint8_t modrm)
 		case 7:
 			if (w)
 			{
-				modrm_info.final_offset = &cpu_8086.DI;
+				modrm_info.final_offset = (uint8_t*)&cpu_8086.DI;
 #if X86_DEBUG
 				strncat(operand2_string, "DI", 2);
 #endif
@@ -1114,20 +1113,20 @@ void i8086_MoveSegOff8(uint8_t value, bool direction)
 	// modrm but for some reason both mod and reg are avoided, so it has to have its own implementation only for opcodes a0-a3. also only for the AH register.
 
 	// default register for this is DS
-	uint16_t* seg_ptr = &cpu_8086.address_space[(cpu_8086.DS * X86_PARAGRAPH_SIZE) + value];
+	uint16_t* seg_ptr = (uint16_t*)&cpu_8086.address_space[(cpu_8086.DS * X86_PARAGRAPH_SIZE) + value];
 
 	switch (cpu_8086.last_prefix)
 	{
 		case override_es:
-			seg_ptr = &cpu_8086.address_space[(cpu_8086.ES * X86_PARAGRAPH_SIZE) + value];
+			seg_ptr = (uint16_t*)&cpu_8086.address_space[(cpu_8086.ES * X86_PARAGRAPH_SIZE) + value];
 			Logging_LogChannel("MOV AL, [ES:%02x]", value);
 			break;
 		case override_cs:
-			seg_ptr = &cpu_8086.address_space[(cpu_8086.CS * X86_PARAGRAPH_SIZE) + value];
+			seg_ptr = (uint16_t*)&cpu_8086.address_space[(cpu_8086.CS * X86_PARAGRAPH_SIZE) + value];
 			Logging_LogChannel("I don't think this is a great idea (MOV AL, [CS:%02x])", LogChannel_Warning, value);
 			break;
 		case override_ss:
-			seg_ptr = &cpu_8086.address_space[(cpu_8086.SS * X86_PARAGRAPH_SIZE) + value];
+			seg_ptr = (uint16_t*)&cpu_8086.address_space[(cpu_8086.SS * X86_PARAGRAPH_SIZE) + value];
 			Logging_LogChannel("MOV AL, [SS:%02x]", LogChannel_Warning, value);
 			break;
 	}
@@ -1135,7 +1134,7 @@ void i8086_MoveSegOff8(uint8_t value, bool direction)
 
 	if (!direction) // a0-a1
 	{
-		cpu_8086.AL = *seg_ptr;
+		cpu_8086.AL = (uint8_t)*seg_ptr;
 	}
 	else // a2-a3
 	{
@@ -1150,25 +1149,25 @@ void i8086_MoveSegOff16(uint16_t value, bool direction)
 	// modrm but for some reason both mod and reg are avoided, so it has to have its own implementation only for opcodes a0-a3. also only for the AH register.
 
 	// default register for this instruction is DS
-	uint16_t* seg_ptr = &cpu_8086.address_space[(cpu_8086.DS * X86_PARAGRAPH_SIZE) + value];
+	uint16_t* seg_ptr = (uint16_t*)&cpu_8086.address_space[(cpu_8086.DS * X86_PARAGRAPH_SIZE) + value];
 
 	switch (cpu_8086.last_prefix)
 	{
 	case override_es:
-		seg_ptr = &cpu_8086.address_space[(cpu_8086.ES * X86_PARAGRAPH_SIZE) + value];
+		seg_ptr = (uint16_t*)&cpu_8086.address_space[(cpu_8086.ES * X86_PARAGRAPH_SIZE) + value];
 		Logging_LogChannel("MOV AL, [ES:%02x]", LogChannel_Debug, value);
 		break;
 	case override_cs:
-		seg_ptr = &cpu_8086.address_space[(cpu_8086.CS * X86_PARAGRAPH_SIZE) + value];
+		seg_ptr = (uint16_t*)&cpu_8086.address_space[(cpu_8086.CS * X86_PARAGRAPH_SIZE) + value];
 		Logging_LogChannel("I don't think this is a great idea (MOV AL, [CS:%02x])", LogChannel_Warning, value);
 		break;
 	case override_ss:
-		seg_ptr = &cpu_8086.address_space[(cpu_8086.SS * X86_PARAGRAPH_SIZE) + value];
+		seg_ptr = (uint16_t*)&cpu_8086.address_space[(cpu_8086.SS * X86_PARAGRAPH_SIZE) + value];
 		Logging_LogChannel("MOV AL, [SS:%02x]", LogChannel_Debug, value);
 		break;
 	case override_ds:
 	case override_none:
-		seg_ptr = &cpu_8086.address_space[(cpu_8086.SS * X86_PARAGRAPH_SIZE) + value];
+		seg_ptr = (uint16_t*)&cpu_8086.address_space[(cpu_8086.SS * X86_PARAGRAPH_SIZE) + value];
 		Logging_LogChannel("MOV AL, [DS:%02x]", LogChannel_Debug, value);
 		break;
 	}
@@ -1400,7 +1399,7 @@ void i8086_Grp1(uint8_t opcode)
 			break;
 		case 0x83:
 			temp_imm8u_02 = i8086_ReadU8(cpu_8086._PC);
-			i8086_Cmp16(modrm_info.reg_ptr16, (uint16_t*)&temp_imm8u_02);
+			i8086_Cmp16((uint16_t*)modrm_info.reg_ptr16, (uint16_t*)&temp_imm8u_02);
 			Logging_LogChannel("CMP %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm8u_02);
 			cpu_8086.IP += 2;
 			break;
@@ -1432,17 +1431,17 @@ void i8086_Grp2(uint8_t opcode)
 			Logging_LogChannel("ROL %s, 1", LogChannel_Debug, modrm_info.disasm);
 			break;
 		case 0xD1:
-			i8086_Rol16(modrm_info.final_offset, 1, false);
+			i8086_Rol16((uint16_t*)modrm_info.final_offset, 1, false);
 			
 			Logging_LogChannel("ROL %s, 1", LogChannel_Debug, modrm_info.disasm);
 			break;
 		case 0xD2:
-			i8086_Rol8(modrm_info.reg_ptr8, &cpu_8086.CL, false);
+			i8086_Rol8(modrm_info.reg_ptr8, cpu_8086.CL, false);
 			
 			Logging_LogChannel("ROL %s, CL", LogChannel_Debug, modrm_info.disasm);
 			break;
 		case 0xD3:
-			i8086_Rol16(modrm_info.final_offset, &cpu_8086.CL, false);
+			i8086_Rol16((uint16_t*)modrm_info.final_offset, cpu_8086.CL, false);
 			
 			Logging_LogChannel("ROL %s, CL", LogChannel_Debug, modrm_info.disasm);
 			break;
@@ -1457,17 +1456,17 @@ void i8086_Grp2(uint8_t opcode)
 			Logging_LogChannel("ROR %s, 1", LogChannel_Debug, modrm_info.disasm);
 			break;
 		case 0xD1:
-			i8086_Ror16(modrm_info.final_offset, 1, false);
+			i8086_Ror16((uint16_t*)modrm_info.final_offset, 1, false);
 			
 			Logging_LogChannel("ROR %s, 1", LogChannel_Debug, modrm_info.disasm);
 			break;
 		case 0xD2:
-			i8086_Ror8(modrm_info.reg_ptr8, &cpu_8086.CL, false);
+			i8086_Ror8(modrm_info.reg_ptr8, cpu_8086.CL, false);
 			
 			Logging_LogChannel("ROR %s, CL", LogChannel_Debug, modrm_info.disasm);
 			break;
 		case 0xD3:
-			i8086_Ror16(modrm_info.final_offset, &cpu_8086.CL, false);
+			i8086_Ror16((uint16_t*)modrm_info.final_offset, cpu_8086.CL, false);
 			
 			Logging_LogChannel("ROR %s, CL", LogChannel_Debug, modrm_info.disasm);
 			break;
@@ -1483,17 +1482,17 @@ void i8086_Grp2(uint8_t opcode)
 			Logging_LogChannel("RCL %s, 1", LogChannel_Debug, modrm_info.disasm);
 			break;
 		case 0xD1:
-			i8086_Rol16(modrm_info.final_offset, 1, true);
+			i8086_Rol16((uint16_t*)modrm_info.final_offset, 1, true);
 			
 			Logging_LogChannel("RCL %s, 1", LogChannel_Debug, modrm_info.disasm);
 			break;
 		case 0xD2:
-			i8086_Rol8(modrm_info.reg_ptr8, &cpu_8086.CL, true);
+			i8086_Rol8(modrm_info.reg_ptr8, cpu_8086.CL, true);
 			
 			Logging_LogChannel("RCL %s, CL", LogChannel_Debug, modrm_info.disasm);
 			break;
 		case 0xD3:
-			i8086_Rol16(modrm_info.final_offset, &cpu_8086.CL, true);
+			i8086_Rol16((uint16_t*)modrm_info.final_offset, cpu_8086.CL, true);
 			
 			Logging_LogChannel("RCL %s, CL", LogChannel_Debug, modrm_info.disasm);
 			break;
@@ -1508,17 +1507,17 @@ void i8086_Grp2(uint8_t opcode)
 			Logging_LogChannel("RCR %s, 1", LogChannel_Debug, modrm_info.disasm);
 			break;
 		case 0xD1:
-			i8086_Ror16(modrm_info.final_offset, 1, true);
+			i8086_Ror16((uint16_t*)modrm_info.final_offset, 1, true);
 			
 			Logging_LogChannel("RCR %s, 1", LogChannel_Debug, modrm_info.disasm);
 			break;
 		case 0xD2:
-			i8086_Ror8(modrm_info.reg_ptr8, &cpu_8086.CL, true);
+			i8086_Ror8(modrm_info.reg_ptr8, cpu_8086.CL, true);
 			
 			Logging_LogChannel("RCR %s, CL", LogChannel_Debug, modrm_info.disasm);
 			break;
 		case 0xD3:
-			i8086_Ror16(modrm_info.final_offset, &cpu_8086.CL, true);
+			i8086_Ror16((uint16_t*)modrm_info.final_offset, cpu_8086.CL, true);
 			
 			Logging_LogChannel("RCR %s, CL", LogChannel_Debug, modrm_info.disasm);
 			break;
@@ -1530,22 +1529,22 @@ void i8086_Grp2(uint8_t opcode)
 		switch (opcode)
 		{
 		case 0xD0:
-			i8086_Shl8(modrm_info.reg_ptr8, 1, false);
+			i8086_Shl8(modrm_info.reg_ptr8, 1);
 			
 			Logging_LogChannel("SHL %s, 1", LogChannel_Debug, modrm_info.disasm);
 			break;
 		case 0xD1:
-			i8086_Shl16(modrm_info.final_offset, 1, false);
+			i8086_Shl16((uint16_t*)modrm_info.final_offset, 1);
 			
 			Logging_LogChannel("SHL %s, 1", LogChannel_Debug, modrm_info.disasm);
 			break;
 		case 0xD2:
-			i8086_Shl8(modrm_info.reg_ptr8, &cpu_8086.CL, false);
+			i8086_Shl8(modrm_info.reg_ptr8, cpu_8086.CL);
 			
 			Logging_LogChannel("SHL %s, CL", LogChannel_Debug, modrm_info.disasm);
 			break;
 		case 0xD3:
-			i8086_Shl16(modrm_info.final_offset, &cpu_8086.CL, false);
+			i8086_Shl16((uint16_t*)modrm_info.final_offset, cpu_8086.CL);
 			
 			Logging_LogChannel("SHL %s, CL", LogChannel_Debug, modrm_info.disasm);
 			break;
@@ -1560,17 +1559,17 @@ void i8086_Grp2(uint8_t opcode)
 			Logging_LogChannel("SHR %s, 1", LogChannel_Debug, modrm_info.disasm);
 			break;
 		case 0xD1:
-			i8086_Shr16(modrm_info.final_offset, 1, false);
+			i8086_Shr16((uint16_t*)modrm_info.final_offset, 1, false);
 			
 			Logging_LogChannel("SHR %s, 1", LogChannel_Debug, modrm_info.disasm);
 			break;
 		case 0xD2:
-			i8086_Shr8(modrm_info.reg_ptr8, &cpu_8086.CL, false);
+			i8086_Shr8(modrm_info.reg_ptr8, cpu_8086.CL, false);
 			
 			Logging_LogChannel("SHR %s, CL", LogChannel_Debug, modrm_info.disasm);
 			break;
 		case 0xD3:
-			i8086_Shr16(modrm_info.final_offset, &cpu_8086.CL, false);
+			i8086_Shr16((uint16_t*)modrm_info.final_offset, cpu_8086.CL, false);
 			
 			Logging_LogChannel("SHR %s, CL", LogChannel_Debug, modrm_info.disasm);
 			break;
@@ -1585,17 +1584,17 @@ void i8086_Grp2(uint8_t opcode)
 			Logging_LogChannel("SAR %s, 1", LogChannel_Debug, modrm_info.disasm);
 			break;
 		case 0xD1:
-			i8086_Shr16(modrm_info.final_offset, 1, true);
+			i8086_Shr16((uint16_t*)modrm_info.final_offset, 1, true);
 			
 			Logging_LogChannel("SAR %s, 1", LogChannel_Debug, modrm_info.disasm);
 			break;
 		case 0xD2:
-			i8086_Shr8(modrm_info.reg_ptr8, &cpu_8086.CL, true);
+			i8086_Shr8(modrm_info.reg_ptr8, cpu_8086.CL, true);
 			
 			Logging_LogChannel("SAR %s, CL", LogChannel_Debug, modrm_info.disasm);
 			break;
 		case 0xD3:
-			i8086_Shr16(modrm_info.final_offset, &cpu_8086.CL, true);
+			i8086_Shr16((uint16_t*)modrm_info.final_offset, cpu_8086.CL, true);
 			Logging_LogChannel("SAR %s, CL", LogChannel_Debug, modrm_info.disasm);
 			break;
 		}
