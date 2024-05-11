@@ -320,165 +320,213 @@ void i8086_Update()
 				cpu_8086.IP += 2;
 				Logging_LogChannel("SUB AX, %04x", LogChannel_Debug, temp_imm16u_01);
 				break;
+			case 0x38:
+				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
+				cpu_8086._PC++;
+				modrm_info = i8086_ModRM(false, next_opcode, temp_imm8u);
+
+				i8086_Cmp8(modrm_info.final_offset, modrm_info.reg_ptr8);
+				cpu_8086.IP++;
+				break;
+			case 0x39:
+				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
+				cpu_8086._PC++;
+				modrm_info = i8086_ModRM(true, next_opcode, temp_imm8u);
+
+				i8086_Cmp16(modrm_info.final_offset, modrm_info.reg_ptr16);
+				cpu_8086.IP++;
+				break;
+			case 0x3A:
+				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
+				cpu_8086._PC++;
+				modrm_info = i8086_ModRM(false, next_opcode, temp_imm8u);
+
+				i8086_Cmp8(modrm_info.reg_ptr8, modrm_info.final_offset);
+				cpu_8086.IP++;
+				break;
+			case 0x3B:
+				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
+				cpu_8086._PC++;
+				modrm_info = i8086_ModRM(true, next_opcode, temp_imm8u);
+
+				i8086_Cmp16(modrm_info.reg_ptr16, modrm_info.final_offset);
+				cpu_8086.IP++;
+				break;
+			case 0x3C:
+				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
+				cpu_8086._PC++;
+
+				i8086_Cmp8(&cpu_8086.AL, &temp_imm8u);
+				cpu_8086.IP++;
+				Logging_LogChannel("CMP AL, %02x", LogChannel_Debug, temp_imm8u);
+				break;
+			case 0x3D:
+				temp_imm16u_01 = i8086_ReadU16(cpu_8086._PC);
+				cpu_8086._PC++;
+
+				i8086_Cmp16(&cpu_8086.AX, &temp_imm8u);
+				cpu_8086.IP += 2;
+				Logging_LogChannel("CMP AX, %04x", LogChannel_Debug, temp_imm16u_01);
+				break;
 			case 0x40:
-				Logging_LogChannel("INC AX", LogChannel_Debug);
 				cpu_8086.AX++;
 				cpu_8086.IP++;
+				Logging_LogChannel("INC AX", LogChannel_Debug);
 				break;
 			case 0x41:
-				Logging_LogChannel("INC BX", LogChannel_Debug);
 				cpu_8086.BX++;
 				cpu_8086.IP++;
+				Logging_LogChannel("INC BX", LogChannel_Debug);
 				break;
 			case 0x42:
-				Logging_LogChannel("INC CX", LogChannel_Debug);
 				cpu_8086.CX++;
 				cpu_8086.IP++;
+				Logging_LogChannel("INC CX", LogChannel_Debug);
 				break;
 			case 0x43:
-				Logging_LogChannel("INC DX", LogChannel_Debug);
 				cpu_8086.DX++;
 				cpu_8086.IP++;
+				Logging_LogChannel("INC DX", LogChannel_Debug);
 				break;
 			case 0x44:
-				Logging_LogChannel("INC SP", LogChannel_Debug);
 				cpu_8086.SP++;
 				cpu_8086.IP++;
+				Logging_LogChannel("INC SP", LogChannel_Debug);
 				break;
 			case 0x45:
-				Logging_LogChannel("INC BP", LogChannel_Debug);
 				cpu_8086.BP++;
 				cpu_8086.IP++;
+				Logging_LogChannel("INC BP", LogChannel_Debug);
 				break;
 			case 0x46:
-				Logging_LogChannel("INC SI", LogChannel_Debug);
 				cpu_8086.SI++;
 				cpu_8086.IP++;
+				Logging_LogChannel("INC SI", LogChannel_Debug);
 				break;
 			case 0x47:
-				Logging_LogChannel("INC DI", LogChannel_Debug);
 				cpu_8086.DI++;
 				cpu_8086.IP++;
+				Logging_LogChannel("INC DI", LogChannel_Debug);
 				break;
 			case 0x48:
-				Logging_LogChannel("DEC AX", LogChannel_Debug);
 				cpu_8086.AX--;
 				cpu_8086.IP++;
+				Logging_LogChannel("DEC AX", LogChannel_Debug);
 				break;
 			case 0x49:
-				Logging_LogChannel("DEC BX", LogChannel_Debug);
 				cpu_8086.BX--;
 				cpu_8086.IP++;
+				Logging_LogChannel("DEC BX", LogChannel_Debug);
 				break;
 			case 0x4A:
-				Logging_LogChannel("DEC CX", LogChannel_Debug);
 				cpu_8086.CX--;
 				cpu_8086.IP++;
+				Logging_LogChannel("DEC CX", LogChannel_Debug);
 				break;
 			case 0x4B:
-				Logging_LogChannel("DEC DX", LogChannel_Debug);
 				cpu_8086.DX--;
 				cpu_8086.IP++;
+				Logging_LogChannel("DEC DX", LogChannel_Debug);
 				break;
 			case 0x4C:
-				Logging_LogChannel("DEC SP", LogChannel_Debug);
 				cpu_8086.SP--;
 				cpu_8086.IP++;
+				Logging_LogChannel("DEC SP", LogChannel_Debug);
 				break;
 			case 0x4D:
-				Logging_LogChannel("DEC BP", LogChannel_Debug);
 				cpu_8086.BP--;
 				cpu_8086.IP++;
+				Logging_LogChannel("DEC BP", LogChannel_Debug);
 				break;
 			case 0x4E:
-				Logging_LogChannel("DEC SI", LogChannel_Debug);
 				cpu_8086.SI--;
 				cpu_8086.IP++;
+				Logging_LogChannel("DEC SI", LogChannel_Debug);
 				break;
 			case 0x4F:
-				Logging_LogChannel("DEC DI", LogChannel_Debug);
 				cpu_8086.DI--;
 				cpu_8086.IP++;
+				Logging_LogChannel("DEC DI", LogChannel_Debug);
 				break;
 			case 0x50:
-				Logging_LogChannel("PUSH AX", LogChannel_Debug);
 				i8086_Push(cpu_8086.AX);
 				cpu_8086.IP++;
+				Logging_LogChannel("PUSH AX", LogChannel_Debug);
 				break;
 			case 0x51:
-				Logging_LogChannel("PUSH CX", LogChannel_Debug);
 				i8086_Push(cpu_8086.CX);
 				cpu_8086.IP++;
+				Logging_LogChannel("PUSH CX", LogChannel_Debug);
 				break;
 			case 0x52:
-				Logging_LogChannel("PUSH DX", LogChannel_Debug);
 				i8086_Push(cpu_8086.DX);
 				cpu_8086.IP++;
+				Logging_LogChannel("PUSH DX", LogChannel_Debug);
 				break;
 			case 0x53:
-				Logging_LogChannel("PUSH BX", LogChannel_Debug);
 				i8086_Push(cpu_8086.BX);
 				cpu_8086.IP++;
+				Logging_LogChannel("PUSH BX", LogChannel_Debug);
 				break;
 			case 0x54:
-				Logging_LogChannel("PUSH SP", LogChannel_Debug);
 				i8086_Push(cpu_8086.SP);
 				cpu_8086.IP++;
+				Logging_LogChannel("PUSH SP", LogChannel_Debug);
 				break;
 			case 0x55:
-				Logging_LogChannel("PUSH BP", LogChannel_Debug);
 				i8086_Push(cpu_8086.BP);
 				cpu_8086.IP++;
+				Logging_LogChannel("PUSH BP", LogChannel_Debug);
 				break;
 			case 0x56:
-				Logging_LogChannel("PUSH SI", LogChannel_Debug);
 				i8086_Push(cpu_8086.SI);
 				cpu_8086.IP++;
+				Logging_LogChannel("PUSH SI", LogChannel_Debug);
 				break;
 			case 0x57:
-				Logging_LogChannel("PUSH DI", LogChannel_Debug);
 				i8086_Push(cpu_8086.DI);
 				cpu_8086.IP++;
+				Logging_LogChannel("PUSH DI", LogChannel_Debug);
 				break;
 			case 0x58:
-				Logging_LogChannel("POP AX", LogChannel_Debug);
 				cpu_8086.AX = i8086_Pop();
 				cpu_8086.IP++;
+				Logging_LogChannel("POP AX", LogChannel_Debug);
 				break;
 			case 0x59:
-				Logging_LogChannel("POP CX", LogChannel_Debug);
 				cpu_8086.CX = i8086_Pop();
 				cpu_8086.IP++;
+				Logging_LogChannel("POP CX", LogChannel_Debug);
 				break;
 			case 0x5A:
-				Logging_LogChannel("POP DX", LogChannel_Debug);
 				cpu_8086.DX = i8086_Pop();
 				cpu_8086.IP++;
+				Logging_LogChannel("POP DX", LogChannel_Debug);
 				break;
 			case 0x5B:
-				Logging_LogChannel("POP BX", LogChannel_Debug);
 				cpu_8086.BX = i8086_Pop();
 				cpu_8086.IP++;
+				Logging_LogChannel("POP BX", LogChannel_Debug);
 				break;
 			case 0x5C:
-				Logging_LogChannel("POP SP", LogChannel_Debug);
 				cpu_8086.SP = i8086_Pop();
 				cpu_8086.IP++;
+				Logging_LogChannel("POP SP", LogChannel_Debug);
 				break;
 			case 0x5D:
-				Logging_LogChannel("POP BP", LogChannel_Debug);
 				cpu_8086.BP = i8086_Pop();
 				cpu_8086.IP++;
+				Logging_LogChannel("POP BP", LogChannel_Debug);
 				break;
 			case 0x5E:
-				Logging_LogChannel("POP SI", LogChannel_Debug);
 				cpu_8086.SI = i8086_Pop();
 				cpu_8086.IP++;
+				Logging_LogChannel("POP SI", LogChannel_Debug);
 				break;
 			case 0x5F:
-				Logging_LogChannel("POP DI", LogChannel_Debug);
 				cpu_8086.DI = i8086_Pop();
 				cpu_8086.IP++;
+				Logging_LogChannel("POP DI", LogChannel_Debug);
 				break;
 			case 0x60: // undocumented alias due to microcode bit matching criteria
 			case 0x70:
