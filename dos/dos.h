@@ -43,7 +43,7 @@ typedef enum dos_api_level_e
 	// MS-DOS 2.0 to 2.1. Substantially less useless - file handlers, drivers, IOCTL, etc
 	DOS_20 = 2,
 
-	// MS-DOS 2.11. Level 1 + INT 21h,AH=58
+	// MS-DOS 2.11. Adds INT 21h,AH=58h (Get/set memory allocation strategy)
 	DOS_211 = 3,
 
 	// MS-DOS 2.25 - Internationalised DOS

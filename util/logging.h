@@ -8,6 +8,11 @@
 // Jan 2024: Fixed it...and added LogChannel_Debug.
 //
 
+// Defines for the logging system
+#define	LOGGING_MAX_LENGTH_TEXT		2176												// Maximum length of text being logged via the logger. 2176 bytes because of help file.
+#define LOGGING_MAX_LENGTH_DATE		32													// Length of the string containing the current date.
+#define LOGGING_MAX_LENGTH_TOTAL	LOGGING_MAX_LENGTH_TEXT + LOGGING_MAX_LENGTH_DATE	// Total length of the logging text buffer.
+
 // Enumerates logging channels. This is a set of flags, so the user can enable anything they want.
 typedef enum LogChannel_s
 {

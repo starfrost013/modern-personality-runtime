@@ -11,11 +11,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Defines only used in this source file
-#define	LOGGING_MAX_LENGTH_TEXT		512													// Maximum length of text being logged via the logger.
-#define LOGGING_MAX_LENGTH_DATE		32													// Length of the string containing the current date.
-#define LOGGING_MAX_LENGTH_TOTAL	LOGGING_MAX_LENGTH_TEXT + LOGGING_MAX_LENGTH_DATE	// Total length of the logging text buffer.
-
 // Prototypes for "internal" functions only used in this source file
 void	Logging_Log(const char* text, LogChannel channel, va_list args);
 
@@ -134,7 +129,7 @@ void Logging_Log(const char* text, LogChannel channel, va_list args)
 
 	if (strlen(text) > LOGGING_MAX_LENGTH_TEXT)
 	{
-		printf(u8"Log failed: 0x0004DEAD cannot log string of length 0 or above 512 bytes!");
+		printf(u8"Log failed: 0x0004DEAD cannot log string of length 0 or above %d bytes!", LOGGING_MAX_LENGTH_TEXT);
 		return;
 	}
 
