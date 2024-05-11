@@ -1,5 +1,5 @@
 #include "machine.h"
-#include "8086/8086.h"
+#include "cpu/8086/8086.h"
 // Machine.c: Implements machine.h
 
 binary_type		Binary_GetBinaryType();
