@@ -16,8 +16,7 @@ void Util_ConsoleSetForegroundColor(ConsoleColor color)
 	if (color >= CONSOLECOLOR_FIRST_BRIGHT) finalColor = 90 + color;
 
 	// 10 (max) + 1 + 4 + 1 for safety
-	char finalString[CONSOLE_COLOR_BUFFER_SIZE];
-	memset(finalString, 0x00, sizeof(char) * CONSOLE_COLOR_BUFFER_SIZE);
+	char finalString[CONSOLE_COLOR_BUFFER_SIZE] = {0};
 
 	char* string = Util_StringFromInt(finalColor);
 
@@ -40,8 +39,7 @@ void Util_ConsoleSetBackgroundColor(ConsoleColor color)
 	if (color >= CONSOLECOLOR_FIRST_BRIGHT) finalColor = 100 + color;
 
 	// 10 (max) + 1 + 4 + 1 for safety
-	char* finalString[CONSOLE_COLOR_BUFFER_SIZE];
-	memset(finalString, 0x00, sizeof(char) * 17);
+	char* finalString[CONSOLE_COLOR_BUFFER_SIZE] = {0};
 
 	char* string = Util_StringFromInt(finalColor);
 
