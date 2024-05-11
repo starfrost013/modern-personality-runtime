@@ -620,3 +620,5 @@ bool MTDOS_Init();				// Initialise exciting DOS.
 //
 
 void MSDOS_Int21(uint16_t ax);
+
+#pragma pack (pop)
