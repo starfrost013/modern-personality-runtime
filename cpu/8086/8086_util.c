@@ -113,3 +113,11 @@ void i8086_SetSF16(uint16_t result)
 	// this works because we only have an 16-bit number, basically checks if first bit is 1 or not (which is how twos complement determines negative or not)
 	cpu->flag_sign = (result & 0x8000);
 }
+
+bool i8086_IsGroupOpcode(uint8_t opcode)
+{
+	return ((opcode >= 0x80 && opcode <= 0x83)		//GRP1
+		|| (opcode >= 0xD0 && opcode <= 0xD4)		//GRP2
+		|| (opcode >= 0xF6 && opcode <= 0xF7)		//GRP3A/3B	
+		|| (opcode >= 0xFE && opcode <= 0xFF));		//GRP4/5			
+}

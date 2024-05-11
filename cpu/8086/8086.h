@@ -102,6 +102,7 @@ void i8086_SetSF16(uint16_t result);															// Set sign flag based on 8-b
 // other flags (IF,DF,TF) are set by code.
 
 // utilities
+bool i8086_IsGroupOpcode(uint8_t opcode);								// For debug disassembly: Determines if an opcode is a group opcode or not.
 
 // instructions both filtered through immediates and MOdR/m
 
@@ -115,15 +116,27 @@ void i8086_Sub16(uint16_t* destination, uint16_t* source, bool sbb);	// 16-bit S
 void i8086_Cmp8(uint8_t* destination, uint8_t* source);					// 8-bit compare: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
 void i8086_Cmp16(uint16_t* destination, uint16_t* source);				// 16-bit compare: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
 
+void i8086_Or8(uint8_t* destination, uint8_t* source);					// 8-bit OR: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+void i8086_Or16(uint16_t* destination, uint16_t* source);				// 16-bit OR: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+
+void i8086_And8(uint8_t* destination, uint8_t* source);					// 8-bit AND: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+void i8086_And16(uint16_t* destination, uint16_t* source);				// 16-bit AND: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+
+void i8086_Xor8(uint8_t* destination, uint8_t* source);					// 8-bit XOR: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+void i8086_Xor16(uint16_t* destination, uint16_t* source);				// 16-bit XOR: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+
 // instruction decode
-i8086_modrm_t i8086_ModRM(bool w, uint8_t opcode, uint8_t modrm);	// Parse ModR/M byte
+i8086_modrm_t i8086_ModRM(uint8_t opcode, uint8_t modrm);		// Parse ModR/M byte
+
+// group instruction decode. Some instructions use the reg as an extended opcode instead.
+void i8086_Grp1(uint8_t opcode);										// 0x80..0x83
 
 // loop
-void i8086_Loop(uint8_t destination_offset, bool condition); // Loop instruction
+void i8086_Loop(uint8_t destination_offset, bool condition);			// Loop instruction
 
 // move
-void i8086_MoveSegOff8(uint8_t value, bool direction);	// modrm but for some reason both mod and reg are avoided, so it has to have its own implementation only for opcodes a0-a3. also only for the AH register.
-void i8086_MoveSegOff16(uint16_t value, bool direction);// modrm but for some reason both mod and reg are avoided, so it has to have its own implementation only for opcodes a0-a3. also only for the AX register.
+void i8086_MoveSegOff8(uint8_t value, bool direction);					// modrm but for some reason both mod and reg are avoided, so it has to have its own implementation only for opcodes a0-a3. also only for the AH register.
+void i8086_MoveSegOff16(uint16_t value, bool direction);				// modrm but for some reason both mod and reg are avoided, so it has to have its own implementation only for opcodes a0-a3. also only for the AX register.
 
 // jump
 void i8086_JumpConditional(uint8_t destination_offset, bool condition); // Jump conditional instruction
