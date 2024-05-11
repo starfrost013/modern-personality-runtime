@@ -750,7 +750,31 @@ void i8086_Update()
 
 				Logging_LogChannel("CALL FAR %04x:%04x", LogChannel_Debug, temp_imm16u_01, temp_imm16u_02);
 				break;
+			case 0x9E: // SAHF
+				cpu_8086.flag_sign = (cpu_8086.AH) & 0x80;			//bit0
+				cpu_8086.flag_zero = (cpu_8086.AH) & 0x40;			//bit1
+																	//bit2 - reserved, always 0
+				cpu_8086.flag_aux_carry = (cpu_8086.AH) & 0x10;		//bit3
+																	//bit4 - reserved, always 0
+				cpu_8086.flag_parity = (cpu_8086.AH) & 0x04;		//bit5
+																	//bit6 - reserved, always 1, see above
+				cpu_8086.flag_carry = (cpu_8086.AH) & 0x01;			//bit7
 
+				Logging_LogChannel("SAHF", LogChannel_Debug);
+				break;
+			case 0x9F: // LAHF
+				cpu_8086.AH = 0x02; // Set initial AH to 0b00000010. Bit1 is always 1, so load it here.
+
+				if (cpu_8086.flag_sign) cpu_8086.AH |= 0x80;		//bit0
+				if (cpu_8086.flag_zero) cpu_8086.AH |= 0x40;		//bit1
+																	//bit2 - reserved, always 0
+				if (cpu_8086.flag_aux_carry) cpu_8086.AH |= 0x10;	//bit3
+																	//bit4 - reserved, always 0
+				if (cpu_8086.flag_parity) cpu_8086.AH |= 0x04;		//bit5
+																	//bit6 - reserved, always 1, see above
+				if (cpu_8086.flag_carry) cpu_8086.AH |= 0x01;		//bit7
+				Logging_LogChannel("LAHF", LogChannel_Debug);
+				break;
 				// a0-a3: bizarre special case instructions
 			case 0xA0:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
