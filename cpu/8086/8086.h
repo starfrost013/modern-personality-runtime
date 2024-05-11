@@ -86,8 +86,8 @@ uint16_t i8086_ReadU16(uint32_t position);
 int16_t i8086_ReadS16(uint32_t position);
 
 // utilities for setting flags
-void i8086_SetCF8(uint8_t result);																// Set carry flag based on 8-bit result.
-void i8086_SetCF16(uint16_t result);															// Set carry flag based on 16-bit result.
+void i8086_SetCF8(uint8_t destination, uint8_t source);											// Set carry flag based on 8-bit result.
+void i8086_SetCF16(uint16_t destination, uint16_t source);										// Set carry flag based on 16-bit result.
 void i8086_SetAF8(uint8_t result, uint8_t source, uint8_t destination);							// Set aux/halfcarry flag based on 8-bit result.
 void i8086_SetAF16(uint16_t result, uint16_t source, uint16_t destination);						// Set aux/halfcarry flag based on 16-bit result.
 void i8086_SetOF8(uint8_t result, uint8_t source, uint8_t destination, bool isSubtracting);		// Set overflow flag based on 8-bit result.

@@ -86,8 +86,8 @@ typedef enum mtdos_api_level_e
 {
 	MTDOS_Invalid = 0,
 
-	// TODO: Get this build dumped
-	// Microsoft M/T-DOS Beta Release 29 May 1984
+	// Build ("Internal Work #2.06") - 29 May 1984
+	// the below but with multithreading (94h)
 	MTDOS_Beta_5_29_84 = 1,
 
 	// 6.7 with pipes and swapping (Early 1985)
@@ -448,7 +448,7 @@ typedef struct msdos_sysvars_v30_s
 	uint16_t	fcb_table_ptr_off;			// 0x22: FCB Table Pointer [Offset]
 	uint16_t	fcb_table_ptr_seg;			// 0x24: FCB Table Pointer [Segment]
 	uint16_t	protected_fcbs;				// 0x26: Protected FCBS (y in FCB=x,y in CONFIG.SYS)
-	uint8_t		nul_header[18];				// 0x17: NUL device header.
+	uint8_t		nul_header[18];				// 0x28: NUL device header.
 } msdos_sysvars_v30_t;
 
 // MS-DOS 3.1-3.3
@@ -599,8 +599,6 @@ typedef struct msdos_sysvars_v5
 
 	uint16_t	ext_memory_size;			// 0x45: Extended memory size (KB)
 } msdos_sysvars_v5_t;
-
-
 
 // 
 // MT-DOS stuff here:

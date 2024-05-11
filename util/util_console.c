@@ -16,42 +16,42 @@ void Util_ConsoleSetForegroundColor(ConsoleColor color)
 	if (color >= CONSOLECOLOR_FIRST_BRIGHT) finalColor = 90 + color;
 
 	// 10 (max) + 1 + 4 + 1 for safety
-	char finalString[CONSOLE_COLOR_BUFFER_SIZE] = {0};
+	char final_string[CONSOLE_COLOR_BUFFER_SIZE] = {0};
 
-	char* string = Util_StringFromInt(finalColor);
+	char* temp_string = Util_StringFromInt(finalColor);
 
 	int remaining_characters = CONSOLE_COLOR_BUFFER_SIZE - 4;
 
-	strncat(&finalString, CONSOLE_TERMINAL_COMMAND_PREFIX, remaining_characters);
-	remaining_characters -= strlen(string);
-	strncat(&finalString, string, remaining_characters);
+	strncat(&final_string, CONSOLE_TERMINAL_COMMAND_PREFIX, remaining_characters);
+	remaining_characters -= strlen(temp_string);
+	strncat(&final_string, temp_string, remaining_characters);
 	remaining_characters -= 1;
-	strncat(&finalString, "m", remaining_characters);
+	strncat(&final_string, "m", remaining_characters);
 
-	printf(finalString);
+	printf(final_string);
 }
 
 void Util_ConsoleSetBackgroundColor(ConsoleColor color)
 {
-	int32_t finalColor = 0;
+	int32_t final_color = 0;
 
-	finalColor = 40 + color;
-	if (color >= CONSOLECOLOR_FIRST_BRIGHT) finalColor = 100 + color;
+	final_color = 40 + color;
+	if (color >= CONSOLECOLOR_FIRST_BRIGHT) final_color = 100 + color;
 
 	// 10 (max) + 1 + 4 + 1 for safety
-	char* finalString[CONSOLE_COLOR_BUFFER_SIZE] = {0};
+	char* final_string[CONSOLE_COLOR_BUFFER_SIZE] = {0};
 
-	char* string = Util_StringFromInt(finalColor);
+	char* temp_string = Util_StringFromInt(final_color);
 
 	int remaining_characters = CONSOLE_COLOR_BUFFER_SIZE - 4;
 
-	strncat(finalString, CONSOLE_TERMINAL_COMMAND_PREFIX, remaining_characters);
-	remaining_characters -= strlen(string);
-	strncat(finalString, string, remaining_characters);
+	strncat(final_string, CONSOLE_TERMINAL_COMMAND_PREFIX, remaining_characters);
+	remaining_characters -= strlen(temp_string);
+	strncat(final_string, temp_string, remaining_characters);
 	remaining_characters -= 1;
-	strncat(finalString, "m", remaining_characters);
+	strncat(final_string, "m", remaining_characters);
 
-	printf(finalString);
+	printf(final_string);
 }
 
 void Util_ConsoleResetForegroundColor()
