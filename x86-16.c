@@ -2,9 +2,11 @@
 // I SAWED THIS EMULATOR IN HALF
 // © 2024 starfrost			January 7, 2024 
 
-#include "core.h"
+#include "macros.h"
 #include "cmd/cmd.h"
 #include "cpu/8086/8086.h"
+#include "util/logging.h"
+#include <stdlib.h>
 
 int main(int argc, char* argv[])
 {

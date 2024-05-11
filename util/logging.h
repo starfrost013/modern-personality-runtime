@@ -1,5 +1,6 @@
 #pragma once
-#include "../core.h"
+#include <stdbool.h>
+#include <stdio.h>
 //
 // Logging system
 // 

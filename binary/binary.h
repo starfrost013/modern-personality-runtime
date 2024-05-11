@@ -1,5 +1,4 @@
 #pragma once
-#include "../core.h"
 #include "../cpu/machine.h"
 #include "../cpu/8086/8086.h"
 #include "../cmd/cmd.h"
@@ -36,7 +35,7 @@ typedef struct msdos_loaded_binary_s
 	uint8_t*		binary;						// Binary (after relocations were applied to it)
 } msdos_loaded_binary_t;
 
-msdos_loaded_binary_t	loaded_binary_msdos;
+extern msdos_loaded_binary_t	loaded_binary_msdos;
 
 bool COM_Load();								// Loads a DOS1.x/86DOS com file.
 bool MZ_Load();									// Loads a boring DOS MZ binary (also int 21,4a handler)

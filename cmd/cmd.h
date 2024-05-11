@@ -1,7 +1,10 @@
 #pragma once
 
-#include "../core.h"
+#include "macros.h"
 #include "../dos/dos.h"
+
+#include <stdbool.h>
+#include <stdio.h>
 
 // CMD.h: parses command line and stores program state.
 
