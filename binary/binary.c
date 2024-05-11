@@ -97,7 +97,7 @@ bool MZ_Load()
 
 	// allocate memory 
 
-	uint8_t* binary_data = malloc(sizeof(uint8_t) * code_size);
+	uint8_t* binary_data = calloc(1, sizeof(uint8_t) * code_size);
 
 	if (binary_data == NULL)
 	{	
@@ -120,7 +120,7 @@ bool MZ_Load()
 	if (mz_header.num_relocs > 0x00)
 	{
 		// allocate the relocation entries (they are temp, as we don't need them after they are done)
-		mz_reloc_t* reloc_table = malloc(sizeof(mz_reloc_t) + (sizeof(mz_reloc_entry_t) * mz_header.num_relocs));
+		mz_reloc_t* reloc_table = calloc(mz_header.num_relocs, sizeof(mz_reloc_t) + (sizeof(mz_reloc_entry_t)));
 
 		if (reloc_table == NULL)
 		{

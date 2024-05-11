@@ -11,22 +11,20 @@
 
 binary_type Binary_GetBinaryType()
 {
-	uint8_t binary_header[2];
-
-	memset(&binary_header, 0x00, sizeof binary_header);
+	uint8_t exe_signature[2] = { 0 };
 
 	// if we read less than 2 bytes (?!) \there's no real way this can be a valid file 
-	if (fread(&binary_header, 1, 2, cmd.handle) < 2)
+	if (fread(&exe_signature, 1, 2, cmd.handle) < 2)
 	{
 		Logging_LogChannel("Header type determination failed. File not long enough for a header.", LogChannel_Fatal);
 		return Binary_Invalid;
 	}
 
 	// check for MZ header (Zm is also okay, as it was used in some very early compilers where they fucked up the endianness e.g. IBM Pascal 1.0)
-	if ((binary_header[0] == 'M'
-		&& binary_header[1] == 'Z')
-		|| binary_header[0] == 'Z'
-		&& binary_header[1] == 'M')
+	if ((exe_signature[0] == 'M'
+		&& exe_signature[1] == 'Z')
+		|| exe_signature[0] == 'Z'
+		&& exe_signature[1] == 'M')
 	{
 		uint16_t e_lfanew;
 		uint16_t num_relocs;
