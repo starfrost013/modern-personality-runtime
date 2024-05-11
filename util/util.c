@@ -8,7 +8,8 @@
 #include <string.h>
 #include <time.h>
 
-char g_string_from_intptr[10];
+#define INTPTR_STRING_SIZE		10
+char g_string_from_intptr[INTPTR_STRING_SIZE];
 
 void Util_DateGetCurrentString(char *str)
 {
@@ -53,8 +54,8 @@ bool Util_StringFromBoolean(char* str)
 char* Util_StringFromInt(int32_t num)
 {
 	// 10 digit number as uint32_t max is 2147483647
-	memset(&g_string_from_intptr, 0x00, sizeof(char) * 10);
-	snprintf(&g_string_from_intptr, sizeof(char) * 10, "%d", num);
+	memset(&g_string_from_intptr, 0x00, sizeof(char) * INTPTR_STRING_SIZE);
+	snprintf(&g_string_from_intptr, sizeof(char) * INTPTR_STRING_SIZE, "%d", num);
 	
 	return &g_string_from_intptr;
 }
