@@ -51,6 +51,7 @@ bool MZ_Load()
 	fread(&mz_header.overlay_info, 1, 2, cmd.handle);
 
 	// the bbits will likely not be present if reloc information is at 0x20 or earlier
+	// THE MDOS4 BETA BUILDS ACTUALLY USE THIS!!!! WTF DO THEY DO? (CHECK BBSET.EXE)
 	if (mz_header.reloc_ptr > 0x20)
 	{
 		fseek(cmd.handle, 0x20, SEEK_CUR);

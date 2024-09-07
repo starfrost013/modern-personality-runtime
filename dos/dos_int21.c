@@ -11,7 +11,7 @@
 void MSDOS_Int21()
 {
 	basecpu_t* cpu = CPU_Get();
-	Logging_LogChannel("INT 21 DISPATCHER ENTRY", LogChannel_Debug);
+	Logging_LogChannel("INT 21 DISPATCHER ENTRY AH=%d", LogChannel_Debug, cpu->AH);
 
 	// TODO: INVALID FUNCTION HANDLER!!!!
 
@@ -55,7 +55,7 @@ void MSDOS_PrintString()
 	if (cmd.cpu_ver == cpu_type_i8086)
 	{
 #if X86_DEBUG
-		int debug_count = 0x00;
+		int32_t debug_count = 0x00;
 #endif
 		char* next_char = &cpu_8086.address_space[start_location];
 

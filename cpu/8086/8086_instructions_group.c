@@ -425,7 +425,28 @@ void i8086_Grp2(uint8_t opcode)
 
 void i8086_Grp3(uint8_t opcode)
 {
+	uint8_t temp_imm8u_01 = i8086_ReadU8(cpu_8086._PC); // read modrm byte
+	uint8_t temp_imm8u_02 = 0x00;
 
+	cpu_8086._PC++;
+
+	i8086_modrm_t modrm_info = i8086_ModRM(opcode, temp_imm8u_01);
+
+	switch (modrm_info.ext_opcode)
+	{
+	case 0:
+		temp_imm8u_02 = i8086_ReadU8(cpu_8086._PC);  // read modrm byte
+		cpu_8086._PC++;
+
+		if (opcode == 0xF6)
+		{
+			i8086_Test8(modrm_info.reg_ptr8, &temp_imm8u_02);
+		}
+		else
+		{
+			i8086_Test16((uint16_t*)modrm_info.final_offset, &temp_imm8u_02);
+		}
+	}
 }
 
 void i8086_Grp4(uint8_t opcode)

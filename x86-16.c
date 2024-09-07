@@ -4,6 +4,7 @@
 // Combines an 8086 emulator (not entirely accurate, designed to run as fast as possible) and trapping MS-DOS and MT-DOS APIs and thunking them to be used on the host system
 // 
 // © 2024 starfrost			Development started: January 7, 2024 
+//							In September 2024 I got bored enough to try and finish this
 
 #include "macros.h"
 #include "cmd/cmd.h"
@@ -40,18 +41,17 @@ const char help_message[] =
 	"--OPTIONAL ARGUMENTS--\n"
 	"-mtdosver: Automatically turns on Multitasking MS-DOS 4.0 emulation. Determines the sub-version of Multitasking MS-DOS 4.0 to run.\n\n"
 	"Values:\n"
-	"1: Microsoft M/T-DOS Beta Release 29 May 1984 ****UNDUMPED****\n"
-	"2: A hypothetical pre-release of Multitasking MS-DOS 4.0 with the removed swapping and named pipes functionality. Circa Early 1985. Maybe we'll even find it.\n"
-	"3: Build 6.7, 26 November 1985 (2013 release) - Preemptive multitasking, multiple screen devices, dynamic linking, process priority, session management, shared memory, semaphores, processes sharing code segments, etc etc etc etc\n"
-	"4: Final release, 17 November 1986 - Actually less stuff due to the fact the project was basically cancelled, no session management etc, seemingly incompatible NEs\n"
-	"5: MT-DOS 4.1 (up to 12 March 1988) ****UNDUMPED****\n"
+	"1: Internal Work #2.06, 29 May 1984\t\t (\"M/T-MSDOS Beta Release 5/29/84)\n"
+	"2: Build 4.11. 28 May 1985\t\t\t (internal beta - worse version of 6.7)\n"
+	"3: Build 6.7, 26 November 1985\t\t\t - Preemptive multitasking, multiple screen devices, dynamic linking, process priority, session management, shared memory, semaphores, processes sharing code segments, etc etc etc etc\n"
+	"4: Final release, 17 November 1986\t\t - Actually less stuff due to the fact the project was basically cancelled, no session management etc, seemingly incompatible NEs\n"
 };
 
 int main(int argc, char* argv[])
 {
 	Logging_Init();
 
-	Logging_LogAll("modern:personality Runtime v%s", X86_VERSION);
+	Logging_LogAll("modern:personality Runtime v%s (%s %s)", X86_VERSION, __DATE__, __TIME__);
 	Logging_LogAll("© 2023-2024 starfrost");
 
 	if (!CMD_Parse(argc, argv))

@@ -90,8 +90,8 @@ typedef enum mtdos_api_level_e
 	// the below but with multithreading (94h)
 	MTDOS_Beta_5_29_84 = 1,
 
-	// 6.7 with pipes and swapping (Early 1985)
-	MTDOS_Hypothetical_Prerelease = 2,
+	// Build 4.11, 28 May 1985
+	MTDOS_Beta_4_11 = 2,
 
 	// Build 6.7, 26 November 1985
 	// Preemptive multitasking, multiple screen devices, dynamic linking, process priority, session management, shared memory, semaphores, processes sharing code segments, etc etc etc etc
@@ -101,11 +101,7 @@ typedef enum mtdos_api_level_e
 	// No session management, maybe no dynamic linking, hotpatching processes (aka Windows) in memory
 	MTDOS_Final = 4,
 
-	// MT-DOS 4.1 (reporting as MS-DOS 3.99)
-	// Up to 12 March 1988
-	// Also get this dumped
-	// COol file manager I guess
-	MTDOS_Final_4_1 = 5,
+	// Removed 4.1 until it's dumped
 } mtdos_api_level;
 
 // Binary type

@@ -103,10 +103,6 @@ bool CMD_Parse(int argc, char* argv[])
 					Logging_LogAll("Simulated Environment: M/T-MSDOS Beta Release (May 29, 1984)");
 					cmd.msdos_ver = MTDOS_Beta_5_29_84;
 					break;
-				case MTDOS_Hypothetical_Prerelease:
-					Logging_LogAll("Simulated Environment: MT-DOS (Hypothetical pre-release with named pipes and multithreading; ~Early 1985)");
-					cmd.msdos_ver = MTDOS_Hypothetical_Prerelease;
-					break;
 				case MTDOS_Beta_6_7:
 					Logging_LogAll("Simulated Environment: MT-DOS 4.0 (Pre-release build 6.7, November 26, 1985)");
 					cmd.msdos_ver = MTDOS_Beta_6_7;
@@ -115,11 +111,6 @@ bool CMD_Parse(int argc, char* argv[])
 					Logging_LogAll("Simulated Environment: MT-DOS 4.0 (November 17, 1986)");
 					cmd.msdos_ver = MTDOS_Final;
 					break;
-				case MTDOS_Final_4_1:
-					Logging_LogAll("Simulated Environment: MT-DOS 4.10-4.10.30 (October 11, 1987-May 10, 1988)");
-					cmd.msdos_ver = MTDOS_Final_4_1;
-					break;
-
 				}
 
 				argn++;

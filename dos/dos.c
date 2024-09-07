@@ -129,6 +129,7 @@ bool MSDOS_Init()
 	return false;
 }
 
+// In the future (tm) this will initialise a simulated MT-DOS kernel
 bool MTDOS_Init()
 {
 	Logging_LogAll("MT-DOS not implemented!");

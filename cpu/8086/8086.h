@@ -24,7 +24,7 @@ typedef struct i8086_modrm_s
 	uint8_t		ext_opcode;					//bits3-5 for some opcodes
 	uint8_t		rm;							//bits0-2
 
-	uint8_t*	final_offset;				//filled in for memory-referencing instructions
+	uint8_t*	final_offset;				//filled in for memory-referencing instructions, could point to register content
 	
 #if X86_DEBUG
 	char		disasm[DISASM_STR_SIZE];	//disassembled string
@@ -86,8 +86,8 @@ uint16_t i8086_ReadU16(uint32_t position);
 int16_t i8086_ReadS16(uint32_t position);
 
 // utilities for setting flags
-void i8086_SetCF8(uint8_t destination, uint8_t source);											// Set carry flag based on 8-bit result.
-void i8086_SetCF16(uint16_t destination, uint16_t source);										// Set carry flag based on 16-bit result.
+void i8086_SetCF8(uint8_t result);																// Set carry flag based on 8-bit result.
+void i8086_SetCF16(uint16_t result);															// Set carry flag based on 16-bit result.
 void i8086_SetAF8(uint8_t result, uint8_t source, uint8_t destination);							// Set aux/halfcarry flag based on 8-bit result.
 void i8086_SetAF16(uint16_t result, uint16_t source, uint16_t destination);						// Set aux/halfcarry flag based on 16-bit result.
 void i8086_SetOF8(uint8_t result, uint8_t source, uint8_t destination, bool isSubtracting);		// Set overflow flag based on 8-bit result.
@@ -115,6 +115,9 @@ void i8086_Sub16(uint16_t* destination, uint16_t* source, bool sbb);	// 16-bit S
 
 void i8086_Cmp8(uint8_t* destination, uint8_t* source);					// 8-bit compare: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
 void i8086_Cmp16(uint16_t* destination, uint16_t* source);				// 16-bit compare: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+
+void i8086_Test8(uint8_t* destination, uint8_t* source);				// 8-bit test: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+void i8086_Test16(uint16_t* destination, uint16_t* source);				// 8-bit test: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
 
 void i8086_Or8(uint8_t* destination, uint8_t* source);					// 8-bit OR: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
 void i8086_Or16(uint16_t* destination, uint16_t* source);				// 16-bit OR: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.

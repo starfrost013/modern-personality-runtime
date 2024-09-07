@@ -1,4 +1,4 @@
-﻿// macros.h : Various useful global macros 
+﻿// macros.h : Various useful global macros
 
 #pragma once
 

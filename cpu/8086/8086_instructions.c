@@ -154,6 +154,41 @@ void i8086_Cmp16(uint16_t* destination, uint16_t* source)
 	i8086_SetSF16(final_value);
 }
 
+
+void i8086_Test8(uint8_t* destination, uint8_t* source)
+{
+	uint8_t temp = *destination & *source; // src1 & src2
+
+	i8086_SetZF8(temp);
+
+	i8086_SetPF8(temp);
+	
+	i8086_t* cpu_i8086 = (i8086_t*)CPU_Get();
+
+	//always set to false
+	cpu_i8086->flag_carry = false;
+	cpu_i8086->flag_overflow = false;
+
+	//result discarded
+}
+
+void i8086_Test16(uint16_t* destination, uint16_t* source)
+{
+	uint16_t temp = *destination & *source; // src1 & src2
+
+	i8086_SetZF16(temp);
+
+	i8086_SetPF16(temp >> 8); // only uses MSB
+
+	i8086_t* cpu_i8086 = (i8086_t*)CPU_Get();
+
+	//always set to false
+	cpu_i8086->flag_carry = false;
+	cpu_i8086->flag_overflow = false;
+
+	//result discarded
+}
+
 void i8086_Or8(uint8_t* destination, uint8_t* source)
 {
 	uint8_t original_value = 0;

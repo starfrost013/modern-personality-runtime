@@ -14,7 +14,7 @@ i8086_modrm_t i8086_ModRM(uint8_t opcode, uint8_t modrm)
 	bool w = false; // false = 8-bit word length for oeprands, true=16-bit
 
 	// HACK warning: for some reason, the reg field means something entirely different for SPECIFICALLY these two instructions. Fuck Intel!
-	// They are always 16-bit, even though the w-field of the opcod register indicates the precise opposite, and the reg field selects segment registers
+	// They are always 16-bit, even though the w-field of the opcode register indicates the precise opposite, and the reg field selects segment registers
 	// using an entirely different coding
 	// INTEL? MORE LIKE UnIntelligent
 	bool intel_moron_instructions = (opcode == 0x8C
