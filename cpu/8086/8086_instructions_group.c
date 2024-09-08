@@ -425,16 +425,31 @@ void i8086_Grp2(uint8_t opcode)
 
 void i8086_Grp3(uint8_t opcode)
 {
-	uint8_t temp_imm8u_01 = i8086_ReadU8(cpu_8086._PC); // read modrm byte
-	uint8_t temp_imm8u_02 = 0x00;
+	// 0xF6		GRP3A (byte) 
+	// 0xF7		GRP3B (word)
+	bool opcode_byte = (opcode == 0xF6);
 
-	cpu_8086._PC++;
+	uint8_t temp_imm8u_01 = 0x00;
+	uint8_t temp_imm8u_02 = 0x00;
+	uint16_t temp_imm16u_01 = 0x00;
+	uint16_t temp_imm16u_02 = 0x00;
+
+	// bit0 of opcode byte used to determine operand width here and only here
+	if (opcode_byte)
+	{
+		temp_imm8u_01 = i8086_ReadU8(cpu_8086._PC); // read modrm byte
+		temp_imm8u_02 = 0x00;
+		cpu_8086._PC++;
+	}
+	else
+	{
+		temp_imm16u_01 = i8086_ReadU16(cpu_8086._PC); // read modrm byte
+		temp_imm16u_02 = 0x00;
+		cpu_8086._PC += 2;
+	}
+
 
 	i8086_modrm_t modrm_info = i8086_ModRM(opcode, temp_imm8u_01);
-
-	// 0xF6		GRP3A
-	// 0xF7		GRP3B
-	bool opcode_byte = (opcode == 0xF6);
 
 	switch (modrm_info.ext_opcode)
 	{
@@ -445,7 +460,7 @@ void i8086_Grp3(uint8_t opcode)
 		if (opcode == opcode_byte)
 			i8086_Test8(modrm_info.reg_ptr8, &temp_imm8u_02);
 		else
-			i8086_Test16((uint16_t*)modrm_info.final_offset, &temp_imm8u_02);
+			i8086_Test16((uint16_t*)modrm_info.final_offset, &temp_imm16u_02);
 
 		Logging_LogChannel("TEST %s", LogChannel_Debug, modrm_info.disasm);
 		break;
@@ -469,9 +484,9 @@ void i8086_Grp3(uint8_t opcode)
 		break;
 	case 3: // NEG
 		if (opcode == opcode_byte)
-			i8086_Neg8(modrm_info.reg_ptr8, &temp_imm8u_02);
+			i8086_Neg8(modrm_info.reg_ptr8);
 		else
-			i8086_Neg16((uint16_t*)modrm_info.final_offset, &temp_imm8u_02);
+			i8086_Neg16((uint16_t*)modrm_info.final_offset);
 	
 		Logging_LogChannel("NEG %s", LogChannel_Debug, modrm_info.disasm);
 		break;
