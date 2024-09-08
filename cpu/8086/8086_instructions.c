@@ -325,6 +325,154 @@ void i8086_Neg16(uint16_t* destination, uint16_t* source)
 	i8086_SetPF16(*destination);
 }
 
+// Unsigned multiplication
+void i8086_Mul8(uint8_t* source)
+{
+	// the destination gets ignored and AX is implied
+	cpu_8086.AX = (uint16_t)cpu_8086.AL * *source;
+
+	cpu_8086.flag_carry = (cpu_8086.AH == 0);
+	cpu_8086.flag_overflow = (cpu_8086.AH == 0);
+}
+
+void i8086_Mul16(uint16_t* source)
+{
+	// the destination gets ignored and AX is implied
+	uint32_t temporary = (uint32_t)(cpu_8086.AX * *source);
+
+	// stored into DX:AX register pair
+	cpu_8086.DX = (temporary >> 16);
+	cpu_8086.AX = (temporary << 16) & 0xFFFF;// mask off
+
+	cpu_8086.flag_carry = (cpu_8086.DX == 0);
+	cpu_8086.flag_overflow = (cpu_8086.DX == 0);
+
+}
+
+// Signed multiplication
+void i8086_Imul8(uint8_t* source)
+{
+	// the destination gets ignored and AL is implied
+	// does this need sign extension?
+	int16_t result = (int8_t)cpu_8086.AL * (int8_t)*source;
+
+	// CF and OF set if AH is not sign extension of AL
+	// 
+	// we can simplify this to 
+	// set if (result<=255)
+	// otherwise no set
+
+	cpu_8086.flag_carry = (result <= 0xFF);
+	cpu_8086.flag_overflow = (result <= 0xFF);
+
+	cpu_8086.AX = (uint16_t)result;
+}
+
+void i8086_Imul16(uint16_t* source)
+{
+	// the destination gets ignored and AX is implied
+	// does this need sign extension?
+	int32_t result = (int16_t)cpu_8086.AX * (int16_t)*source;
+
+	// CF and OF set if AH is not sign extension of AL
+	// 
+	// we can simplify this to 
+	// set if (result<=255)
+	// otherwise no set
+
+	cpu_8086.flag_carry = (result <= 0xFFFF);
+	cpu_8086.flag_overflow = (result <= 0xFFFF);
+
+	// stored into DX:AX register pair
+	cpu_8086.DX = (result >> 16);
+	cpu_8086.AX = (result << 16) & 0xFFFF;// mask off
+}
+
+// Unsigned division
+
+void i8086_Div8(uint8_t * source)
+{
+	if (*source == 0)
+		i8086_InterruptForce(0);		// INT 0 called on division by zero (and documented). But the CPU officially doesn't have exceptions?
+
+	// the destination gets ignored and AX is implied
+	uint16_t temporary = (uint16_t)(cpu_8086.AX / *source);
+
+	if (temporary > 0xFF)
+		i8086_InterruptForce(0);		// INT 0 called if the result doesn't fit in the operand. But the CPU officially doesn't have exceptions?
+
+	cpu_8086.AL = temporary;			//quotient
+	cpu_8086.AH = cpu_8086.AX % *source;	//remainder
+}
+
+void i8086_Div16(uint16_t* source)
+{
+	if (*source == 0)
+		i8086_InterruptForce(0);		// INT 0 called on division by zero (and documented). But the CPU officially doesn't have exceptions?
+
+	uint32_t quotient = (uint32_t)(cpu_8086.DX << 16) + cpu_8086.AX;
+
+	// the destination gets ignored and AX is implied
+	uint32_t temporary = (uint32_t)(quotient / *source);
+
+	if (temporary > 0xFFFF)
+		i8086_InterruptForce(0);		// INT 0 called if the result doesn't fit in the operand. But the CPU officially doesn't have exceptions?
+
+	cpu_8086.AX = temporary;			//quotient
+
+	// get the remainder
+	// so set the new quotient
+	quotient = (uint32_t)(cpu_8086.DX << 16) + cpu_8086.AX;
+	cpu_8086.DX = quotient % *source;	//remainder
+}
+
+// Signed division
+
+void i8086_Idiv8(uint8_t* source)
+{
+	if (*source == 0)
+		i8086_InterruptForce(0);		// INT 0 called on division by zero (and documented). But the CPU officially doesn't have exceptions?
+
+	// the destination gets ignored and AX is implied
+	int16_t temporary = (int16_t)(cpu_8086.AX / *source);
+
+	if (temporary < -0x7F
+		&& temporary > 0x81)
+	{
+		i8086_InterruptForce(0);		// INT 0 called if the result doesn't fit in the operand. But the CPU officially doesn't have exceptions?
+	}
+
+	cpu_8086.AL = temporary;			//quotient
+
+	// yes this is how it is actually implemented it uses the modified version of AX?
+	// so set the new quotient
+	cpu_8086.AH = cpu_8086.AX % *source;	//remainder
+}
+
+void i8086_Idiv16(uint16_t* source)
+{
+	if (*source == 0)
+		i8086_InterruptForce(0);		// INT 0 called on division by zero (and documented). But the CPU officially doesn't have exceptions?
+
+	int32_t quotient = (int32_t)(cpu_8086.DX << 16) + cpu_8086.AX;
+
+	// the destination gets ignored and AX is implied
+	int32_t temporary = (int32_t)(quotient / *source);
+
+	if (temporary < -0x7FFF
+		&& temporary > 0x8001)
+	{
+		i8086_InterruptForce(0);		// INT 0 called if the result doesn't fit in the operand. But the CPU officially doesn't have exceptions?
+	}
+
+	cpu_8086.AX = temporary;			//quotient
+
+	// get the remainder
+	// so set the new quotient
+	quotient = (int32_t)(cpu_8086.DX << 16) + cpu_8086.AX;
+	cpu_8086.DX = quotient % *source;	//remainder
+}
+
 // SAL DOES NOT EXIST ON 8086!
 void i8086_Shl8(uint8_t* destination, uint8_t amount)
 {
@@ -679,20 +827,20 @@ void i8086_MoveSegOff16(uint16_t value, bool direction)
 	{
 	case override_es:
 		seg_ptr = (uint16_t*)&cpu_8086.address_space[(cpu_8086.ES * X86_PARAGRAPH_SIZE) + value];
-		Logging_LogChannel("MOV AL, [ES:%02x]", LogChannel_Debug, value);
+		Logging_LogChannel("MOV AX, [ES:%02x]", LogChannel_Debug, value);
 		break;
 	case override_cs:
 		seg_ptr = (uint16_t*)&cpu_8086.address_space[(cpu_8086.CS * X86_PARAGRAPH_SIZE) + value];
-		Logging_LogChannel("I don't think this is a great idea (MOV AL, [CS:%02x])", LogChannel_Warning, value);
+		Logging_LogChannel("I don't think this is a great idea (MOV AX, [CS:%02x])", LogChannel_Warning, value);
 		break;
 	case override_ss:
 		seg_ptr = (uint16_t*)&cpu_8086.address_space[(cpu_8086.SS * X86_PARAGRAPH_SIZE) + value];
-		Logging_LogChannel("MOV AL, [SS:%02x]", LogChannel_Debug, value);
+		Logging_LogChannel("MOV AX, [SS:%02x]", LogChannel_Debug, value);
 		break;
 	case override_ds:
 	case override_none:
 		seg_ptr = (uint16_t*)&cpu_8086.address_space[(cpu_8086.SS * X86_PARAGRAPH_SIZE) + value];
-		Logging_LogChannel("MOV AL, [DS:%02x]", LogChannel_Debug, value);
+		Logging_LogChannel("MOV AX, [DS:%02x]", LogChannel_Debug, value);
 		break;
 	}
 

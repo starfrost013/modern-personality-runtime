@@ -432,31 +432,72 @@ void i8086_Grp3(uint8_t opcode)
 
 	i8086_modrm_t modrm_info = i8086_ModRM(opcode, temp_imm8u_01);
 
+	// 0xF6		GRP3A
+	// 0xF7		GRP3B
+	bool opcode_byte = (opcode == 0xF6);
+
 	switch (modrm_info.ext_opcode)
 	{
 	case 0:
 		temp_imm8u_02 = i8086_ReadU8(cpu_8086._PC);  // read modrm byte
 		cpu_8086._PC++;
 
-		if (opcode == 0xF6)
+		if (opcode == opcode_byte)
 			i8086_Test8(modrm_info.reg_ptr8, &temp_imm8u_02);
 		else
 			i8086_Test16((uint16_t*)modrm_info.final_offset, &temp_imm8u_02);
+		Logging_LogChannel("TEST %s", LogChannel_Debug, modrm_info.disasm);
+		break;
 	case 1:
 		// Illegal Opcode
 		// But this should still do something...
 		break;
 	case 2:
-		if (opcode == 0xF6)
+		if (opcode == opcode_byte)
 			i8086_Not8(modrm_info.reg_ptr8, &temp_imm8u_02);
 		else
 			i8086_Not16((uint16_t*)modrm_info.final_offset, &temp_imm8u_02);
+		Logging_LogChannel("NOT %s", LogChannel_Debug, modrm_info.disasm);
+		break;
 	case 3:
-		if (opcode == 0xF6)
+		if (opcode == opcode_byte)
 			i8086_Neg8(modrm_info.reg_ptr8, &temp_imm8u_02);
 		else
 			i8086_Neg16((uint16_t*)modrm_info.final_offset, &temp_imm8u_02);
+	
+		Logging_LogChannel("NEG %s", LogChannel_Debug, modrm_info.disasm);
+		break;
+	case 4:
+		if (opcode == opcode_byte)
+			i8086_Mul8(modrm_info.reg_ptr8);
+		else
+			i8086_Mul16((uint16_t*)modrm_info.final_offset);
 
+		Logging_LogChannel("MUL %s", LogChannel_Debug, modrm_info.disasm);
+		break;
+	case 5:
+		if (opcode == opcode_byte)
+			i8086_Imul8(modrm_info.reg_ptr8);
+		else
+			i8086_Imul16((uint16_t*)modrm_info.final_offset);
+
+		Logging_LogChannel("IMUL %s", LogChannel_Debug, modrm_info.disasm);
+		break;
+	case 6:
+		if (opcode == opcode_byte)
+			i8086_Div8(modrm_info.reg_ptr8);
+		else
+			i8086_Div16((uint16_t*)modrm_info.final_offset);
+
+		Logging_LogChannel("DIV %s", LogChannel_Debug, modrm_info.disasm);
+		break;
+	case 7:
+		if (opcode == opcode_byte)
+			i8086_Idiv8(modrm_info.reg_ptr8);
+		else
+			i8086_Idiv16((uint16_t*)modrm_info.final_offset);
+
+		Logging_LogChannel("IDIV %s", LogChannel_Debug, modrm_info.disasm);
 		break;
 	}
 }
@@ -468,6 +509,6 @@ void i8086_Grp4(uint8_t opcode)
 
 void i8086_Grp5(uint8_t opcode)
 {
-
+	Logging_LogChannel("GRP5 NOT IMPLEMENTED!", LogChannel_Debug);
 }
 

@@ -106,7 +106,7 @@ void Logging_Log(const char* text, LogChannel channel, va_list args)
 		return;
 	}
 
-// if solely printing debug channel, return on release build
+// if solely printing debug channel, return on release builds
 #if !X86_DEBUG
 	if (channel == LogChannel_Debug)
 	{

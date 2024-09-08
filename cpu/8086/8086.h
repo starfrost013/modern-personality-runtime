@@ -104,6 +104,10 @@ void i8086_SetSF16(uint16_t result);															// Set sign flag based on 8-b
 // utilities
 bool i8086_IsGroupOpcode(uint8_t opcode);								// For debug disassembly: Determines if an opcode is a group opcode or not.
 
+// interrupts
+void i8086_Interrupt();
+void i8086_InterruptForce(uint8_t interrupt_num);
+
 // instructions both filtered through immediates and MOdR/m
 
 // arithmetic and compare
@@ -134,18 +138,18 @@ void i8086_Not16(uint16_t* destination, uint16_t* source);				// 16-bit NOT: Des
 void i8086_Neg8(uint8_t* destination, uint8_t* source);					// 8-bit NEG: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
 void i8086_Neg16(uint16_t* destination, uint16_t* source);				// 16-bit NEG: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
 
-void i8086_Mul8(uint8_t* destination, uint8_t* source);					// 8-bit MUL: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
-void i8086_Mul16(uint16_t* destination, uint16_t* source);				// 16-bit MUL: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+void i8086_Mul8(uint8_t* source);										// 8-bit MUL: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+void i8086_Mul16(uint16_t* source);										// 16-bit MUL: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
 
-void i8086_Imul8(uint8_t* destination, uint8_t* source);				// 8-bit IMUL: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
-void i8086_Imul6(uint16_t* destination, uint16_t* source);				// 16-bit IMUL: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+// Signed (why is it "I" MUL?)
+void i8086_Imul8(uint8_t* source);										// 8-bit IMUL: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+void i8086_Imul16(uint16_t* source);									// 16-bit IMUL: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
 
-void i8086_Div8(uint8_t* destination, uint8_t* source);					// 8-bit DIV: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
-void i8086_Div16(uint16_t* destination, uint16_t* source);				// 16-bit DIV: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+void i8086_Div8(uint8_t* source);										// 8-bit DIV: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+void i8086_Div16(uint16_t* source);										// 16-bit DIV: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
 
-void i8086_Idiv8(uint8_t* destination, uint8_t* source);				// 8-bit IDIV: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
-void i8086_Idiv16(uint16_t* destination, uint16_t* source);				// 16-bit IDIV: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
-
+void i8086_Idiv8(uint8_t* source);										// 8-bit IDIV: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+void i8086_Idiv16(uint16_t* source);									// 16-bit IDIV: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
 
 
 // bit manip

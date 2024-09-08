@@ -419,6 +419,7 @@ void i8086_Update()
 				cpu_8086._PC++;
 				i8086_Xor8(&cpu_8086.AX, temp_imm16u_01);
 				cpu_8086.IP += 3;
+
 				Logging_LogChannel("XOR AX, %04Xh", LogChannel_Debug, temp_imm8u);
 				break;
 			case 0x38:
@@ -428,9 +429,8 @@ void i8086_Update()
 
 				i8086_Cmp8(modrm_info.final_offset, modrm_info.reg_ptr8);
 				cpu_8086.IP += 2;
-#if X86_DEBUG
+
 				Logging_LogChannel("CMP %s", LogChannel_Debug, modrm_info.disasm);
-#endif
 				break;
 			case 0x39:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
@@ -439,9 +439,8 @@ void i8086_Update()
 
 				i8086_Cmp16(modrm_info.final_offset, modrm_info.reg_ptr16);
 				cpu_8086.IP += 2;
-#if X86_DEBUG
+
 				Logging_LogChannel("CMP %s", LogChannel_Debug, modrm_info.disasm);
-#endif
 				break;
 			case 0x3A:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
@@ -450,9 +449,9 @@ void i8086_Update()
 
 				i8086_Cmp8(modrm_info.reg_ptr8, modrm_info.final_offset);
 				cpu_8086.IP += 2;
-#if X86_DEBUG
+
 				Logging_LogChannel("CMP %s", LogChannel_Debug, modrm_info.disasm);
-#endif
+
 				break;
 			case 0x3B:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
@@ -461,9 +460,9 @@ void i8086_Update()
 
 				i8086_Cmp16(modrm_info.reg_ptr16, modrm_info.final_offset);
 				cpu_8086.IP += 2;
-#if X86_DEBUG
+
 				Logging_LogChannel("CMP %s", LogChannel_Debug, modrm_info.disasm);
-#endif
+
 				break;
 			case 0x3C:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
@@ -1133,29 +1132,7 @@ void i8086_Update()
 				cpu_8086.IP++;
 				break;
 			case 0xCD:
-				interrupt_num = i8086_ReadU8(cpu_8086._PC); //increment IP and read 
-				cpu_8086._PC++;
-
-				Logging_LogChannel("The application called an interrupt service routine.\n\n"
-					"INT %02Xh AX=%04Xh BX=%04Xh CX=%04Xh DX=%04Xh\n"
-					"CS=%04Xh IP=%04Xh (Physical address of PC=%05X) DS=%04Xh ES=%04Xh SS=%04Xh\n"
-					"BP=%04Xh DI=%04Xh SI=%04Xh", LogChannel_Debug, interrupt_num,
-					cpu_8086.AX, cpu_8086.BX, cpu_8086.CX, cpu_8086.DX, cpu_8086.CS, cpu_8086.IP, cpu_8086._PC, cpu_8086.DS, cpu_8086.ES, cpu_8086.SS,
-					cpu_8086.BP, cpu_8086.DI, cpu_8086.ES);
-				
-				switch (interrupt_num)
-				{
-				case 0x21:				// General DOS API dispatcher.
-					MSDOS_Int21();
-					break;
-				default:
-					// nothing to do beyond here the program will crash anyway 
-					Logging_LogChannel("UNHANDLED int %04Xh called (likely unimplemented)", LogChannel_Fatal, interrupt_num);
-					break;
-				}
-
-				cpu_8086.IP += 2;
-
+				i8086_Interrupt(); // call interrupt service
 				break;
 			case 0xD0:
 			case 0xD1:
@@ -1193,9 +1170,6 @@ void i8086_Update()
 					
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
-
-				break;
-
 
 				// otherwise read a byte and do nothing
 
