@@ -322,7 +322,7 @@ void i8086_Neg16(uint16_t* source)
 	i8086_SetOF16(*source, *source, original_value, false);
 	i8086_SetSF16(*source);
 	i8086_SetAF16(*source, *source, original_value);
-	i8086_SetPF16(*destination);
+	i8086_SetPF16(*source);
 }
 
 // Unsigned multiplication
