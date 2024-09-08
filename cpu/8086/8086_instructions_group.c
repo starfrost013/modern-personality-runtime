@@ -537,12 +537,12 @@ void i8086_Grp4(uint8_t opcode)
 	switch (modrm_info.ext_opcode)
 	{
 	case 0: // INC
-		*modrm_info.reg_ptr8++;
+		(*modrm_info.reg_ptr8)++;
 
 		Logging_LogChannel("INC %s", LogChannel_Debug, modrm_info.disasm);
 		break;
 	case 1: // DEC
-		*modrm_info.reg_ptr8--;
+		(*modrm_info.reg_ptr8)--;
 
 		Logging_LogChannel("DEC %s", LogChannel_Debug, modrm_info.disasm);
 		break;
