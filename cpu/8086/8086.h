@@ -128,19 +128,39 @@ void i8086_And16(uint16_t* destination, uint16_t* source);				// 16-bit AND: Des
 void i8086_Xor8(uint8_t* destination, uint8_t* source);					// 8-bit XOR: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
 void i8086_Xor16(uint16_t* destination, uint16_t* source);				// 16-bit XOR: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
 
+void i8086_Not8(uint8_t* destination, uint8_t* source);					// 8-bit NOT: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+void i8086_Not16(uint16_t* destination, uint16_t* source);				// 16-bit NOT: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+
+void i8086_Neg8(uint8_t* destination, uint8_t* source);					// 8-bit NEG: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+void i8086_Neg16(uint16_t* destination, uint16_t* source);				// 16-bit NEG: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+
+void i8086_Mul8(uint8_t* destination, uint8_t* source);					// 8-bit MUL: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+void i8086_Mul16(uint16_t* destination, uint16_t* source);				// 16-bit MUL: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+
+void i8086_Imul8(uint8_t* destination, uint8_t* source);				// 8-bit IMUL: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+void i8086_Imul6(uint16_t* destination, uint16_t* source);				// 16-bit IMUL: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+
+void i8086_Div8(uint8_t* destination, uint8_t* source);					// 8-bit DIV: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+void i8086_Div16(uint16_t* destination, uint16_t* source);				// 16-bit DIV: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+
+void i8086_Idiv8(uint8_t* destination, uint8_t* source);				// 8-bit IDIV: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+void i8086_Idiv16(uint16_t* destination, uint16_t* source);				// 16-bit IDIV: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+
+
+
 // bit manip
 // no, sal doesn't exist on 8086.
 void i8086_Shl8(uint8_t* destination, uint8_t amount);					// 8-bit SHL: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
-void i8086_Shl16(uint16_t* destination, uint8_t amount);				// 16-bit SHL: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+void i8086_Shl16(uint16_t* destination, uint8_t amount);				// 16-bit SHL: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
 
 void i8086_Shr8(uint8_t* destination, uint8_t amount, bool sar);		// 8-bit SHL: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
-void i8086_Shr16(uint16_t* destination, uint8_t amount, bool sar);		// 16-bit SHL: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+void i8086_Shr16(uint16_t* destination, uint8_t amount, bool sar);		// 16-bit SHL: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
 
 void i8086_Rol8(uint8_t* destination, uint8_t amount, bool rcl);		// 8-bit SHL: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
-void i8086_Rol16(uint16_t* destination, uint8_t amount, bool rcl);		// 16-bit SHL: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+void i8086_Rol16(uint16_t* destination, uint8_t amount, bool rcl);		// 16-bit SHL: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
 
 void i8086_Ror8(uint8_t* destination, uint8_t amount, bool rcr);		// 8-bit ROR: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
-void i8086_Ror16(uint16_t* destination, uint8_t amount, bool rcr);		// 16-bit ROR: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+void i8086_Ror16(uint16_t* destination, uint8_t amount, bool rcr);		// 16-bit ROR: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
 
 // instruction decode
 i8086_modrm_t i8086_ModRM(uint8_t opcode, uint8_t modrm);		// Parse ModR/M byte

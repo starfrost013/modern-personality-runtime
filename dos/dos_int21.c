@@ -11,7 +11,8 @@
 void MSDOS_Int21()
 {
 	basecpu_t* cpu = CPU_Get();
-	Logging_LogChannel("INT 21 DISPATCHER ENTRY AH=%d", LogChannel_Debug, cpu->AH);
+
+	Logging_LogChannel("INT 21 DISPATCHER ENTRY AH=%0x", LogChannel_Debug, cpu->AH);
 
 	// TODO: INVALID FUNCTION HANDLER!!!!
 

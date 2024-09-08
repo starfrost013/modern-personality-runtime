@@ -439,19 +439,31 @@ void i8086_Grp3(uint8_t opcode)
 		cpu_8086._PC++;
 
 		if (opcode == 0xF6)
-		{
 			i8086_Test8(modrm_info.reg_ptr8, &temp_imm8u_02);
-		}
 		else
-		{
 			i8086_Test16((uint16_t*)modrm_info.final_offset, &temp_imm8u_02);
-		}
+	case 1:
+		// Illegal Opcode
+		// But this should still do something...
+		break;
+	case 2:
+		if (opcode == 0xF6)
+			i8086_Not8(modrm_info.reg_ptr8, &temp_imm8u_02);
+		else
+			i8086_Not16((uint16_t*)modrm_info.final_offset, &temp_imm8u_02);
+	case 3:
+		if (opcode == 0xF6)
+			i8086_Neg8(modrm_info.reg_ptr8, &temp_imm8u_02);
+		else
+			i8086_Neg16((uint16_t*)modrm_info.final_offset, &temp_imm8u_02);
+
+		break;
 	}
 }
 
 void i8086_Grp4(uint8_t opcode)
 {
-
+	Logging_LogChannel("GRP4 NOT IMPLEMENTED!", LogChannel_Debug);
 }
 
 void i8086_Grp5(uint8_t opcode)

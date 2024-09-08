@@ -163,11 +163,10 @@ void i8086_Test8(uint8_t* destination, uint8_t* source)
 
 	i8086_SetPF8(temp);
 	
-	i8086_t* cpu_i8086 = (i8086_t*)CPU_Get();
 
 	//always set to false
-	cpu_i8086->flag_carry = false;
-	cpu_i8086->flag_overflow = false;
+	cpu_8086.flag_carry = false;
+	cpu_8086.flag_overflow = false;
 
 	//result discarded
 }
@@ -180,11 +179,9 @@ void i8086_Test16(uint16_t* destination, uint16_t* source)
 
 	i8086_SetPF16(temp >> 8); // only uses MSB
 
-	i8086_t* cpu_i8086 = (i8086_t*)CPU_Get();
-
 	//always set to false
-	cpu_i8086->flag_carry = false;
-	cpu_i8086->flag_overflow = false;
+	cpu_8086.flag_carry = false;
+	cpu_8086.flag_overflow = false;
 
 	//result discarded
 }
@@ -280,6 +277,52 @@ void i8086_Xor16(uint16_t* destination, uint16_t* source)
 	i8086_SetZF16(*destination);
 	i8086_SetPF16(*destination);
 	i8086_SetSF16(*destination);
+}
+
+void i8086_Not8(uint8_t* destination, uint8_t* source)
+{
+	// no flags
+	*destination = ~*source;
+}
+
+void i8086_Not16(uint16_t* destination, uint16_t* source)
+{
+	// no flags
+	*destination = ~*source;
+}
+
+void i8086_Neg8(uint8_t* destination, uint8_t* source)
+{
+	uint8_t original_value = 0;
+	// so the original value doesn't get overwritten
+	memcpy(&original_value, destination, sizeof(uint8_t));
+
+	cpu_8086.flag_carry = (*source == 0);
+
+	*destination = -*source;
+
+	i8086_SetZF8(*destination);
+	i8086_SetOF8(*destination, *source, original_value, false);
+	i8086_SetSF8(*destination);
+	i8086_SetAF8(*destination, *source, original_value);
+	i8086_SetPF8(*destination);
+}
+
+void i8086_Neg16(uint16_t* destination, uint16_t* source)
+{
+	uint16_t original_value = 0;
+	// so the original value doesn't get overwritten
+
+	memcpy(&original_value, destination, sizeof(uint16_t));
+	cpu_8086.flag_carry = (*source == 0);
+
+	*destination = -*source;
+
+	i8086_SetZF16(*destination);
+	i8086_SetOF16(*destination, *source, original_value, false);
+	i8086_SetSF16(*destination);
+	i8086_SetAF16(*destination, *source, original_value);
+	i8086_SetPF16(*destination);
 }
 
 // SAL DOES NOT EXIST ON 8086!

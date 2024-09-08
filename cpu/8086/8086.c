@@ -1149,7 +1149,8 @@ void i8086_Update()
 					MSDOS_Int21();
 					break;
 				default:
-					Logging_LogChannel("UNHANDLED int %04Xh called (likely unimplemented)", interrupt_num);
+					// nothing to do beyond here the program will crash anyway 
+					Logging_LogChannel("UNHANDLED int %04Xh called (likely unimplemented)", LogChannel_Fatal, interrupt_num);
 					break;
 				}
 
@@ -1162,6 +1163,45 @@ void i8086_Update()
 			case 0xD3:
 				i8086_Grp2(next_opcode);
 				break;
+			// Coprocessor Escape (0xD8-0xDF)
+			case 0xD8:
+			case 0xD9:
+			case 0xDA:
+			case 0xDB:
+			case 0xDC:
+			case 0xDD:
+			case 0xDE:
+			case 0xDF:
+				Logging_LogChannel("Tried to execute Intel 8087 coprocessor escape instruction. NOT IMPLEMENTED! Faking it...", LogChannel_Warning);
+
+				// pretend that we did that anyway
+				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
+				cpu_8086._PC++;
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
+
+				// literally do nothing
+				if (modrm_info.rm == 0b11)
+					break;
+				// two displacement bytes
+				else if (modrm_info.rm == 0b10)
+				{
+					temp_imm16u_01 = i8086_ReadU16(cpu_8086._PC);
+					cpu_8086._PC += 2;
+					break;
+				}
+				// one displacement byte
+					
+				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
+				cpu_8086._PC++;
+
+				break;
+
+
+				// otherwise read a byte and do nothing
+
+				Logging_LogChannel("ESC [UNIMPLEMENTED]", LogChannel_Debug, temp_imm8s);
+				break;
+
 			case 0xE0:
 				temp_imm8s = i8086_ReadS8(cpu_8086._PC++);
 				i8086_Loop(temp_imm8s, cpu_8086.CX > 0);
@@ -1220,8 +1260,12 @@ void i8086_Update()
 			case 0xF5:
 				Logging_LogChannel("CMC", LogChannel_Debug);
 				// IGNORE THIS WARNING, THIS IS WHAT THE INSTRUCTION IS MEANT TO DO 
-				cpu_8086.flag_carry = ~cpu_8086.flag_carry; // get complement
+				cpu_8086.flag_carry = !cpu_8086.flag_carry; // get complement
 				cpu_8086.IP++;
+				break;
+			case 0xF6: // grp3a
+			case 0xF7: // grp3b
+				i8086_Grp3(next_opcode);
 				break;
 			case 0xF8:
 				Logging_LogChannel("CLC", LogChannel_Debug);
@@ -1252,6 +1296,12 @@ void i8086_Update()
 				Logging_LogChannel("CLD", LogChannel_Debug);
 				cpu_8086.flag_direction = false;
 				cpu_8086.IP++;
+				break;
+			case 0xFE:  // grp4
+				i8086_Grp4(next_opcode);
+				break;
+			case 0xFF:  // grp5
+				i8086_Grp5(next_opcode);
 				break;
 			default:
 				Logging_LogChannel("Unimplemented 8086 opcode 0x%X @ %04Xh:%04Xh", LogChannel_Error, next_opcode, cpu_8086.CS, cpu_8086.IP);
