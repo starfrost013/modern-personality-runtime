@@ -446,11 +446,18 @@ void i8086_Grp3(uint8_t opcode)
 			i8086_Test8(modrm_info.reg_ptr8, &temp_imm8u_02);
 		else
 			i8086_Test16((uint16_t*)modrm_info.final_offset, &temp_imm8u_02);
+
 		Logging_LogChannel("TEST %s", LogChannel_Debug, modrm_info.disasm);
 		break;
 	case 1:
-		// Illegal Opcode that sets the register to -1
+		if (opcode == opcode_byte)
+			i8086_Setmo8(modrm_info.reg_ptr8);
+		else
+			i8086_Setmo16((uint16_t*)modrm_info.final_offset);
 
+		// SETMO
+		// Was this ever used in software?
+		Logging_LogChannel("[Illegal Opcode - 8086 Only] SETMO %s", LogChannel_Debug, modrm_info.disasm);
 		break;
 	case 2:
 		if (opcode == opcode_byte)

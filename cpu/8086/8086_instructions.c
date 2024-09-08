@@ -325,6 +325,17 @@ void i8086_Neg16(uint16_t* source)
 	i8086_SetPF16(*source);
 }
 
+void i8086_Setmo8(uint8_t* source)
+{
+	*source = (uint8_t)-1;
+}
+
+void i8086_Setmo16(uint16_t* source)
+{
+	*source = (uint16_t)-1;
+}
+
+
 // Unsigned multiplication
 void i8086_Mul8(uint8_t* source)
 {
