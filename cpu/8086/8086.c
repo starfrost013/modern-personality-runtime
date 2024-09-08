@@ -1140,6 +1140,11 @@ void i8086_Update()
 			case 0xD3:
 				i8086_Grp2(next_opcode);
 				break;
+			case 0xD6:
+				// SALC (undocumented copyright trap instruction, intel 8086 only)
+				cpu_8086.AL = (cpu_8086.flag_carry) ? 0xFF : 0x00;
+				Logging_LogChannel("SALC", LogChannel_Debug);
+				break;
 			// Coprocessor Escape (0xD8-0xDF)
 			case 0xD8:
 			case 0xD9:
