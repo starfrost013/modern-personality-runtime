@@ -16,11 +16,11 @@
 
 const char help_message[] =
 { 
-	"modern:personality Runtime Help\n\n" 
+	"dev16 Help\n\n" 
 	"--REQUIRED USAGE--\n"
-	"x86-16 -dosver filename\n\n"
+	"dev16 -dosver filename\n\n"
 	"--OPTIONAL USAGE--\n"
-	"x86-16 [-mtdosver] filename\n\n"
+	"dev16 [-mtdosver] filename\n\n"
 	"--REQUIRED ARGUMENTS--\n"
 	"-filename: Provides a .COM, .EXE (MZ or NE) file to run.\n"
 	"-dosver: Provides a (non-multitasking) MS-DOS API level.\n\n"
@@ -51,7 +51,8 @@ int main(int argc, char* argv[])
 {
 	Logging_Init();
 
-	Logging_LogAll("modern:personality Runtime v%s (%s %s)", X86_VERSION, __DATE__, __TIME__);
+	Logging_LogAll("dev16 v%s (%s %s)", X86_VERSION, __DATE__, __TIME__);
+	Logging_LogAll("Develop for ancient computers on modern ones");
 	Logging_LogAll("© 2023-2024 starfrost");
 
 	if (!CMD_Parse(argc, argv))
