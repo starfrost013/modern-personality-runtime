@@ -438,7 +438,7 @@ void i8086_Grp3(uint8_t opcode)
 
 	switch (modrm_info.ext_opcode)
 	{
-	case 0:
+	case 0:	// TEST
 		temp_imm8u_02 = i8086_ReadU8(cpu_8086._PC);  // read modrm byte
 		cpu_8086._PC++;
 
@@ -449,7 +449,7 @@ void i8086_Grp3(uint8_t opcode)
 
 		Logging_LogChannel("TEST %s", LogChannel_Debug, modrm_info.disasm);
 		break;
-	case 1:
+	case 1: // SETMO (this isn't actually a real opcode, just a side effect of how the ALU works)
 		if (opcode == opcode_byte)
 			i8086_Setmo8(modrm_info.reg_ptr8);
 		else
@@ -459,7 +459,7 @@ void i8086_Grp3(uint8_t opcode)
 		// Was this ever used in software?
 		Logging_LogChannel("[Illegal Opcode - 8086 Only] SETMO %s", LogChannel_Debug, modrm_info.disasm);
 		break;
-	case 2:
+	case 2: // NOT
 		if (opcode == opcode_byte)
 			i8086_Not8(modrm_info.reg_ptr8);
 		else
@@ -467,7 +467,7 @@ void i8086_Grp3(uint8_t opcode)
 
 		Logging_LogChannel("NOT %s", LogChannel_Debug, modrm_info.disasm);
 		break;
-	case 3:
+	case 3: // NEG
 		if (opcode == opcode_byte)
 			i8086_Neg8(modrm_info.reg_ptr8, &temp_imm8u_02);
 		else
@@ -475,7 +475,7 @@ void i8086_Grp3(uint8_t opcode)
 	
 		Logging_LogChannel("NEG %s", LogChannel_Debug, modrm_info.disasm);
 		break;
-	case 4:
+	case 4: // MUL
 		if (opcode == opcode_byte)
 			i8086_Mul8(modrm_info.reg_ptr8);
 		else
@@ -483,7 +483,7 @@ void i8086_Grp3(uint8_t opcode)
 
 		Logging_LogChannel("MUL %s", LogChannel_Debug, modrm_info.disasm);
 		break;
-	case 5:
+	case 5: // IMUL
 		if (opcode == opcode_byte)
 			i8086_Imul8(modrm_info.reg_ptr8);
 		else
@@ -491,7 +491,7 @@ void i8086_Grp3(uint8_t opcode)
 
 		Logging_LogChannel("IMUL %s", LogChannel_Debug, modrm_info.disasm);
 		break;
-	case 6:
+	case 6: // DIV
 		if (opcode == opcode_byte)
 			i8086_Div8(modrm_info.reg_ptr8);
 		else
@@ -499,7 +499,7 @@ void i8086_Grp3(uint8_t opcode)
 
 		Logging_LogChannel("DIV %s", LogChannel_Debug, modrm_info.disasm);
 		break;
-	case 7:
+	case 7: // IDIV
 		if (opcode == opcode_byte)
 			i8086_Idiv8(modrm_info.reg_ptr8);
 		else
@@ -512,7 +512,23 @@ void i8086_Grp3(uint8_t opcode)
 
 void i8086_Grp4(uint8_t opcode)
 {
-	Logging_LogChannel("GRP4 NOT IMPLEMENTED!", LogChannel_Debug);
+	uint8_t temp_imm8u_01 = i8086_ReadU8(cpu_8086._PC); // read modrm byte
+	uint8_t temp_imm8u_02 = 0x00;
+
+	cpu_8086._PC++;
+
+	i8086_modrm_t modrm_info = i8086_ModRM(opcode, temp_imm8u_01);
+
+	switch (modrm_info.ext_opcode)
+	{
+	case 0: // INC
+		*modrm_info.reg_ptr8++;
+		break;
+	case 1: // DEC
+		*modrm_info.reg_ptr8--;
+		break;
+	// need to do more research on 2-6 they are fucked up calls and jumps
+	}
 }
 
 void i8086_Grp5(uint8_t opcode)
