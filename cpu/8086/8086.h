@@ -132,11 +132,11 @@ void i8086_And16(uint16_t* destination, uint16_t* source);				// 16-bit AND: Des
 void i8086_Xor8(uint8_t* destination, uint8_t* source);					// 8-bit XOR: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
 void i8086_Xor16(uint16_t* destination, uint16_t* source);				// 16-bit XOR: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
 
-void i8086_Not8(uint8_t* destination, uint8_t* source);					// 8-bit NOT: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
-void i8086_Not16(uint16_t* destination, uint16_t* source);				// 16-bit NOT: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+void i8086_Not8(uint8_t* source);										// 8-bit NOT: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+void i8086_Not16(uint16_t* source);										// 16-bit NOT: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
 
-void i8086_Neg8(uint8_t* destination, uint8_t* source);					// 8-bit NEG: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
-void i8086_Neg16(uint16_t* destination, uint16_t* source);				// 16-bit NEG: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+void i8086_Neg8(uint8_t* source);										// 8-bit NEG: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
+void i8086_Neg16(uint16_t* source);										// 16-bit NEG: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
 
 void i8086_Mul8(uint8_t* source);										// 8-bit MUL: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
 void i8086_Mul16(uint16_t* source);										// 16-bit MUL: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.

@@ -449,14 +449,15 @@ void i8086_Grp3(uint8_t opcode)
 		Logging_LogChannel("TEST %s", LogChannel_Debug, modrm_info.disasm);
 		break;
 	case 1:
-		// Illegal Opcode
-		// But this should still do something...
+		// Illegal Opcode that sets the register to -1
+
 		break;
 	case 2:
 		if (opcode == opcode_byte)
-			i8086_Not8(modrm_info.reg_ptr8, &temp_imm8u_02);
+			i8086_Not8(modrm_info.reg_ptr8);
 		else
-			i8086_Not16((uint16_t*)modrm_info.final_offset, &temp_imm8u_02);
+			i8086_Not16((uint16_t*)modrm_info.final_offset);
+
 		Logging_LogChannel("NOT %s", LogChannel_Debug, modrm_info.disasm);
 		break;
 	case 3:

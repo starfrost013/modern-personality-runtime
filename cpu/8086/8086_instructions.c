@@ -279,49 +279,49 @@ void i8086_Xor16(uint16_t* destination, uint16_t* source)
 	i8086_SetSF16(*destination);
 }
 
-void i8086_Not8(uint8_t* destination, uint8_t* source)
+void i8086_Not8(uint8_t* source)
 {
 	// no flags
-	*destination = ~*source;
+	*source = ~*source;
 }
 
-void i8086_Not16(uint16_t* destination, uint16_t* source)
+void i8086_Not16(uint16_t* source)
 {
 	// no flags
-	*destination = ~*source;
+	*source = ~*source;
 }
 
-void i8086_Neg8(uint8_t* destination, uint8_t* source)
+void i8086_Neg8(uint8_t* source)
 {
 	uint8_t original_value = 0;
 	// so the original value doesn't get overwritten
-	memcpy(&original_value, destination, sizeof(uint8_t));
+	memcpy(&original_value, source, sizeof(uint8_t));
 
 	cpu_8086.flag_carry = (*source == 0);
 
-	*destination = -*source;
+	*source = -*source;
 
-	i8086_SetZF8(*destination);
-	i8086_SetOF8(*destination, *source, original_value, false);
-	i8086_SetSF8(*destination);
-	i8086_SetAF8(*destination, *source, original_value);
-	i8086_SetPF8(*destination);
+	i8086_SetZF8(*source);
+	i8086_SetOF8(*source, *source, original_value, false);
+	i8086_SetSF8(*source);
+	i8086_SetAF8(*source, *source, original_value);
+	i8086_SetPF8(*source);
 }
 
-void i8086_Neg16(uint16_t* destination, uint16_t* source)
+void i8086_Neg16(uint16_t* source)
 {
 	uint16_t original_value = 0;
 	// so the original value doesn't get overwritten
 
-	memcpy(&original_value, destination, sizeof(uint16_t));
+	memcpy(&original_value, source, sizeof(uint16_t));
 	cpu_8086.flag_carry = (*source == 0);
 
-	*destination = -*source;
+	*source = -*source;
 
-	i8086_SetZF16(*destination);
-	i8086_SetOF16(*destination, *source, original_value, false);
-	i8086_SetSF16(*destination);
-	i8086_SetAF16(*destination, *source, original_value);
+	i8086_SetZF16(*source);
+	i8086_SetOF16(*source, *source, original_value, false);
+	i8086_SetSF16(*source);
+	i8086_SetAF16(*source, *source, original_value);
 	i8086_SetPF16(*destination);
 }
 
