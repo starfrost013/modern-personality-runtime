@@ -335,7 +335,6 @@ void i8086_Setmo16(uint16_t* source)
 	*source = (uint16_t)-1;
 }
 
-
 // Unsigned multiplication
 void i8086_Mul8(uint8_t* source)
 {
@@ -789,6 +788,49 @@ uint16_t i8086_Pop()
 	cpu_8086._realSP += 2;
 	uint16_t ret_val = (cpu_8086.address_space[cpu_8086._realSP + 1] << 8) + cpu_8086.address_space[cpu_8086._realSP];
 	return ret_val;
+}
+
+// Pushes flag registers to the stack
+void i8086_Pushf()
+{
+	cpu_8086.SP -= 2;
+	
+	uint16_t* ptr = (uint16_t*)cpu_8086.address_space[cpu_8086._realSP];
+
+	// bits 12-15 always 1 (bit 15 is 0 on a 286+)
+	*ptr = 0xF000;
+
+	// populate the top of the stack with the various flags
+	if (cpu_8086.flag_overflow) *ptr |= 0x800;
+	if (cpu_8086.flag_direction) *ptr |= 0x400;
+	if (cpu_8086.flag_interrupt_enable) *ptr |= 0x200;
+	if (cpu_8086.flag_trap) *ptr |= 0x100;
+	if (cpu_8086.flag_sign) *ptr |= 0x80;
+	if (cpu_8086.flag_zero) *ptr |= 0x40;
+	//bit5 undefined per 8086 user's manual
+	if (cpu_8086.flag_aux_carry) *ptr |= 0x10;
+	if (cpu_8086.flag_parity) *ptr |= 0x4;
+	if (cpu_8086.flag_carry) *ptr |= 0x1;
+
+	Logging_LogChannel("PUSHF", LogChannel_Debug);
+}
+
+void i8086_Popf()
+{
+	uint16_t* ptr = (uint16_t*)cpu_8086.address_space[cpu_8086._realSP];
+
+	cpu_8086.flag_overflow = GET_BIT(*ptr, 11);
+	cpu_8086.flag_direction = GET_BIT(*ptr, 10);
+	cpu_8086.flag_interrupt_enable = GET_BIT(*ptr, 9);
+	cpu_8086.flag_trap = GET_BIT(*ptr, 8);
+	cpu_8086.flag_sign = GET_BIT(*ptr, 7);
+	cpu_8086.flag_zero = GET_BIT(*ptr, 6);
+	cpu_8086.flag_aux_carry = GET_BIT(*ptr, 4);
+	cpu_8086.flag_parity = GET_BIT(*ptr, 2);
+	cpu_8086.flag_carry = GET_BIT(*ptr, 0);
+	cpu_8086.SP += 2;
+
+	Logging_LogChannel("POPF", LogChannel_Debug);
 }
 
 void i8086_MoveSegOff8(uint8_t value, bool direction)

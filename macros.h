@@ -18,8 +18,8 @@
 /*#define BIG_ENDIAN		(volatile uint32_t i = 0x0D15EA5E) \
 							((*((uint8_t*)(&i))) != 0x5E);*/
 
-// uint16_t: bit 0 = 32768, bit 1 = 16384, etc etc etc 
-#define BIT(x) 1 << x;
+// pull a single bit out of a numeric value
+#define GET_BIT(val, x) (val & (1 << x)) & 1;
 
 #define MAX_PATH_MODERN		260		// Not actually the path limit, just the modern-ish path limmit
 #define MAX_PATH_LEGACY		11		// 8.3 filename

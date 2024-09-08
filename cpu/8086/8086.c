@@ -892,7 +892,8 @@ void i8086_Update()
 				cpu_8086.IP++;
 				Logging_LogChannel("XCHG DI, AX", LogChannel_Debug);
 				break;
-			case 0x9A:
+
+			case 0x9A: // CALL FAR
 				i8086_Push(cpu_8086.IP + 4); // offset of return address after call
 				i8086_Push(cpu_8086.CS);     // and the segment
 
@@ -903,6 +904,12 @@ void i8086_Update()
 				cpu_8086.CS = temp_imm16u_02;
 
 				Logging_LogChannel("CALL FAR %04Xh:%04Xh", LogChannel_Debug, temp_imm16u_01, temp_imm16u_02);
+				break;
+			case 0x9C: // PUSHF
+				i8086_Pushf();
+				break;
+			case 0x9D: // POPF
+				i8086_Popf();
 				break;
 			case 0x9E: // SAHF
 				cpu_8086.flag_sign = (cpu_8086.AH) & 0x80;			//bit0

@@ -552,6 +552,38 @@ void i8086_Grp4(uint8_t opcode)
 
 void i8086_Grp5(uint8_t opcode)
 {
-	Logging_LogChannel("GRP5 NOT IMPLEMENTED!", LogChannel_Debug);
+	uint8_t temp_imm16u_01 = i8086_ReadU16(cpu_8086._PC); // read modrm byte
+	uint8_t temp_imm16u_02 = 0x00;
+
+	cpu_8086._PC++;
+
+	i8086_modrm_t modrm_info = i8086_ModRM(opcode, temp_imm16u_01);
+
+	switch (modrm_info.ext_opcode)
+	{
+	case 0: // INC
+		(*modrm_info.final_offset)++;
+
+		Logging_LogChannel("INC %s", LogChannel_Debug, modrm_info.disasm);
+		break;
+	case 1: // DEC
+		(*modrm_info.final_offset)--;
+
+		Logging_LogChannel("DEC %s", LogChannel_Debug, modrm_info.disasm);
+		break;
+		// need to do more research on 2-6 they are fucked up calls and jumps
+	case 2: // CALL
+		break;
+	case 3: // CALL, but R/M byte is memory only
+		break;
+	case 4: // JMP
+		break;
+	case 5: // JMP, but R/M byte is memory only
+		break;
+	case 6: // PUSH
+		break;
+	case 7: 
+		break; //illegal opcode wtf?
+	}
 }
 
