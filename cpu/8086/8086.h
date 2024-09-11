@@ -9,7 +9,7 @@
 // Defines intel 8086 specific stuff, on top of basecpu.
 //
 
-#define ADDRESS_SPACE_8086		1048576					// Size of the Intel 8086 address space.
+#define ADDRESS_SPACE_SIZE_8086		1048576					// Size of the Intel 8086 address space.
 
 #if X86_DEBUG
 #define DISASM_STR_SIZE			48						// Size of the disassembly string for ModR/M in debug builds.
@@ -66,13 +66,14 @@ typedef enum i8086_repeat_s
 
 typedef struct i8086_s
 {
-	struct			basecpu_s;
-	uint8_t			address_space[ADDRESS_SPACE_8086];
+	struct			basecpu_s;			// BASE cpu structure
+	uint8_t			address_space[ADDRESS_SPACE_SIZE_8086];
 
-	bool			halted;				// 'HLT' instruction ran
-	bool			int3;				// 'INT3' instruction ran
+	bool			halted;				// Was a 'HLT' instruction ran?
+	bool			int3;				// Was a 'INT3' instruction ran?
 	bool			interrupt_waiting;	// Is there an interrupt waiting?
-	i8086_prefix_t	last_prefix;		// holds the last prefix (ES:/SS:)
+	i8086_prefix_t	last_prefix_segment;// holds the last prefix (CS:/DS:/ES:/SS:)
+	i8086_repeat_t	last_prefix_repeat;	// holds the lats repeat (rep/repe/repz/repnz..>)
 } i8086_t;
 
 extern i8086_t cpu_8086;
@@ -168,8 +169,6 @@ void i8086_Rol16(uint16_t* destination, uint8_t amount, bool rcl);		// 16-bit RO
 void i8086_Ror8(uint8_t* destination, uint8_t amount, bool rcr);		// 8-bit ROR: Destination must be pointer to one of the 8-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
 void i8086_Ror16(uint16_t* destination, uint8_t amount, bool rcr);		// 16-bit ROR: Destination must be pointer to one of the 16-bit registers inside "basecpu" structure, or a pointer into the 8086's address space.
 
-
-
 // instruction decode
 i8086_modrm_t i8086_ModRM(uint8_t opcode, uint8_t modrm);		// Parse ModR/M byte
 
@@ -186,6 +185,18 @@ void i8086_Loop(uint8_t destination_offset, bool condition);			// Loop instructi
 // move
 void i8086_MoveSegOff8(uint8_t value, bool direction);					// modrm but for some reason both mod and reg are avoided, so it has to have its own implementation only for opcodes a0-a3. also only for the AH register.
 void i8086_MoveSegOff16(uint16_t value, bool direction);				// modrm but for some reason both mod and reg are avoided, so it has to have its own implementation only for opcodes a0-a3. also only for the AX register.
+
+// string
+void i8086_Movsb();														// Moves a byte [DS:SI] to [ES:DI]. Optional REP prefix
+void i8086_Movsw();														// Moves a word [DS:SI] to [ES:DI]. Optional REP prefix
+void i8086_Cmpsb();														// Compares a byte [DS:SI] to [ES:DI]. Optional REP prefix
+void i8086_Cmpsw();														// Compares a word [DS:SI] to [ES:DI]. Optional REP prefix
+void i8086_Stosb();														// Stores a byte at [ES:DI] from AL. Optional REP prefix
+void i8086_Stosw();														// Stores a word at [ES:DI] from AX. Optional REP prefix
+void i8086_Lodsb();														// Loads a byte at [DS:SI] from AL. Optional REP prefix
+void i8086_Lodsw();														// Loads a byte at [DS:SI] from AX. Optional REP prefix
+void i8086_Scasb();														// Scans for a byte at [ES:DI], loads into AL. Optional REP prefix.
+void i8086_Scasw();														// Scans for a word at [ES:DI], loads into AL. Optional REP prefix.
 
 // jump
 void i8086_JumpConditional(uint8_t destination_offset, bool condition); // Jump conditional instruction

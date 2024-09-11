@@ -840,7 +840,7 @@ void i8086_MoveSegOff8(uint8_t value, bool direction)
 	// default register for this is DS
 	uint16_t* seg_ptr = (uint16_t*)&cpu_8086.address_space[(cpu_8086.DS * X86_PARAGRAPH_SIZE) + value];
 
-	switch (cpu_8086.last_prefix)
+	switch (cpu_8086.last_prefix_segment)
 	{
 		case override_es:
 			seg_ptr = (uint16_t*)&cpu_8086.address_space[(cpu_8086.ES * X86_PARAGRAPH_SIZE) + value];
@@ -876,7 +876,7 @@ void i8086_MoveSegOff16(uint16_t value, bool direction)
 	// default register for this instruction is DS
 	uint16_t* seg_ptr = (uint16_t*)&cpu_8086.address_space[(cpu_8086.DS * X86_PARAGRAPH_SIZE) + value];
 
-	switch (cpu_8086.last_prefix)
+	switch (cpu_8086.last_prefix_segment)
 	{
 	case override_es:
 		seg_ptr = (uint16_t*)&cpu_8086.address_space[(cpu_8086.ES * X86_PARAGRAPH_SIZE) + value];

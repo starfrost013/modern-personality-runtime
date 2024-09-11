@@ -25,7 +25,7 @@ void i8086_Update()
 			// set fake PC and real SP registers (this simplifies code later down the line)
 			cpu_8086._PC = (cpu_8086.CS * X86_PARAGRAPH_SIZE) + cpu_8086.IP;
 			cpu_8086._realSP = (cpu_8086.SS * X86_PARAGRAPH_SIZE) + cpu_8086.SP;
-			cpu_8086.last_prefix = override_none; // reset prefix
+			cpu_8086.last_prefix_segment = override_none; // reset prefix
 
 			// Treat TF and Int3 as the same for now (change this)
 			cpu_8086.int3 = cpu_8086.flag_trap;
@@ -53,19 +53,19 @@ void i8086_Update()
 			switch (next_opcode)
 			{
 			case 0x26:
-				cpu_8086.last_prefix = override_es;
+				cpu_8086.last_prefix_segment = override_es;
 				increment = true;
 				break;
 			case 0x2E:
-				cpu_8086.last_prefix = override_cs;
+				cpu_8086.last_prefix_segment = override_cs;
 				increment = true;
 				break;
 			case 0x36:
-				cpu_8086.last_prefix = override_ss;
+				cpu_8086.last_prefix_segment = override_ss;
 				increment = true;
 				break;
 			case 0x3E:
-				cpu_8086.last_prefix = override_ds;
+				cpu_8086.last_prefix_segment = override_ds;
 				increment = true;
 				break;
 			}

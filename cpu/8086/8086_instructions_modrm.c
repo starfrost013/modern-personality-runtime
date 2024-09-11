@@ -225,7 +225,7 @@ i8086_modrm_t i8086_ModRM(uint8_t opcode, uint8_t modrm)
 		// don't bother setting segreg_default if mod == 0b11 (register)
 		uint8_t segreg_default = cpu_8086.address_space[cpu_8086.DS];
 
-		switch (cpu_8086.last_prefix)
+		switch (cpu_8086.last_prefix_segment)
 		{
 		case override_ds: // todo: figure out which ones default to SS
 			segreg_default = cpu_8086.address_space[cpu_8086.DS];
