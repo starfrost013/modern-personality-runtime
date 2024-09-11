@@ -572,15 +572,20 @@ void i8086_Grp5(uint8_t opcode)
 		Logging_LogChannel("DEC %s", LogChannel_Debug, modrm_info.disasm);
 		break;
 		// need to do more research on 2-6 they are fucked up calls and jumps
-	case 2: // CALL
-		break;
-	case 3: // CALL, but R/M byte is memory only
+	case 2: // CALL (Near Absolute)
+	case 3: // CALL, but R/M byte is memory only - due to the way we designed the ModR/M pointer the &final_offset can point to register OR memory, so we can just duplicate the handling here?
+		i8086_Push(cpu_8086.IP + 2); // offset of return address after call
+
+		cpu_8086.IP = *modrm_info.final_offset;
 		break;
 	case 4: // JMP
-		break;
-	case 5: // JMP, but R/M byte is memory only
+	case 5: // JMP, but R/M byte is memory only  - due to the way we designed the ModR/M pointer the &final_offset can point to register OR memory, so we can just duplicate the handling here?
+		cpu_8086._PC = *modrm_info.final_offset;
+		Logging_LogChannel("JMP %s", LogChannel_Debug, modrm_info.disasm);
 		break;
 	case 6: // PUSH
+		i8086_Push(*modrm_info.final_offset);
+		Logging_LogChannel("PUSH %s", LogChannel_Debug, modrm_info.disasm);
 		break;
 	case 7: 
 		break; //illegal opcode wtf?
