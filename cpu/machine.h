@@ -40,9 +40,9 @@ typedef struct basecpu_s
 		uint16_t		BX;
 	};
 
+	// CX - Loop Register
 	union
 	{
-		// CX - Loop Register
 		struct // use as uint16_t
 		{
 			uint8_t		CL; // (CX && 8);

@@ -140,9 +140,7 @@ void i8086_Update()
 				Logging_LogChannel("ADD AL, %02Xh", LogChannel_Debug, temp_imm8u);
 				cpu_8086.IP += 2;
 
-#if X86_DEBUG
 				Logging_LogChannel("ADD %s", LogChannel_Debug, modrm_info.disasm);
-#endif
 				break;
 			case 0x05:
 				temp_imm16u_01 = i8086_ReadU16(cpu_8086._PC);
@@ -183,9 +181,9 @@ void i8086_Update()
 
 				i8086_Add8(modrm_info.final_offset, modrm_info.reg_ptr8, true);
 				cpu_8086.IP += 2;
-#if X86_DEBUG
+
 				Logging_LogChannel("ADD %s", LogChannel_Debug, modrm_info.disasm);
-#endif
+
 				break;
 			case 0x11:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
@@ -194,9 +192,9 @@ void i8086_Update()
 
 				i8086_Add16(modrm_info.final_offset, (uint16_t*)modrm_info.reg_ptr16, true);
 				cpu_8086.IP += 2;
-#if X86_DEBUG
+
 				Logging_LogChannel("ADD %s", LogChannel_Debug, modrm_info.disasm);
-#endif
+
 				break;
 			case 0x12:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
@@ -205,9 +203,9 @@ void i8086_Update()
 
 				i8086_Add8(modrm_info.reg_ptr8, modrm_info.final_offset, true);
 				cpu_8086.IP += 2;
-#if X86_DEBUG
+
 				Logging_LogChannel("ADD %s", LogChannel_Debug, modrm_info.disasm);
-#endif
+
 				break;
 			case 0x13:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
@@ -252,9 +250,9 @@ void i8086_Update()
 
 				i8086_Sub8(modrm_info.final_offset, modrm_info.reg_ptr8, true);
 				cpu_8086.IP += 2;
-#if X86_DEBUG
+
 				Logging_LogChannel("SBB %s", LogChannel_Debug, modrm_info.disasm);
-#endif
+
 				break;
 			case 0x19:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
@@ -784,9 +782,9 @@ void i8086_Update()
 				*modrm_info.final_offset = *modrm_info.reg_ptr16;
 
 				cpu_8086.IP += 2; // 1 modrm byte
-#if X86_DEBUG
+
 				Logging_LogChannel("MOV %s", LogChannel_Debug, modrm_info.disasm);
-#endif
+
 				break;
 			case 0x8A:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
@@ -796,9 +794,9 @@ void i8086_Update()
 				*modrm_info.reg_ptr8 = &modrm_info.final_offset;
 
 				cpu_8086.IP += 2; // 1 modrm byte
-#if X86_DEBUG
+
 				Logging_LogChannel("MOV %s", LogChannel_Debug, modrm_info.disasm);
-#endif
+
 				break;
 			case 0x8B:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
@@ -808,9 +806,9 @@ void i8086_Update()
 				*modrm_info.reg_ptr16 = *modrm_info.final_offset;
 
 				cpu_8086.IP += 2; // 1 modrm byte
-#if X86_DEBUG
+
 				Logging_LogChannel("MOV %s", LogChannel_Debug, modrm_info.disasm);
-#endif
+
 				break;
 			case 0x8C:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
@@ -820,9 +818,8 @@ void i8086_Update()
 				*modrm_info.final_offset = *modrm_info.reg_ptr16;
 
 				cpu_8086.IP += 2; // 1 modrm byte
-#if X86_DEBUG
+
 				Logging_LogChannel("MOV %s", LogChannel_Debug, modrm_info.disasm);
-#endif
 				break;
 			case 0x8E:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
@@ -832,9 +829,7 @@ void i8086_Update()
 				*modrm_info.reg_ptr16 = *modrm_info.final_offset;
 
 				cpu_8086.IP += 2; // 1 modrm byte
-#if X86_DEBUG
 				Logging_LogChannel("MOV %s", LogChannel_Debug, modrm_info.disasm);
-#endif
 				break;
 			case 0x90:
 				// lol
@@ -955,6 +950,52 @@ void i8086_Update()
 			case 0xA3:
 				temp_imm16u_01 = i8086_ReadU16(cpu_8086._PC);
 				i8086_MoveSegOff16(temp_imm16u_01, true);
+				break;
+				// string hell
+			case 0xA4:
+				i8086_Movsb();
+				break;
+			case 0xA5:
+				i8086_Movsw();
+				break;
+			case 0xA6:
+				i8086_Cmpsb();
+				break;
+			case 0xA7:
+				i8086_Cmpsw();
+				break;
+			case 0xA8: // dubous implementation
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
+
+				i8086_Test8(modrm_info.reg_ptr8, &temp_imm8u);
+
+				Logging_LogChannel("TEST %s", LogChannel_Debug, modrm_info.disasm);
+				break;
+			case 0xA9:
+				modrm_info = i8086_ModRM(next_opcode, temp_imm16u_01);
+
+				i8086_Test8(modrm_info.final_offset, &temp_imm16u_01);
+
+				Logging_LogChannel("TEST %s", LogChannel_Debug, modrm_info.disasm);
+
+				break;
+			case 0xAA:
+				i8086_Stosb();
+				break;
+			case 0xAB:
+				i8086_Stosw();
+				break;
+			case 0xAC:
+				i8086_Lodsb();
+				break;
+			case 0xAD:
+				i8086_Lodsw();
+				break;
+			case 0xAE:
+				i8086_Scasb();
+				break;
+			case 0xAF:
+				i8086_Scasw();
 				break;
 				// b0-bf: 16-bit move immediate instructions
 			case 0xB0:

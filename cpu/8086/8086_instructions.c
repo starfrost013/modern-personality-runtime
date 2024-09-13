@@ -163,7 +163,6 @@ void i8086_Test8(uint8_t* destination, uint8_t* source)
 
 	i8086_SetPF8(temp);
 	
-
 	//always set to false
 	cpu_8086.flag_carry = false;
 	cpu_8086.flag_overflow = false;
@@ -184,6 +183,7 @@ void i8086_Test16(uint16_t* destination, uint16_t* source)
 	cpu_8086.flag_overflow = false;
 
 	//result discarded
+
 }
 
 void i8086_Or8(uint8_t* destination, uint8_t* source)
@@ -812,6 +812,7 @@ void i8086_Pushf()
 	if (cpu_8086.flag_parity) *ptr |= 0x4;
 	if (cpu_8086.flag_carry) *ptr |= 0x1;
 
+	cpu_8086.IP++;
 	Logging_LogChannel("PUSHF", LogChannel_Debug);
 }
 
@@ -830,6 +831,7 @@ void i8086_Popf()
 	cpu_8086.flag_carry = GET_BIT(*ptr, 0);
 	cpu_8086.SP += 2;
 
+	cpu_8086.IP++;
 	Logging_LogChannel("POPF", LogChannel_Debug);
 }
 
