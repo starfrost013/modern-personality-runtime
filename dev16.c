@@ -41,7 +41,7 @@ const char help_message[] =
 	"--OPTIONAL ARGUMENTS--\n"
 	"-mtdosver: Automatically turns on Multitasking MS-DOS 4.0 emulation. Determines the sub-version of Multitasking MS-DOS 4.0 to run.\n\n"
 	"Values:\n"
-	"1: Internal Work #2.06, 29 May 1984\t\t (\"M/T-MSDOS Beta Release 5/29/84)\n"
+	"1: Internal Work #2.06, 29 May 1984\t\t (\"M/T-MSDOS Beta Release 5/29/84\")\n"
 	"2: Build 4.11. 28 May 1985\t\t\t (internal beta - worse version of 6.7)\n"
 	"3: Build 6.7, 26 November 1985\t\t\t - Preemptive multitasking, multiple screen devices, dynamic linking, process priority, session management, shared memory, semaphores, processes sharing code segments, etc etc etc etc\n"
 	"4: Final release, 17 November 1986\t\t - Actually less stuff due to the fact the project was basically cancelled, no session management etc, seemingly incompatible NEs\n"
