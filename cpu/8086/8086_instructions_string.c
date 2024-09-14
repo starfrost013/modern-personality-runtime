@@ -117,14 +117,14 @@ void i8086_Cmpsb()
 	}
 
 	cpu_8086.IP++;
-	Logging_LogChannel("cmpsb", LogChannel_Debug);
+	Logging_LogChannel("CMPSB", LogChannel_Debug);
 }
 
 void i8086_Cmpsw()
 {
 	uint32_t source = i8086_StringCalculateSource(); 
 	uint32_t destination_location = (cpu_8086.ES * X86_PARAGRAPH_SIZE) + cpu_8086.DI;
-	uint32_t destination = cpu_8086.address_space[destination_location] << 8 + cpu_8086.address_space[destination_location + 1];
+	uint32_t destination = (cpu_8086.address_space[destination_location] << 8) + cpu_8086.address_space[destination_location + 1];
 
 	uint32_t temporary = (source - destination);
 
@@ -153,7 +153,7 @@ void i8086_Cmpsw()
 	}
 
 	cpu_8086.IP++;
-	Logging_LogChannel("cmpsw", LogChannel_Debug);
+	Logging_LogChannel("CMPSW", LogChannel_Debug);
 }
 
 void i8086_Stosb()	
@@ -173,7 +173,7 @@ void i8086_Stosb()
 		cpu_8086.DI++;
 
 	cpu_8086.IP++;
-	Logging_LogChannel("stosb", LogChannel_Debug);
+	Logging_LogChannel("STOSB", LogChannel_Debug);
 }
 
 void i8086_Stosw()
@@ -194,7 +194,7 @@ void i8086_Stosw()
 		cpu_8086.DI += 2;
 
 	cpu_8086.IP++;
-	Logging_LogChannel("stosw", LogChannel_Debug);
+	Logging_LogChannel("STOSW", LogChannel_Debug);
 }
 
 void i8086_Lodsb()
@@ -210,7 +210,7 @@ void i8086_Lodsb()
 
 	cpu_8086.IP++;
 
-	Logging_LogChannel("lodsb", LogChannel_Debug);
+	Logging_LogChannel("LODSB", LogChannel_Debug);
 }
 
 void i8086_Lodsw()
@@ -228,7 +228,7 @@ void i8086_Lodsw()
 
 	cpu_8086.IP++;
 
-	Logging_LogChannel("lodsw", LogChannel_Debug);
+	Logging_LogChannel("LODSW", LogChannel_Debug);
 }
 
 void i8086_Scasb()
@@ -252,7 +252,7 @@ void i8086_Scasb()
 		cpu_8086.DI++;
 
 	cpu_8086.IP++;
-	Logging_LogChannel("scasb", LogChannel_Debug);
+	Logging_LogChannel("SCASB", LogChannel_Debug);
 }
 
 void i8086_Scasw()
@@ -277,5 +277,5 @@ void i8086_Scasw()
 
 	cpu_8086.IP++;
 
-	Logging_LogChannel("scasw", LogChannel_Debug);
+	Logging_LogChannel("SCASW", LogChannel_Debug);
 }

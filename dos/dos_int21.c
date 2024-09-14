@@ -55,9 +55,7 @@ void MSDOS_PrintString()
 	// TEMP code
 	if (cmd.cpu_ver == cpu_type_i8086)
 	{
-#if X86_DEBUG
 		int32_t debug_count = 0x00;
-#endif
 		char* next_char = &cpu_8086.address_space[start_location];
 
 		while (*next_char != '$')
@@ -65,13 +63,10 @@ void MSDOS_PrintString()
 			putchar(*next_char);
 			// go to next byte
 			next_char++;
-#if X86_DEBUG
 			debug_count++;
+
 			if (debug_count > 8192)
-			{
-				Logging_LogChannel("***DEBUG WARNING***: TRIED TO PRINT OVER 8KB OF TEXT via INT 21h,AH=09h something is going very wrong", LogChannel_Warning);
-			}
-#endif
+				Logging_LogChannel("***DEBUG WARNING***: Tried to print a ridiculous amount (>8192 bytes) of text using INT 21h,AH=09h something is going very wrong", LogChannel_Warning);
 		}
 	}
 
@@ -83,6 +78,7 @@ void MSDOS_Exit()
 
 	// exit with exit code 0
 	cpu->AL = 0x00;
+
 	MSDOS_ExitWithExitCode();
 }
 
