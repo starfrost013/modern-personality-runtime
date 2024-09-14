@@ -829,10 +829,24 @@ void i8086_Popf()
 	cpu_8086.flag_aux_carry = GET_BIT(*ptr, 4);
 	cpu_8086.flag_parity = GET_BIT(*ptr, 2);
 	cpu_8086.flag_carry = GET_BIT(*ptr, 0);
+
 	cpu_8086.SP += 2;
 
 	cpu_8086.IP++;
 	Logging_LogChannel("POPF", LogChannel_Debug);
+}
+
+// Bizarre lookup table acceleration instruction.
+void i8086_Xlat()
+{
+	// XLAT calculated from DS:BX + AL (basically DS*16+BX+AL)
+
+	cpu_8086.IP++;
+
+	uint8_t source = cpu_8086.address_space[(cpu_8086.DS * X86_PARAGRAPH_SIZE) + cpu_8086.BX + cpu_8086.AL];
+
+	cpu_8086.AL = cpu_8086.address_space[source];
+	Logging_LogChannel("XLAT", LogChannel_Debug);
 }
 
 void i8086_MoveSegOff8(uint8_t value, bool direction)

@@ -30,7 +30,7 @@ void i8086_Update()
 			// Treat TF and Int3 as the same for now (change this)
 			cpu_8086.int3 = cpu_8086.flag_trap;
 
-#if _DEBUG
+#if X86_DEBUG
 			if (cpu_8086.int3)
 			{
 				Logging_LogChannel("INT3!", LogChannel_Debug);
@@ -42,6 +42,8 @@ void i8086_Update()
 				cpu_8086.int3 = false;
 			}
 #endif
+
+
 
 			// read the next opcode
 			uint8_t next_opcode = i8086_ReadU8(cpu_8086._PC++);
@@ -1240,7 +1242,7 @@ void i8086_Update()
 				*modrm_info.reg_ptr8 = temp_imm8u;
 				cpu_8086.IP += 3;
 #if X86_DEBUG
-				Logging_LogChannel("MOV %s, %04Xh", LogChannel_Debug, modrm_info.disasm, temp_imm8u);
+				Logging_LogChannel("MOV %s, %02Xh", LogChannel_Debug, modrm_info.disasm, temp_imm8u);
 #endif
 				break;
 			case 0xC7:
@@ -1269,7 +1271,7 @@ void i8086_Update()
  
 				// operand2 is number of bytes to free from stack
 				// for parameters etc..
-				for (int i = 0; i < temp_imm16u_01; i += 2)
+				for (int32_t i = 0; i < temp_imm16u_01; i += 2)
 				{
 					// throw away
 					i8086_Pop();
@@ -1303,6 +1305,9 @@ void i8086_Update()
 				// SALC (undocumented copyright trap instruction, intel 8086 only)
 				cpu_8086.AL = (cpu_8086.flag_carry) ? 0xFF : 0x00;
 				Logging_LogChannel("SALC", LogChannel_Debug);
+				break;
+			case 0xD7:
+				i8086_Xlat();
 				break;
 			// Coprocessor Escape (0xD8-0xDF)
 			case 0xD8:

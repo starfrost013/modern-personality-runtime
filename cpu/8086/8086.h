@@ -208,3 +208,6 @@ uint16_t i8086_Pop();
 // flags shit
 void i8086_Pushf();														// Push flags to stack.
 void i8086_Popf();														// Pop flags to stack.
+
+// Why would you even have this in silicon?
+void i8086_Xlat();														// Load [DS:BX]+
