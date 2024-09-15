@@ -849,6 +849,7 @@ void i8086_Xlat()
 	Logging_LogChannel("XLAT", LogChannel_Debug);
 }
 
+
 void i8086_MoveSegOff8(uint8_t value, bool direction)
 {
 	// modrm but for some reason both mod and reg are avoided, so it has to have its own implementation only for opcodes a0-a3. also only for the AH register.
