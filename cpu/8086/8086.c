@@ -1216,7 +1216,7 @@ void i8086_Update()
 				
 				// operand2 is number of bytes to free from stack
 				// for parameters etc..
-				for (int i = 0; i < temp_imm16u_01; i += 2)
+				for (int32_t i = 0; i < temp_imm16u_01; i += 2)
 				{
 					// throw away
 					i8086_Pop();
@@ -1400,45 +1400,50 @@ void i8086_Update()
 
 				cpu_8086.IP += temp_imm8s;
 				break;
+			case 0xF4: // HLT
+				cpu_8086.halted = true;
+				cpu_8086.IP++;
+				Logging_LogChannel("HL", LogChannel_Debug);
+				break;
 			case 0xF5:
-				Logging_LogChannel("CMC", LogChannel_Debug);
 				// IGNORE THIS WARNING, THIS IS WHAT THE INSTRUCTION IS MEANT TO DO 
 				cpu_8086.flag_carry = !cpu_8086.flag_carry; // get complement
 				cpu_8086.IP++;
+				Logging_LogChannel("CMC", LogChannel_Debug);
 				break;
 			case 0xF6: // grp3a
 			case 0xF7: // grp3b
 				i8086_Grp3(next_opcode);
 				break;
 			case 0xF8:
-				Logging_LogChannel("CLC", LogChannel_Debug);
 				cpu_8086.flag_carry = false;
 				cpu_8086.IP++;
+				Logging_LogChannel("CLC", LogChannel_Debug);
 				break;
 			case 0xF9:
-				Logging_LogChannel("STC", LogChannel_Debug);
 				cpu_8086.flag_carry = true;
 				cpu_8086.IP++;
+				Logging_LogChannel("STC", LogChannel_Debug);
 				break;
 			case 0xFA:
-				Logging_LogChannel("CLI", LogChannel_Debug);
 				cpu_8086.flag_interrupt_enable = false;
 				cpu_8086.IP++;
+				Logging_LogChannel("CLI", LogChannel_Debug);
 				break;
 			case 0xFB:
-				Logging_LogChannel("STI", LogChannel_Debug);
 				cpu_8086.flag_interrupt_enable = true;
 				cpu_8086.IP++;
+				Logging_LogChannel("STI", LogChannel_Debug);
 				break;
 			case 0xFC:
-				Logging_LogChannel("CLD", LogChannel_Debug);
 				cpu_8086.flag_direction = false;
 				cpu_8086.IP++;
+				Logging_LogChannel("CLD", LogChannel_Debug);
 				break;
 			case 0xFD:
-				Logging_LogChannel("CLD", LogChannel_Debug);
 				cpu_8086.flag_direction = false;
 				cpu_8086.IP++;
+				Logging_LogChannel("CLD", LogChannel_Debug);
 				break;
 			case 0xFE:  // grp4
 				i8086_Grp4(next_opcode);
