@@ -5,6 +5,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+// 8086.c: Main 8086 core and basic instructions
+//
+// This code sucks...
+
 i8086_t cpu_8086;
 
 void i8086_Init()
@@ -875,6 +879,53 @@ void i8086_Update()
 			case 0x83:
 				i8086_Grp1(next_opcode);
 				break;
+			// ModRM test/xchg
+			case 0x84:
+				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
+				cpu_8086._PC++;
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
+
+				i8086_Test8(modrm_info.final_offset, modrm_info.reg_ptr8);
+				Logging_LogChannel("TEST %s", LogChannel_Debug, modrm_info.disasm);
+				break;
+			case 0x85:
+				temp_imm16u_01 = i8086_ReadU16(cpu_8086._PC);
+				cpu_8086._PC += 2;
+				modrm_info = i8086_ModRM(next_opcode, temp_imm16u_01);
+
+				i8086_Test16(modrm_info.final_offset, modrm_info.reg_ptr16);
+
+				cpu_8086.IP += 3; // 1 modrm byte
+
+				Logging_LogChannel("TEST %s", LogChannel_Debug, modrm_info.disasm);
+
+				break;
+			case 0x86:
+				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
+				cpu_8086._PC++;
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
+
+				temp_imm8u = *modrm_info.reg_ptr8;
+				*modrm_info.reg_ptr8 = *modrm_info.final_offset;
+				*modrm_info.final_offset = temp_imm8u;
+
+				cpu_8086.IP += 2; // 1 modrm byte
+
+				Logging_LogChannel("XCHG %s", LogChannel_Debug, modrm_info.disasm);
+				break;
+			case 0x87:
+				temp_imm16u_01 = i8086_ReadU16(cpu_8086._PC);
+				cpu_8086._PC += 2;
+				modrm_info = i8086_ModRM(next_opcode, temp_imm16u_01);
+
+				temp_imm16u_01 = *modrm_info.reg_ptr16;
+				*modrm_info.reg_ptr8 = *modrm_info.final_offset;
+				*modrm_info.final_offset = temp_imm16u_01;
+
+				cpu_8086.IP += 3; // 1 modrm byte
+
+				Logging_LogChannel("XCHG %s", LogChannel_Debug, modrm_info.disasm);
+				break;
 			case 0x88:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
 				cpu_8086._PC++;
@@ -883,9 +934,8 @@ void i8086_Update()
 				*modrm_info.final_offset = *modrm_info.reg_ptr8;
 				
 				cpu_8086.IP += 2; // 1 modrm byte
-#if X86_DEBUG
+
 				Logging_LogChannel("MOV %s", LogChannel_Debug, modrm_info.disasm);
-#endif
 				break;
 			case 0x89:
 				temp_imm8u = i8086_ReadU8(cpu_8086._PC);
@@ -943,6 +993,15 @@ void i8086_Update()
 
 				cpu_8086.IP += 2; // 1 modrm byte
 				Logging_LogChannel("MOV %s", LogChannel_Debug, modrm_info.disasm);
+				break;
+			case 0x8F:
+				temp_imm16u_01 = i8086_ReadU16(cpu_8086._PC);
+				cpu_8086._PC++;
+				modrm_info = i8086_ModRM(next_opcode, temp_imm8u);
+
+				*modrm_info.final_offset = i8086_Pop();
+
+				cpu_8086.IP += 2; // 1 modrm byte
 				break;
 			case 0x90:
 				// lol

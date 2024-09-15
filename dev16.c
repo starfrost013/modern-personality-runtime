@@ -1,4 +1,4 @@
-﻿// modern:personality Project (neé OpenWindows) Runtime
+﻿// dev16 Runtime
 // 
 // A compatibility layer for legacy MS-DOS and Multitasking MS-DOS apps intended to allow cross-compiling, in order to facilitate development on modern systems.
 // Combines an 8086 emulator (not entirely accurate, designed to run as fast as possible) and trapping MS-DOS and MT-DOS APIs and thunking them to be used on the host system
