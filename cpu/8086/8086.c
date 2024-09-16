@@ -23,7 +23,7 @@ void i8086_Update()
 {
 	Logging_LogChannel("Starting 8086 core", LogChannel_Debug);
 
-	// declared here os we can
+	// declared here so we can repeat opcodes for the REP prefix
 	uint8_t next_opcode = 0x00;
 
 	while (machine_running)
