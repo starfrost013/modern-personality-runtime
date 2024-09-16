@@ -52,7 +52,7 @@ typedef enum i8086_repeat_s
 
 	/// <summary>
 	/// Repeat until CX=0 and Zero Flag Set/Repeat until Equal (normal order)
-	/// REP/REP/REPZ
+	/// REP/REPE/REPZ
 	/// </summary>
 	repeat_zero = 1,
 
@@ -80,6 +80,7 @@ extern i8086_t cpu_8086;
 
 void i8086_Init();
 void i8086_Update();
+
 
 uint8_t i8086_ReadU8(uint32_t position);
 int8_t i8086_ReadS8(uint32_t position);
