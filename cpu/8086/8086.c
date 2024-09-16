@@ -1217,7 +1217,10 @@ void i8086_DecodeAndExecuteOpcode(uint8_t opcode)
 
 		i8086_Test8(modrm_info.reg_ptr8, &imm8u);
 
-		Logging_LogChannel("TEST %s", LogChannel_Debug, modrm_info.disasm);
+		Logging_LogChannel("TEST %s, %xh", LogChannel_Debug, modrm_info.disasm, imm8u);
+
+		cpu_8086.IP += 2;
+
 		break;
 	case 0xA9:
 		modrm_info = i8086_ModRM(opcode, imm16u_01);
@@ -1226,6 +1229,7 @@ void i8086_DecodeAndExecuteOpcode(uint8_t opcode)
 
 		Logging_LogChannel("TEST %s", LogChannel_Debug, modrm_info.disasm);
 
+		cpu_8086.IP += 2;
 		break;
 	case 0xAA:
 		i8086_Stosb();
