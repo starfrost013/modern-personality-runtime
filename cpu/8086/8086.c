@@ -962,16 +962,19 @@ void i8086_DecodeAndExecuteOpcode(uint8_t opcode)
 		modrm_info = i8086_ModRM(opcode, imm8u);
 
 		i8086_Test8(modrm_info.final_offset, modrm_info.reg_ptr8);
+
+		cpu_8086.IP += 2; // 1 modrm byte
+
 		Logging_LogChannel("TEST %s", LogChannel_Debug, modrm_info.disasm);
 		break;
 	case 0x85:
-		imm16u_01 = i8086_ReadU16(cpu_8086._PC);
-		cpu_8086._PC += 2;
-		modrm_info = i8086_ModRM(opcode, imm16u_01);
+		imm8u = i8086_ReadU8(cpu_8086._PC);
+		cpu_8086._PC++;
+		modrm_info = i8086_ModRM(opcode, imm8u);
 
 		i8086_Test16(modrm_info.final_offset, modrm_info.reg_ptr16);
 
-		cpu_8086.IP += 3; // 1 modrm byte
+		cpu_8086.IP += 2; // 1 modrm byte
 
 		Logging_LogChannel("TEST %s", LogChannel_Debug, modrm_info.disasm);
 
@@ -990,15 +993,15 @@ void i8086_DecodeAndExecuteOpcode(uint8_t opcode)
 		Logging_LogChannel("XCHG %s", LogChannel_Debug, modrm_info.disasm);
 		break;
 	case 0x87:
-		imm16u_01 = i8086_ReadU16(cpu_8086._PC);
-		cpu_8086._PC += 2;
-		modrm_info = i8086_ModRM(opcode, imm16u_01);
+		imm8u = i8086_ReadU8(cpu_8086._PC);
+		cpu_8086._PC++;
+		modrm_info = i8086_ModRM(opcode, imm8u);
 
 		imm16u_01 = *modrm_info.reg_ptr16;
 		*modrm_info.reg_ptr8 = *modrm_info.final_offset;
 		*modrm_info.final_offset = imm16u_01;
 
-		cpu_8086.IP += 3; // 1 modrm byte
+		cpu_8086.IP += 2; // 1 modrm byte
 
 		Logging_LogChannel("XCHG %s", LogChannel_Debug, modrm_info.disasm);
 		break;
@@ -1644,7 +1647,6 @@ void i8086_DecodeAndExecuteOpcode(uint8_t opcode)
 	}
 
 }
-
 
 uint8_t i8086_ReadU8(uint32_t position)
 {

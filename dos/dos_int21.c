@@ -18,12 +18,25 @@ void MSDOS_Int21()
 
 	switch (cpu->AH)
 	{
-	case 0x00:				// Old exit (AH=00)
+	case 0x00:					// Old exit (AH=00)
 		MSDOS_Exit();
 		break;
-	case 0x09:				// Print String (AH=09)
+	case 0x01:
+		MSDOS_ReadStdinEcho();	// Read stdin with echo
+		break;
+	case 0x06:
+		MSDOS_WriteStdout();	// Write stdout or raw stdin (AH=06, depending on if DL=FFh)
+		break;
+	case 0x09:					// Print String (AH=09)
 		MSDOS_PrintString();
 		break;
+	case 0x18:					// CP/M Compatibility Stub Functions
+	case 0x1D:
+	case 0x1E:
+	case 0x20:
+		cpu->AH = 0x00;
+		break;
+
 	case 0x30:
 		MSDOS_GetVersion();
 		break;
@@ -42,34 +55,6 @@ void MSDOS_GetVersion()
 {
 	basecpu_t* cpu = CPU_Get();
 	cpu->AL = 0x00; // DOS 1.X (due to invalid function code), PLACEHOLDER!!!
-}
-
-void MSDOS_PrintString()
-{
-	basecpu_t* cpu = CPU_Get();
-
-	uint32_t start_location = (cpu->DS) * X86_PARAGRAPH_SIZE + cpu->DX;
-
-	// TODO: INT23 CHECK!!!!!
-
-	// TEMP code
-	if (cmd.cpu_ver == cpu_type_i8086)
-	{
-		int32_t debug_count = 0x00;
-		char* next_char = &cpu_8086.address_space[start_location];
-
-		while (*next_char != '$')
-		{
-			putchar(*next_char);
-			// go to next byte
-			next_char++;
-			debug_count++;
-
-			if (debug_count > 8192)
-				Logging_LogChannel("***DEBUG WARNING***: Tried to print a ridiculous amount (>8192 bytes) of text using INT 21h,AH=09h something is going very wrong", LogChannel_Warning);
-		}
-	}
-
 }
 
 void MSDOS_Exit()

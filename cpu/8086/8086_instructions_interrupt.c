@@ -49,7 +49,7 @@ void i8086_InterruptService(uint8_t interrupt_num)
 			Logging_LogChannel("Invalid opcode handler not implemented", LogChannel_Error, interrupt_num); //186
 
 		break;
-	case 0x21:				// General DOS API dispatcher.
+	case MSDOS_INTERRUPT_API:	// General DOS API dispatcher.
 		MSDOS_Int21();
 		break;
 	default:

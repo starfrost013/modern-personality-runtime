@@ -1,4 +1,5 @@
 #include "dos.h"
+#include <mtdos/mtdos.h>
 #include "cmd/cmd.h"
 #include "util/logging.h"
 #include "binary/binary.h"

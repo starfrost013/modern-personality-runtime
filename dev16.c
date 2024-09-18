@@ -9,6 +9,7 @@
 #include "macros.h"
 #include "cmd/cmd.h"
 #include "dos/dos.h"
+#include "mtdos/mtdos.h"
 #include "cpu/8086/8086.h"
 #include "util/logging.h"
 

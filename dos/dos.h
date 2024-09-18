@@ -6,7 +6,7 @@
 // Implements:
 // Interrupt 20h-28h
 // Interrupt 21h (DOS main API)
-// MT-DOS 0506:xxxx dynalinked calls (New Executable)
+
 
 // Not implemented structures as of now (don't think these are all required):
 // MCB: Memory Control Block
@@ -175,7 +175,7 @@ typedef struct mz_reloc_s
 // Swappable Data Area (SDA)
 // MS-DOS 3.x+
 
-// TODO: Do apps defend on the whole 1kb structure? Or just this bit (the part that is guaranteed to stay within INT21h_ . If true, we need to implement SDAv4
+// TODO: Do apps defend on the whole 1kb structure? Or just this bit (the part that is guaranteed to stay within INT21h). If true, we need to implement SDAv4
 typedef struct msdos_sda_s
 {
 	uint8_t		printer_echo_flag;		// -0x22: DOS 3.10+: Printer echo flag (0x00=off, 0xFF=active)
@@ -540,7 +540,7 @@ typedef struct msdos_sysvars_v4_s
 	uint8_t		i80386_dword_move_flag;		// 0x44: on 386+, use DWORD moves for memory (speed) ALWAYS ZERO ON <=286, 01h on 386+
 
 	uint16_t	ext_memory_size;			// 0x45: Extended memory size (KB)
-} msdos_sysvars_v40t;
+} msdos_sysvars_v4_t;
 
 // MS-DOS 5.x and 6.x
 // SYSVARS_v5 (list of lists)
@@ -599,16 +599,34 @@ typedef struct msdos_sysvars_v5
 // 
 // MT-DOS stuff here:
 // Per-Task Data Area (PTDA)
-// MT (Module Table) and MTE (Module Table Entry)
+// MT (Module Table) and MTE (Module Table Entry) list
 // Process-specific SFT
 // mtdos_sysvars (no CDS)
+
+// Interrupt numbers
+#define MSDOS_INTERRUPT_TERMINATE			0x20
+#define MSDOS_INTERRUPT_API					0x21
+#define MSDOS_INTERRUPT_TERMINATE_ADDRESS	0x22
+#define MSDOS_INTERRUPT_CTRL_C				0x23 // SIG_CTRLC - MTDOS4
+#define MSDOS_INTERRUPT_FATAL_ERROR			0x24 // HDERR/HE_DAEM - MDOS4
+#define MSDOS_INTERRUPT_RAW_HDD_READ		0x25
+#define MSDOS_INTERRUPT_RAW_HDD_WRITE		0x26
+#define MSDOS_INTERRUPT_TSR_OLD				0x27 // Dos1.X TSR (e.g. PRINT.COM)
+#define MSDOS_INTERRUPT_IDLE				0x28
+#define MSDOS_INTERRUPT_FAST_CONSOLE_OUTPUT	0x29
+#define MSDOS_INTERRUPT_NETWORK				0x2A
+#define MSDOS_INTERRUPT_DUMMY1				0x2B
+#define MSDOS_INTERRUPT_DUMMY2				0x2C
+#define MSDOS_INTERRUPT_DUMMY3				0x2D
+#define MSDOS_INTERRUPT_PASS_TO_SHELL		0x2E
+#define MSDOS_INTERRUPT_PRINT_TSR_PRINT		0x2F
+#define MSDOS_INTERRUPT_CALL5_WEIRDNESS		0x30
 
 //
 // Methods
 //
 
 bool MSDOS_Init();				// Initialise boring DOS.
-bool MTDOS_Init();				// Initialise exciting DOS.
 
 //
 // API: Int 21h
@@ -616,12 +634,21 @@ bool MTDOS_Init();				// Initialise exciting DOS.
 
 void MSDOS_Int21();
 
+// TODO: REDIRECTION
+
+void MSDOS_ReadStdinEcho();		// INT 21h,AH=01h - Read and echo from stdin				^C/^BREAK CHECKED
+void MSDOS_ReadStdin();			// INT 21h,AH=02h - Read from stdin							^C/^BREAK CHECKED
+
+void MSDOS_WriteStdout();		// INT 21h,AH=06h - Write character represented by DL		^C/^BREAK NOT CHECKED
+void MSDOS_ReadStdinRawEcho();	// INT 21h,AH=06h/DL=FFh - Raw read from stdin and echo		^C/^BREAK NOT CHECKED
+void MSDOS_ReadStdinRaw();		// INT 21h,AH=07h - Raw read from stdin						^C/^BREAK NOT CHECKED
+
 void MSDOS_PrintString();		// INT 21h,AH=09h - Prints a $-terminated string beginning at [DS:DX]
 void MSDOS_GetVersion();		// INT 21h,AH=30h
 
 // exiting
 void MSDOS_Exit();				// INT 21h,AH=0 - exit
-void MSDOS_ExitWithExitCode();		// INT 21h,AH=4Ah - Exits with an exit code.
+void MSDOS_ExitWithExitCode();	// INT 21h,AH=4Ah - Exits with an exit code.
 
 
 #pragma pack (pop)
