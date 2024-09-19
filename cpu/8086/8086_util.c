@@ -28,11 +28,11 @@ void i8086_SetAF16(uint16_t result, uint16_t source, uint16_t destination)
 	cpu->flag_aux_carry = (result ^ source ^ destination) & 0x10;
 }
 
-void i8086_SetOF8(uint8_t result, uint8_t source, uint8_t destination, bool isSubtracting)
+void i8086_SetOF8(uint8_t result, uint8_t source, uint8_t destination, bool is_subtracting)
 {
 	basecpu_t* cpu = CPU_Get();
 	
-	if (!isSubtracting)
+	if (!is_subtracting)
 	{
 		// check for positive overflow
 		cpu->flag_overflow = (result ^ source) & (result ^ destination) & 0x80;

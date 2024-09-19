@@ -81,11 +81,13 @@ extern i8086_t cpu_8086;
 void i8086_Init();
 void i8086_Update();
 
+uint32_t i8086_GetInterruptVector(uint8_t interrupt_number);									// Gets an interrupt vector
 
-uint8_t i8086_ReadU8(uint32_t position);
-int8_t i8086_ReadS8(uint32_t position);
-uint16_t i8086_ReadU16(uint32_t position);
-int16_t i8086_ReadS16(uint32_t position);
+uint8_t i8086_ReadU8(uint32_t position);														// Read an unsigned 8-bit byte
+int8_t i8086_ReadS8(uint32_t position);															// Read a signed 8-bit byte
+uint16_t i8086_ReadU16(uint32_t position);														// Read an unsigned 16-bit word
+int16_t i8086_ReadS16(uint32_t position);														// Read a signed 16-bit word
+uint16_t i8086_FlagsToWord();																	// Convert the flags register to a word.
 
 // utilities for setting flags
 void i8086_SetCF8(uint8_t result);																// Set carry flag based on 8-bit result.

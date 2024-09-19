@@ -629,11 +629,14 @@ typedef struct msdos_sysvars_v5
 bool MSDOS_Init();				// Initialise boring DOS.
 
 //
-// API: Int 21h
+// API: Interrupts
 //
 
 void MSDOS_Int21();
 
+void MSDOS_Int23();				// Ctrl+C
+
+// API
 // TODO: REDIRECTION
 
 void MSDOS_ReadStdinEcho();		// INT 21h,AH=01h - Read and echo from stdin				^C/^BREAK CHECKED

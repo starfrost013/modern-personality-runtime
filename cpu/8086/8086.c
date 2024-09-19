@@ -1669,3 +1669,25 @@ int16_t i8086_ReadS16(uint32_t position)
 	return (cpu_8086.address_space[position + 1] << 8)
 		+ (cpu_8086.address_space[position]);
 }
+
+uint16_t i8086_FlagsToWord()
+{
+	uint16_t flags = 0xF000;
+
+	// bits 12-15 always 1 (bit 15 is 0 on a 286+)
+	flags = 0xF000;
+
+	// populate the top of the stack with the various flags
+	if (cpu_8086.flag_overflow) flags |= 0x800;
+	if (cpu_8086.flag_direction) flags |= 0x400;
+	if (cpu_8086.flag_interrupt_enable) flags |= 0x200;
+	if (cpu_8086.flag_trap) flags |= 0x100;
+	if (cpu_8086.flag_sign) flags |= 0x80;
+	if (cpu_8086.flag_zero) flags |= 0x40;
+	//bit5 undefined per 8086 user's manual
+	if (cpu_8086.flag_aux_carry) flags |= 0x10;
+	if (cpu_8086.flag_parity) flags |= 0x4;
+	if (cpu_8086.flag_carry) flags |= 0x1;
+
+	return flags;
+}

@@ -19,6 +19,26 @@ void i8086_InterruptService(uint8_t interrupt_num)
 		cpu_8086.AX, cpu_8086.BX, cpu_8086.CX, cpu_8086.DX, cpu_8086.CS, cpu_8086.IP, cpu_8086._PC, cpu_8086.DS, cpu_8086.ES, cpu_8086.SS,
 		cpu_8086.BP, cpu_8086.DI, cpu_8086.ES);
 
+	// if the IVT isn't zero
+	if (i8086_GetInterruptVector(interrupt_num) > 0x0) 
+	{
+		// get the cs & ip
+		uint16_t cs = (interrupt_num >> 16); // drop low bits
+		uint16_t ip = (interrupt_num << 16) & 0xFFFF; // drop high bits and mask
+
+		// push ojump and return
+
+		// CS is pushed first...
+
+		i8086_Push(i8086_FlagsToWord());
+		i8086_Push(cpu_8086.CS);
+		i8086_Push(cpu_8086.IP);
+
+		cpu_8086.CS = cs;
+		cpu_8086.IP = ip;
+		return;
+	}
+
 	// there is no IVT yet...
 	switch (interrupt_num)
 	{
@@ -72,4 +92,22 @@ void i8086_Interrupt()
 void i8086_InterruptForce(uint8_t interrupt_num)
 {
 	i8086_InterruptService(interrupt_num);
+}
+
+// Get an interrupt vector from the IVT.
+// Allows applications to override the interrupt vectors we provide
+
+uint32_t i8086_GetInterruptVector(uint8_t interrupt_vector)
+{
+	// little endian
+
+	uint32_t ivt_entry_location = (interrupt_vector) * 4;
+
+	uint16_t ip = *(uint16_t*)cpu_8086.address_space[ivt_entry_location];
+	uint16_t cs = *(uint16_t*)cpu_8086.address_space[ivt_entry_location + 2];
+
+	// *X86_PARAGRAPH_SIZE
+
+	// << 4 would be faster, but less readable - see later if performance loss matters enough
+	return (cs * X86_PARAGRAPH_SIZE) + ip;
 }
