@@ -22,7 +22,7 @@ void MSDOS_ReadStdin()
 		|| cpu_8086.AL == 0x1A)			//Ctrl-Z / Ctrl-Break
 	{
 		// this function needs to be genericised
-		i8086_InterruptForce(0x23);
+		i8086_InterruptForce(MSDOS_INTERRUPT_CTRL_C);
 	}
 }
 
@@ -45,7 +45,7 @@ void MSDOS_WriteStdout()
 	// Maybe they intended to return nothing in AL, but they needed it for a temp register...
 	// https://github.com/microsoft/MS-DOS/blob/main/v1.25/source/MSDOS.ASM
 
-	cpu_generic->AL = cpu_generic->DL;			// MOV	AL, DL	
+	cpu_generic->AL = cpu_generic->DL;		// MOV	AL, DL	
 
 	if (cpu_generic->DL != 0xFF)			// CMP	AL,-1
 		printf((char)cpu_generic->DL);		// JNZ  RAWOUT
@@ -56,7 +56,10 @@ void MSDOS_WriteStdout()
 
 void MSDOS_ReadStdinRawEcho()
 {
+	MSDOS_ReadStdinRaw();
 
+	//echo to display
+	printf((char)cpu_8086.AL);
 }
 
 void MSDOS_PrintString()
