@@ -1643,9 +1643,7 @@ void i8086_DecodeAndExecuteOpcode(uint8_t opcode)
 		Logging_LogChannel("Unimplemented 8086 opcode 0x%X @ %04Xh:%04Xh", LogChannel_Error, opcode, cpu_8086.CS, cpu_8086.IP);
 		cpu_8086.IP++;
 		break;
-
 	}
-
 }
 
 uint8_t i8086_ReadU8(uint32_t position)
