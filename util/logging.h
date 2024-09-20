@@ -55,7 +55,7 @@ typedef struct LogSettings_s
 typedef struct Logger_s
 {
 	LogSettings* settings;
-	FILE* handle;
+	FILE* binary_handle;
 	bool initialised;
 } Logger;
 

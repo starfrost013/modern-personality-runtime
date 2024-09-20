@@ -31,9 +31,9 @@ Logger* Logger_new()
 
 	if (Util_EnumHasFlag(logger->settings->source, LogSource_File))
 	{
-		logger->handle = fopen(logger->settings->fileName, "w+");
+		logger->binary_handle = fopen(logger->settings->fileName, "w+");
 
-		if (logger->handle == NULL)
+		if (logger->binary_handle == NULL)
 		{
 			printf(u8"Log failed: 0x0002DEAD Error opening logfile %s: errno %d\n", logger->settings->fileName, errno);
 			return NULL;
@@ -45,8 +45,8 @@ Logger* Logger_new()
 
 void Logger_destroy(Logger* logger)
 {
-	fclose(logger->handle);
-	free(logger->handle);
+	fclose(logger->binary_handle);
+	free(logger->binary_handle);
 	LogSettings_destroy(logger->settings);
 	free(logger);
 }
@@ -190,7 +190,7 @@ void Logging_Log(const char* text, LogChannel channel, va_list args)
 
 	if (Util_EnumHasFlag(sys_logger->settings->source, LogSource_File))
 	{
-		vfprintf(sys_logger->handle, log_string_buffer, args);
+		vfprintf(sys_logger->binary_handle, log_string_buffer, args);
 	}
 
 	va_end(args);

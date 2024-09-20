@@ -14,7 +14,7 @@ binary_type Binary_GetBinaryType()
 	uint8_t exe_signature[2] = {0};
 
 	// if we read less than 2 bytes (?!) \there's no real way this can be a valid file 
-	if (fread(&exe_signature, 1, 2, cmd.handle) < 2)
+	if (fread(&exe_signature, 1, 2, cmd.binary_handle) < 2)
 	{
 		Logging_LogChannel("Header type determination failed. File not long enough for a header.", LogChannel_Fatal);
 		return Binary_Invalid;
@@ -29,10 +29,10 @@ binary_type Binary_GetBinaryType()
 
 		Logging_LogChannel("Found MZ header.", LogChannel_Debug);
 
-		int e_lfanew_location = 0x3C;
+		int32_t e_lfanew_location = 0x3C;
 
 		// check e_lfanew to see if it's an NE. first check size
-		if (fseek(cmd.handle, 0x3C, SEEK_SET) != 0)
+		if (fseek(cmd.binary_handle, 0x3C, SEEK_SET) != 0)
 		{
 			Logging_LogChannel("File not large enough for valid MZ header.", LogChannel_Fatal);
 			return Binary_Invalid;
@@ -40,9 +40,9 @@ binary_type Binary_GetBinaryType()
 
 		// check if there is a relocation table and if so how many entries
 		// which affects where e_lfanew would be (in practice, NEs have their own relocation table, so DOS relocation table will never be present in an NE (I hope))
-		fseek(cmd.handle, 0x06, SEEK_SET);
+		fseek(cmd.binary_handle, 0x06, SEEK_SET);
 
-		fread(&num_relocs, sizeof(uint16_t), 1, cmd.handle);
+		fread(&num_relocs, sizeof(uint16_t), 1, cmd.binary_handle);
 
 		if (num_relocs > 0)
 		{
@@ -51,13 +51,13 @@ binary_type Binary_GetBinaryType()
 		}
 
 		// check e_lfanew to see if it's an NE. first check size
-		if (fseek(cmd.handle, e_lfanew_location, SEEK_SET) != 0)
+		if (fseek(cmd.binary_handle, e_lfanew_location, SEEK_SET) != 0)
 		{
 			Logging_LogChannel("?????? Invalid header. File cuts off during reloc table?", LogChannel_Fatal);
 			return Binary_Invalid;
 		}
 
-		fread(&e_lfanew, sizeof(uint16_t), 1, cmd.handle);
+		fread(&e_lfanew, sizeof(uint16_t), 1, cmd.binary_handle);
 
 		if (e_lfanew > 0)
 		{
@@ -65,14 +65,14 @@ binary_type Binary_GetBinaryType()
 			uint8_t ne_header[2];
 
 			// seek to e_lfanew
-			if (fseek(cmd.handle, e_lfanew, SEEK_SET))
+			if (fseek(cmd.binary_handle, e_lfanew, SEEK_SET))
 			{
 				Logging_LogChannel("e_lfanew present but the indicated NE header location is not present. Invalid binary.", LogChannel_Fatal);
 				return Binary_Invalid;
 			}
 
 			// read the header, check for NE signature
-			fread(&ne_header, sizeof(uint8_t[2]), 1, cmd.handle);
+			fread(&ne_header, sizeof(uint8_t[2]), 1, cmd.binary_handle);
 
 			if (ne_header[0] == 'N'
 				&& ne_header[1] == 'E')
@@ -126,7 +126,7 @@ bool MSDOS_Init()
 
 	}
 
-	Logging_LogChannel("Tried to load invalid binary type %s", loaded_binary_type);
+	Logging_LogChannel("Tried to load invalid binary type %d", loaded_binary_type);
 	return false;
 }
 

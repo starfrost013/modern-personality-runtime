@@ -152,9 +152,9 @@ bool CMD_Parse(int argc, char* argv[])
 			if (strlen(cmd.command_line) == 0) return false;
 
 			// open handle for read
-			cmd.handle = fopen(cmd.command_line, "rb");
+			cmd.binary_handle = fopen(cmd.command_line, "rb");
 
-			if (cmd.handle == NULL)
+			if (cmd.binary_handle == NULL)
 			{
 				// if the file wasn't found log a special error message
 				if (errno == ENOENT)

@@ -103,8 +103,8 @@ uint32_t i8086_GetInterruptVector(uint8_t interrupt_vector)
 
 	uint32_t ivt_entry_location = (interrupt_vector) * 4;
 
-	uint16_t ip = *(uint16_t*)cpu_8086.address_space[ivt_entry_location];
-	uint16_t cs = *(uint16_t*)cpu_8086.address_space[ivt_entry_location + 2];
+	uint16_t ip = *(uint16_t*)&cpu_8086.address_space[ivt_entry_location];
+	uint16_t cs = *(uint16_t*)&cpu_8086.address_space[ivt_entry_location + 2];
 
 	// *X86_PARAGRAPH_SIZE
 

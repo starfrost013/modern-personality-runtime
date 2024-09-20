@@ -23,7 +23,7 @@ typedef struct cmd_s
 	bool			is_mtdos;						// True = MT-DOS/MDOS4, False = regular dos
 	char			command_line[MAX_PATH_MODERN];	// Command line
 	binary_type		binary_type;					// The binary type
-	FILE*			handle;							// Handle to the binary.
+	FILE*			binary_handle;					// Handle to the binary file being loaded.
 } cmd_t;
 
 extern cmd_t cmd;

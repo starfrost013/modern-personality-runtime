@@ -70,10 +70,13 @@ void MSDOS_PrintString()
 
 	// TODO: INT23 CHECK!!!!!
 
+
+
 	// TEMP code
 	if (cmd.cpu_ver == cpu_type_i8086)
 	{
 		int32_t debug_count = 0x00;
+
 		char* next_char = &cpu_8086.address_space[start_location];
 
 		while (*next_char != '$')
