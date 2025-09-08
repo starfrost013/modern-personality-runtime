@@ -17,7 +17,7 @@
 bool MTDOS_Init();				// Initialise exciting DOS.
 
 // Signals (MTDOS)
-// Note that these are of **10/30/84** docs
+// Note that these are of **10/1/84** docs
 
 #define MTDOS_SIGNAL_KB0		1					// User-defined key signal 0
 #define MTDOS_SIGNAL_INTR		MTDOS_SIGNAL_KB0	// Ctrl+C (KB0 if not defined)
@@ -33,7 +33,7 @@ bool MTDOS_Init();				// Initialise exciting DOS.
 #define MTDOS_SIGNAL_USER2		14					// User defind
 
 // SIGABRT and SIGIPC are mentioned
-// Docs inconsistent with itself...
+// Docs inconsistent with themselves...
 
 // Signal actions
 // These tell the OS what to do on the signal being received by a process (IF a handler is not set?)
@@ -41,4 +41,5 @@ bool MTDOS_Init();				// Initialise exciting DOS.
 #define MTDOS_SIGNAL_ACTION_IGNORE		1			// Ignore it
 #define MTDOS_SIGNAL_ACTION_ACCEPT		2			// Accept
 #define MTDOS_SIGNAL_ACTION_ERROR		3			// Send error
-#define MTDOS_SIGNAL_ACTION_ACKNOWLEDGE	4			// Acknowledge but do nothing?
+#define MTDOS_SIGNAL_ACTION_ACKNOWLEDGE	4			// Acknowledge but do nothing?			
+
